@@ -1,0 +1,86 @@
+body,html{  
+    margin:0;  
+    padding:0;  
+    height:100%;  
+}  
+
+th{
+	text-align: center;
+}
+
+#header{
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+#navigation{
+    background-color:  #666666;
+}
+.navbar a {
+    color: white;
+}
+
+.osu-grey {background-color: #666666;}
+
+.osu-red {background-color:#bb0000;}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:visited,
+.btn-primary:focus {
+    background-color: #26686d;
+    border-color: #666666;
+}
+
+.btn-success,
+.btn-success:hover,
+.btn-success:active,
+.btn-success:visited,
+.btn-success:focus {
+    background-color: #26686d;
+    border-color: #666666;
+}
+
+td.inTable{
+    padding: 0px;
+}
+
+    
+
+#footer-wrap{
+    min-height: 50px;
+    background-color: #666666; 
+    color: #FFF;
+    
+    
+}
+
+#footer{
+    margin: auto;
+    max-width: 100%;
+    min-height:inherit;
+    padding: 10px;
+}
+
+#footer_left{
+    float: left;
+    text-align: left;
+}
+
+#footer_right{
+	float: right;
+    padding-right: 15px;
+}
+
+#content{
+    margin: auto;
+    min-height: 500px;
+}
+
+#main{
+    text-align: center;
+    margin: auto;
+    padding-top: 20px;
+}

@@ -1,0 +1,7 @@
+ShibUseHeaders On
+
+AuthType shibboleth
+ShibRequestSetting redirectToSSL 443
+ShibRequestSetting requireSession 1
+Require shib-user stahl.182@osu.edu
+Require shib-user gao.1153@osu.edu

@@ -1,0 +1,44 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Handle Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+
+    ShibUseHeaders On
+    AuthType shibboleth
+    ShibRequestSetting redirectToSSL 443
+    ShibRequestSetting requireSession 1
+    Require shib-session
+</IfModule>
+
+
+<IfModule mod_shib_22.so>
+    ShibUseHeaders On
+    AuthType shibboleth
+    ShibRequestSetting redirectToSSL 443
+    ShibRequestSetting requireSession 1
+    Require shib-session
+</IfModule>
+
+<IfModule mod_shib_24.so>
+    ShibUseHeaders On
+    AuthType shibboleth
+    ShibRequestSetting redirectToSSL 443
+    ShibRequestSetting requireSession 1
+    Require shib-session
+</IfModule>
