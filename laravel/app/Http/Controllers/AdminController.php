@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Http\Requests;
 use App\Admin;
 use App\Attending;
 use App\Resident;
@@ -13,9 +12,12 @@ use App\Option;
 use App\Assignment;
 use App\AdminDownload;
 use App\ScheduleData;
-use App\EvaluateData;
 use App\Probability;
+use App\EvaluateData;
+use App\Rotations; 
+use App\Http\Requests;
 use Session;
+use \Datetime;
 
 class AdminController extends Controller
 {   
@@ -416,13 +418,18 @@ class AdminController extends Controller
         return view('schedules.admin.resetTickets');
     }
 
-    public function getEvaluation()
+    public function getEvaluation($date = null)
     {
+        
         date_default_timezone_set('America/New_York');
-        $year = date("o", strtotime('-1 day'));
-        $mon = date('m',strtotime('-1 day'));
-        $day = date('j',strtotime('-1 day'));
-        $date =  $year.'-'.$mon.'-'.$day;
+        if($date == null)
+        {
+            $year = date("o", strtotime('-1 day'));
+            $mon = date('m',strtotime('-1 day'));
+            $day = date('j',strtotime('-1 day'));
+            $date =  $year.'-'.$mon.'-'.$day;
+        }      
+        
 
         $evaluate = null;
         $evaluate = EvaluateData::whereDate('date', $date)->get();
@@ -443,7 +450,101 @@ class AdminController extends Controller
             ));
         }
 
-        return view('schedules.admin.evaluation', compact('evaluate_data'));
+        return view('schedules.admin.evaluation', compact('evaluate_data', 'date'));
     }
+	
+	public function uploadForm(){
+		return view('schedules.admin.uploadForm');
+	}
 
+	// only meant to be used when the medhub report form is uploaded
+	public function UpdateRotationsTable()
+	{
+		
+		// delete all the previous entries
+		Rotations::truncate();
+				
+		$file = fopen("/usr/local/webs/remodel.anesthesiology/htdocs/laravel/storage/app/ResidentRotationSchedule/medhub-report.txt","r");
+		$i = 0;
+		while($line = fgets($file)){
+			if($i < 5)
+			{
+		           // This is here in order to skip over the beginning generated info that isn't important to the rotations.
+			  // Once i reaches 5 and above, the remaining information is parsed and stored properly 		
+			}
+			else
+			{
+				$split = explode(',', $line); 
+				$department = $split[0];
+				$name = $split[2].' '.$split[1];
+				$level = $split[4];
+				$service = $split[6]; 
+				$site = $split[7];
+				$startDate = $split[8];
+				$endDate = $split[9];
+				
+				$startDate = DateTime::createFromFormat('m/d/Y', $startDate);
+				$startDate = $startDate->format('Y-m-d');
+				
+				$endDate = DateTime::createFromFormat('m/d/Y', $endDate);
+				$endDate = $endDate->format('Y-m-d');
+				
+				// pediatric, preop anesth., 
+				
+				$serviceToEvalID = array(
+					"Acute Pain Service" => 0,
+					"Acute Pain Service " => 0,
+					"Advanced Clinical Track" => 92,
+					"Advanced Clinical Track - Vascular" => 580,
+					"Advanced Clinical Track- Liver" => 1725,
+					"Advanced Clinical Track- Thoracic" => 581,
+					"Ambulatory Anesthesiology" => 575,
+					"Basic Anesthesiology" => 4,
+					"Cardiac Anesthesiology" => 574,
+					"Cardiovascular Anesthesiology" => 574,
+					"Cardiovascular TEE" => 0,
+					"CBY - Emergency Medicine" =>0,
+					"CBY Anesthesiology ENT" =>0,
+					"CBY Surgery" =>0,
+					"CBY- Blood Bank/ Ultrasound" =>0,
+					"CBY- Pulmonary Consults" =>0,
+					"Chronic Pain"=>0, 
+					"Chronic Pain "=>0,
+					"CBY Hearts" => 0,					
+					"Neuroanesthesiology" =>116,
+					"Obstetrical Anesthesiology" =>0, 
+					"Out of Operating Room Anesthesiology" => 579,
+					"Pain- Regional" => 0,
+					"Pediatric Anesthesiology" =>0, 
+					"Post Anesthesia Care Unit" => 541,
+					"Preop Anesthesiology" =>0,
+					"Preoperative Assessment Clinic" =>0,
+					"Regional Anesthesiology and Pain Medicine Main" => 571,
+					"Regional Anesthesiology at East" =>0,
+					"Research - Rhodes/Doan" =>0,
+					"Ross Intensive Care Unit / CV ICU" =>0,
+					"Surgical Intensive Care Unit" => 0,
+				);
+				
+				
+				$serviceInt = $serviceToEvalID[$service]; 
+				
+				
+				Rotations::insert(['Name'=>$name, 'Level'=>$level, 'Service'=>$serviceInt, 'Site'=>$site, 'Start'=>$startDate, 'End'=>$endDate]);
+				
+			}				
+			$i++;
+		}
+	}
+	
+	public function uploadFormPost(Request $request){
+		
+		$fileName = 'medhub-report.txt';
+				
+		$request->fileUpload->storeAs('ResidentRotationSchedule', $fileName);
+		
+		self::UpdateRotationsTable(); 
+		
+		return view('schedules.admin.uploadSuccess');
+	}
 }

@@ -2,14 +2,16 @@
 
 @section('content')
 
-    <h3><?php
-        date_default_timezone_set('America/New_York');
-        echo "Today is ".date("Y/m/d"),", here is the assignment for ";
-        echo date("Y/m/d", strtotime('-1 day')); 
-        
-
-    ?></h3> 
-    <br><br>
+    <h5>Date: <input id="datepicker" autocomplete="off" class="" style="width: 300px;" type="text" value= "{{ $date }}" /></h5>
+    <script type="text/javascript">  
+        $('#datepicker').datepicker({ 
+            beforeShowDay: $.datepicker.noWeekends,
+            dateFormat: 'yy-mm-d',
+            onSelect: function(date) {
+                window.location.replace("/laravel/public/admin/evaluation/"+date)
+            }            
+         }); 
+    </script>  
 
     <table class="table table-striped table-bordered" id="sched_table">
       <tr>

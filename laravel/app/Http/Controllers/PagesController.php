@@ -168,6 +168,13 @@ class PagesController extends Controller
         return view('pages.contact');
     }
 
+    
+
+    public function getAcknowledgements()
+    {
+	return view('pages.acknowledgements');
+    }
+
     public function getFeedback($date) {
 
         $year = substr($date, 0, 4);

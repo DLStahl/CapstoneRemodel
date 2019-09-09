@@ -6,5 +6,7 @@
     <a class="btn btn-primary" href="admin/postmessage">Post Messages</a>
     <a class="btn btn-primary" href="admin/download">Download Data Sheets</a>
     <a class="btn btn-primary" href="admin/resetTickets">Reset Tickets</a>
-    <a class="btn btn-primary" href="admin/evaluation">View Evaluation</a>
+    <a class="btn btn-primary" href="admin/evaluation">View Resident/Attending Pairings</a>
+	<a class="btn btn-primary" href="admin/uploadForm">Upload Schedule</a>
+    <a class="btn btn-primary" href="admin/medhubtest">MedHub Test</a>
 @endsection

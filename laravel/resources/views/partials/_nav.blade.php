@@ -45,6 +45,20 @@
                             }
                     </script> 
                 </li>
+
+		<li class="nav-item"> 
+			<a class="nav-link" href="/laravel/public/acknowledgements" id="acknowledgements">Acknowledgements</a>
+		<script>
+			if(window.location.pathname.includes("resident"))
+			{
+				document.getElementById("acknowledgements").href = "/laravel/public/resident/acknowledgements";
+			}
+			else if (window.location.pathname.includes("admin"))
+			{
+				document.getElementById("acknowledgements").href = "/laravel/public/admin/acknowledgements";
+			}
+		</script>
+	     </li>
             </ul>
         </div>
     </div>

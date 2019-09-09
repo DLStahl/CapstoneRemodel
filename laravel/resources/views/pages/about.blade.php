@@ -26,7 +26,17 @@
                     @endif
                 </tr>
                 <tr>
-                    <td align="left">First Next Week Day</td>
+                    <td align="left"><?php
+        if (date("l", strtotime('today'))=='Friday') {
+            echo date("l", strtotime('+3 day')),' ', date('F',strtotime('+3 day')),' ',date('j',strtotime('+3 day'));
+        }
+        elseif (date("l", strtotime('today'))=='Saturday') {
+            echo date("l", strtotime('+2 day')),' ', date('F',strtotime('+2 day')),' ',date('j',strtotime('+2 day'));
+        }
+        else{
+            echo date("l", strtotime('+1 day')),' ', date('F',strtotime('+1 day')),' ',date('j',strtotime('+1 day')); 
+        }    
+    ?></td>
                     <td align="left">
                     @if ($data['firstday'] != null)
                         {{ $data['firstday'] }}
@@ -34,7 +44,22 @@
                     </td>
                 </tr>
                 <tr>
-                    <td align="left">Second Next Week Day</td>
+                    <td align="left"><?php
+
+        if(date("l", strtotime('today'))=='Thursday'){
+            echo date("l", strtotime('+4 day')),' ', date('F',strtotime('+4 day')),' ',date('j',strtotime('+4 day'));
+        }
+        elseif (date("l", strtotime('today'))=='Friday') {
+            echo date("l", strtotime('+4 day')),' ', date('F',strtotime('+4 day')),' ',date('j',strtotime('+4 day'));
+        }
+        elseif (date("l", strtotime('today'))=='Saturday') {
+            echo date("l", strtotime('+3 day')),' ', date('F',strtotime('+3 day')),' ',date('j',strtotime('+3 day'));
+        }
+        else{
+            echo date("l", strtotime('+2 day')),' ', date('F',strtotime('+2 day')),' ',date('j',strtotime('+2 day')); 
+        }
+    
+    ?></td>
                     <td align="left">
                         @foreach ($data['secondday'] as $choice)
                             @if ($choice != null)
@@ -44,7 +69,25 @@
                     </td>
                 </tr>  
                 <tr>
-                    <td align="left">Third Next Week Day</td>
+                    <td align="left"><?php
+
+        if(date("l", strtotime('today'))=='Wednesday'){
+            echo date("l", strtotime('+5 day')),' ', date('F',strtotime('+5 day')),' ',date('j',strtotime('+5 day'));
+        }
+        elseif(date("l", strtotime('today'))=='Thursday'){
+            echo date("l", strtotime('+5 day')),' ', date('F',strtotime('+5 day')),' ',date('j',strtotime('+5 day'));
+        }
+        elseif (date("l", strtotime('today'))=='Friday') {
+            echo date("l", strtotime('+5 day')),' ', date('F',strtotime('+5 day')),' ',date('j',strtotime('+5 day'));
+        }
+        elseif (date("l", strtotime('today'))=='Saturday') {
+            echo date("l", strtotime('+4 day')),' ', date('F',strtotime('+4 day')),' ',date('j',strtotime('+4 day'));
+        }
+        else{
+            echo date("l", strtotime('+3 day')),' ', date('F',strtotime('+3 day')),' ',date('j',strtotime('+3 day')); 
+        }
+    
+    ?></td>
                     <td align="left">
                         @foreach ($data['thirdday'] as $choice)
                             @if ($choice != null)
