@@ -1,12 +1,12 @@
 @extends('main')
 
 @section('content')
-    
+
 	<div id = "Resident Form">
         <h4>Resident Preferences</h4><br>
         <form method="POST" action="../../submit">
 		<div class="form-group">
-                <h5>Your Preference: Room {{ $room1 }} with {{ $attending1 }}</h5>
+                <h5>Your 1st Preference: Room {{ $room1 }} with {{ $attending1 }}</h5>
                 <label>Select your Milestone:</label><br>
 
                 <select name="milestones1" id="milestones1" required>
@@ -37,14 +37,15 @@
                         <option value="ICS2" title="Interpersonal and Communication Skills 2">ICS2 - Communication with other professionals</option>
                         <option value="ICS3" title="Interpersonal and Communication Skills 3">ICS3 - Team and leadership skills</option>
                 </select>
-                    
+
                 <br>
-						    
+
                 <label>What is your educational objective for this OR today?</label><br>
-                
+
                 <textarea rows="3" name="objectives1" id="objectives1" class="form-control" required></textarea><br>
-				
-				<h5>Your Preference: Room {{ $room2 }} with {{ $attending2 }}</h5>
+
+        @if(!is_null($room2))
+				<h5>Your 2nd Preference: Room {{ $room2 }} with {{ $attending2 }}</h5>
                 <label>Select your Milestone:</label><br>
 
                 <select name="milestones2" id="milestones2" required>
@@ -75,14 +76,16 @@
                         <option value="ICS2" title="Interpersonal and Communication Skills 2">ICS2 - Communication with other professionals</option>
                         <option value="ICS3" title="Interpersonal and Communication Skills 3">ICS3 - Team and leadership skills</option>
                 </select>
-                    
+
                 <br>
-						    
+
                 <label>What is your educational objective for this OR today?</label><br>
-                
+
                 <textarea rows="3" name="objectives2" id="objectives2" class="form-control" required></textarea><br>
-				
-				<h5>Your Preference: Room {{ $room3 }} with {{ $attending3 }}</h5>
+        @endif
+
+        @if(!is_null($room3))
+				<h5>Your 3rd Preference: Room {{ $room3 }} with {{ $attending3 }}</h5>
                 <label>Select your Milestone:</label><br>
 
                 <select name="milestones3" id="milestones3" required>
@@ -113,20 +116,20 @@
                         <option value="ICS2" title="Interpersonal and Communication Skills 2">ICS2 - Communication with other professionals</option>
                         <option value="ICS3" title="Interpersonal and Communication Skills 3">ICS3 - Team and leadership skills</option>
                 </select>
-                    
+
                 <br>
-						    
+
                 <label>What is your educational objective for this OR today?</label><br>
 
-                <input type="hidden" name="schedule_id" value="{{ $id }}">
-                
                 <textarea rows="3" name="objectives3" id="objectives3" class="form-control" required></textarea><br>
-                  
+
                 <br>
-                
+        @endif
+
+                <input type="hidden" name="schedule_id" value="{{ $id }}">
                 <input align = "right" type='submit' class='btn btn-md btn-success'>
 		</div>
         </form>
 	</div>
-	
+
 @endsection

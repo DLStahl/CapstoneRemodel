@@ -3,14 +3,14 @@
 @section('content')
     <h3>Date: {{ $mon }}/{{ $day }}/{{ $year }}</h3>
 
-	<?php 
-	
+	<?php
+
 		$url = $_SERVER['REQUEST_URI'];
-		
+
 		//echo $url;
-		
+
 		$urlSplit = explode("/", $url);
-		
+
 		if( sizeof($urlSplit) == 6){
 			$room = "null";
 			$leadSurgeon = "null";
@@ -25,9 +25,9 @@
 			$patientClass =str_replace("%20", " ", $urlSplit[9]);
 			$timeSplit = explode("_", $urlSplit[10]);
 			$start_after = $timeSplit[0];
-			$end_before = $timeSplit[1]; 
+			$end_before = $timeSplit[1];
 		}
-		
+
 		if($room == "null"){
 			$room = "-Room-";
 		}
@@ -44,26 +44,26 @@
 		{
 			$end_before = "-End Before-";
 		}
-	
+
 	?>
-    
-	<div id="filter">        
-        
+
+	<div id="filter">
+
 		<!--//patient class filter-->
     	<select id="room">
             <option value="null" label ="{{ $room }}"></option>
     	</select>
-		
+
 		<!--//patient class filter-->
     	<select id="leadSurgeon">
             <option value="null" label ="{{ $leadSurgeon }}"></option>
     	</select>
-		
+
     	<!--//patient class filter-->
     	<select id="patientClasses">
             <option value="null" label ="{{ $patientClass }}"></option>
     	</select>
-		
+
     	<!--//start after filter-->
     	<select id="start_after">
     	    <option value="null" label ="{{ $start_after }}"></option>
@@ -85,17 +85,17 @@
                 <option value="{{$i}}:00:00">{{$i}}:00:00</option>
             @endfor
         </select>
-        
+
 		<div class="float-right">
 			<button type="button" class="btn btn-primary" onclick="filterUpdate()">Filter</button>
 			<button type="button" class="btn btn-primary" onclick="clearFilter()">Clear Filter</button>
-		</div> 
-	
+		</div>
+
 	</div>
 
 	<br>
-	<br> 
-	
+	<br>
+
 	<div class="float-right">
 		<button type="button" class="btn btn-primary" id = "{{$year}}-{{$mon}}-{{$day}}" onclick="clearPreferences(this.id)">Clear Preferences</button>
 		<button type="button" class="btn btn-primary" name = "submitButton" value="Submit" Onclick="checkPreference();">Submit</button>
@@ -107,9 +107,9 @@
 	    @yield('table_generator')
     </div>
 
-	
+
 	    <script type="text/javascript">
-        
+
         var tab, docList;
 		var rooms = [];
 		var leadSurgeons = [];
@@ -118,28 +118,28 @@
 		roomList = document.getElementById("room");
 		leadSurgeonList = document.getElementById("leadSurgeon");
 		patientClassList = document.getElementById("patientClasses");
-        
-        
+
+
         // Get all unique patient class names and sort by alphabetical order
-		var rowHeadersIndicies = []; 
-		
+		var rowHeadersIndicies = [];
+
 		for(var i = 0; i < tab.rows.length; i++){
             if(i != 0){
-                
+
 				var room = (tab.rows[i].cells[0]);
                 if(room.rowSpan > 0){
                     rooms.push(room.innerHTML);
                     //console.log(element);
 					rowHeadersIndicies.push(i)
-					i = i+room.rowSpan-1; 
-					 
+					i = i+room.rowSpan-1;
+
                 }
 			}
 		}
-		
+
         for(var i = 0; i < tab.rows.length; i++){
             if(i != 0){
-                
+
 				if(rowHeadersIndicies.includes(i)){
 					var leadSurgeon = (tab.rows[i].cells[2]).innerText.trim();
 				}
@@ -151,7 +151,7 @@
                     leadSurgeons.push(leadSurgeon);
                     //console.log(leadSurgeons);
                 }
-				
+
 				if(rowHeadersIndicies.includes(i)){
 					var patientClass = (tab.rows[i].cells[3].innerHTML).trim();
 				}
@@ -166,25 +166,25 @@
             }
         }
 		rooms.sort();
-		leadSurgeons.sort(); 
+		leadSurgeons.sort();
         patientClasses.sort();
-       
+
         // Create options for select
-		
+
 		for(var i = 0; i < rooms.length; i++){
             var option = document.createElement("option");
             option.value = rooms[i];
             option.text = rooms[i];
             roomList.appendChild(option);
         }
-		
+
 		for(var i = 0; i < leadSurgeons.length; i++){
             var option = document.createElement("option");
             option.value = leadSurgeons[i];
             option.text = leadSurgeons[i];
             leadSurgeonList.appendChild(option);
         }
-		
+
         for(var i = 0; i < patientClasses.length; i++){
             var option = document.createElement("option");
             option.value = patientClasses[i];
@@ -206,9 +206,9 @@
             var patient_class_selected = patient_class.options[patient_class.selectedIndex].value;
             var start_after_selected = start_after.options[start_after.selectedIndex].value;
             var end_before_selected = end_before.options[end_before.selectedIndex].value;
-            
-            if (start_after_selected.localeCompare(end_before_selected) >= 0 && 
-                start_after_selected.localeCompare("null") != 0 && 
+
+            if (start_after_selected.localeCompare(end_before_selected) >= 0 &&
+                start_after_selected.localeCompare("null") != 0 &&
                 end_before_selected.localeCompare("null") != 0)
             {
                 alert("Invalid selection!");
@@ -223,7 +223,7 @@
             url = url + "/filter/" + room_selected + "/" + leadSurgeon_selected + "/" + patient_class_selected + "/" + start_after_selected + "_" + end_before_selected;
             window.location.href = url;
         }
-		
+
 		function clearFilter()
 		{
 			var current_url = window.location.href;
@@ -233,16 +233,16 @@
 			}
 			else
 			{
-				
+
 			}
-           
+
 		}
-        
+
     </script>
 
     <!--Preference JS -->
     <script type="text/javascript">
-        function storePreference(id1, id2 = false, id3 = false)
+        function storePreference(id1, id2 = '0_', id3 = '0_')
         {
             var current_url = window.location.href;
             var url = current_url.substr(0, current_url.search('/schedule/'));
@@ -253,7 +253,7 @@
 			}
             window.location.href = url;
         }
-		
+
 		function clearPreferences(date){
 			var current_url = window.location.href;
             var url = current_url.substr(0, current_url.search('/schedule/'));
@@ -265,5 +265,5 @@
             window.location.href = url;
 		}
     </script>
-    
+
 @endsection('content')

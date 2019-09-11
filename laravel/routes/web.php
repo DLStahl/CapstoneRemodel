@@ -33,16 +33,16 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
     Route::get('contact','PagesController@getContact');
     Route::post('contact', 'PagesController@postContact');
 	Route::get('acknowledgements', 'PagesController@getAcknowledgements');
-   
+
     Route::get('schedule', 'ResidentController@getSchedule');
-    Route::get('schedule/firstday', 'ScheduleDataController@getFirstDay');        
+    Route::get('schedule/firstday', 'ScheduleDataController@getFirstDay');
     Route::get('schedule/secondday','ScheduleDataController@getSecondDay');
     Route::get('schedule/thirdday','ScheduleDataController@getThirdDay');
 
-    Route::get('schedule/firstday/filter/{room}/{leadSurgeon}/{patient_class}/{starttime_endtime}', 'ScheduleDataController@getFirstDay');        
+    Route::get('schedule/firstday/filter/{room}/{leadSurgeon}/{patient_class}/{starttime_endtime}', 'ScheduleDataController@getFirstDay');
     Route::get('schedule/secondday/filter/{room}/{leadSurgeon}/{patient_class}/{starttime_endtime}','ScheduleDataController@getSecondDay');
     Route::get('schedule/thirdday/filter/{room}/{leadSurgeon}/{patient_class}/{starttime_endtime}','ScheduleDataController@getThirdDay');
-    
+
     Route::get('schedule/secondday/{id}', 'ScheduleDataController@getChoice');
 	Route::get('schedule/thirdday/{id}', 'ScheduleDataController@getChoice');
 	Route::get('schedule/secondday/milestones/{id}', 'ScheduleDataController@selectMilestones');
@@ -51,7 +51,7 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
 	Route::get('schedule/thirdday/preferences/clear/{date}', 'ScheduleDataController@clearOption');
 
     Route::post('schedule/submit', 'ScheduleDataController@postSubmit');
-    
+
     Route::get('instructions','ResidentController@getInstructions');
 });
 
@@ -83,23 +83,22 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('evaluation', 'AdminController@getEvaluation');
 	Route::get('uploadForm', 'AdminController@uploadForm');
 	Route::post('upload', 'AdminController@uploadFormPost');
-	
-	
+
+
     /**
      * Medhub
      */
     Route::get('medhubtest', 'MedhubController@medhubConnect');
-	
-	
+
+
 });
 
 /**
  * Pre-surgery and post-surgery feedback page
- * 
+ *
  * Authorization: residents and attendings
- * 
+ *
  */
 Route::prefix('survey')->group(function() {
     Route::get('{date}', 'PagesController@getFeedback');
 });
-
