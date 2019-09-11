@@ -1,4 +1,4 @@
-@extends('schedules.resident.schedule_basic')
+﻿@extends('schedules.resident.schedule_basic')
 
 @section('table_generator')
 	@if(!is_null($schedule_data))
@@ -82,9 +82,10 @@
 						$tmp_patient= substr($patient_class, 0,$patientPos);
 
 						echo '<td align="left" >';
-							echo '<ul class = "three" style="list-style-type:none">';
+							echo '<ul class = "three" style="list-style-type:disc">';
 							while ($tmp_procedure!=false) {
 								$ep = stripos($tmp_procedure, '[');
+                                $tmp_procedure = str_replace(',','', $tmp_procedure);
 								echo '<li>'.substr($tmp_procedure, 0, $ep).'</li>';
 								$ep = stripos(substr($tmp_procedure, 0), ']');
 								$tmp_procedure = substr($tmp_procedure, $ep+1);
