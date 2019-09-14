@@ -24,7 +24,7 @@ class ScheduleParser extends Model
 
     /**
      * Parse date
-     * 
+     *
      * @var string
      */
     private static function getLineDate($line)
@@ -33,17 +33,17 @@ class ScheduleParser extends Model
         $month = intval(substr($line[Constant::DATE], 0, 2));
         $day = intval(substr($line[Constant::DATE], 3, 5));
         $year = intval(substr($line[Constant::DATE], 6));
-        
+
         return ($year."-".$month."-".$day);
     }
 
     /**
      * Parse time
-     * 
+     *
      * @var string
-     * 
+     *
      * @var int
-     * 
+     *
      */
     private static function getLineTime($line, $index)
     {
@@ -51,7 +51,7 @@ class ScheduleParser extends Model
         if (strcmp($line[$index], "") == 0) return null;
         $hourInt = intval(substr($line[$index], 0, 2));
         $minuteInt = intval(substr($line[$index], 2));
-        
+
         return ($hourInt.":".$minuteInt.":00");
     }
 
@@ -68,6 +68,7 @@ class ScheduleParser extends Model
 
         date_default_timezone_set('America/New_York');
         ScheduleData::where('date',date("Y-m-d",strtotime('+2 day')))->delete();
+        ScheduleData::where('date',date("Y-m-d",strtotime('+4 day')))->delete();
         Log::info("detele succ");
         /**
          * Open file
@@ -78,12 +79,21 @@ class ScheduleParser extends Model
          * Read the first row
          */
         fgetcsv($fp);
-        
+
         while (($line = fgetcsv($fp)) !== false)
         {
             $date = self::getLineDate($line);
             $location = $line[Constant::LOCATION];
             $room = $line[Constant::ROOM];
+            if (strlen($room) < 1) {
+                if (strpos($location, "CCCT")){
+                    $room = "CCCT TBD";
+                } elseif (strpos($location, "UH")){
+                    $room = "UH TBD";
+                } else {
+                    $room = "TBD";
+                }
+            }
             $case_procedure = $line[Constant::CASE_PROCEDURE];
             $lead_surgeon = $line[Constant::LEAD_SURGEON];
             $patient_class = $line[Constant::PATIENT_CLASS];
@@ -91,8 +101,8 @@ class ScheduleParser extends Model
             $end_time = self::getLineTime($line, Constant::END_TIME);
 
             ScheduleData::insert(
-                ['date' => $date, 'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure, 
-                'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class, 'start_time' => $start_time, 
+                ['date' => $date, 'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure,
+                'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class, 'start_time' => $start_time,
                 'end_time' => $end_time]
             );
         }
@@ -106,21 +116,21 @@ class ScheduleParser extends Model
 
     }
 
-    
+
     /**
      * Public functions
      */
-    
+
     /**
      * Constructor of ScheduleBuffer.
-     * 
+     *
      * @var string
      *      {@code date} Formate: "year" + "month" + "day"
      */
     public function __construct($datefile, $isConsole=false)
-    {   
+    {
         Log::info('here');
-        $this->filepath = $isConsole ? Constant::CONSOLE_PATH.$datefile.Constant::EXTENSION 
+        $this->filepath = $isConsole ? Constant::CONSOLE_PATH.$datefile.Constant::EXTENSION
                             :Constant::WEB_PATH.$datefile.Constant::EXTENSION;
 
         Log::info($datefile);
@@ -176,13 +186,16 @@ class ScheduleParser extends Model
                     $end_time=$records[$i]['end_time'];
                 }
 
-
-                
-                //$line=$records[$i]['start_time']."-".$records[$i]['end_time'].":".$records[$i]['case_procedure']."\n";
-                $line=$records[$i]['case_procedure']."\n";
+                $line="(".$records[$i]['start_time']."-".$records[$i]['end_time'].")".$records[$i]['case_procedure']."\n";
+                // $line=$records[$i]['case_procedure']."\n";
                 $case_procedure=$case_procedure.$line;
                 $lead_surgeon=$lead_surgeon.$records[$i]['lead_surgeon']."\n";
                 $patient_class=$patient_class.$records[$i]['patient_class']."\n";
+
+
+                 // $case_procedure = preg_replace('/^[^A-Za-z]+/', '', $case_procedure);
+                 // $start_time = $start_time.$records[$i]['start_time']."\n";
+                 // $end_time = $end_time.$records[$i]['end_time']."\n";
 
             }
             ScheduleData::where('date',$date)->where('room',$room)->delete();
@@ -193,5 +206,5 @@ class ScheduleParser extends Model
             );
         }
     }
-    
+
 }

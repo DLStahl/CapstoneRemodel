@@ -44,8 +44,10 @@
 
                 <textarea rows="3" name="objectives1" id="objectives1" class="form-control" required></textarea><br>
 
-        @if(!is_null($room2))
-				<h5>Your 2nd Preference: Room {{ $room2 }} with {{ $attending2 }}</h5>
+        @if(is_null($room2))
+					<h5>Your 2nd Preference: None</h5>
+				@else
+					<h5>Your 2nd Preference: Room {{ $room2 }} with {{ $attending2 }}</h5>
                 <label>Select your Milestone:</label><br>
 
                 <select name="milestones2" id="milestones2" required>
@@ -84,8 +86,10 @@
                 <textarea rows="3" name="objectives2" id="objectives2" class="form-control" required></textarea><br>
         @endif
 
-        @if(!is_null($room3))
-				<h5>Your 3rd Preference: Room {{ $room3 }} with {{ $attending3 }}</h5>
+        @if(is_null($room3))
+					<h5>Your 3nd Preference: None</h5>
+				@else
+					<h5>Your 3rd Preference: Room {{ $room3 }} with {{ $attending3 }}</h5>
                 <label>Select your Milestone:</label><br>
 
                 <select name="milestones3" id="milestones3" required>
