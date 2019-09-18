@@ -39,7 +39,7 @@ class AutoAssignment extends Model
                 ]);
             }
 
-            
+
 
             if (Option::where('date', $date)->where('resident', $resident['id'])->count() >= 1)
             {
@@ -226,14 +226,18 @@ class AutoAssignment extends Model
         Option::where('schedule', $schedule)->update([
             'isValid'=>'0'
         ]);
-
         $attending = ScheduleData::where('id', $schedule)->value('lead_surgeon');
         $pos = strpos($attending, '[');
         $pos_end = strpos($attending, "]");
         $attending = substr($attending, $pos+1, $pos_end-$pos-1);
 
+        $option = Option::where('resident', $resident)->where('date', $date)->where('schedule', $schedule);
+        $preference = $option->value('option');
+        $milestones = $option->value('milestones');
+        $objectives = $option->value('objectives');
+
         Assignment::insert([
-            'date'=>$date, 'resident'=>$resident, 'attending'=>$attending, 'schedule'=>$schedule
+            'date'=>$date, 'resident'=>$resident, 'attending'=>$attending, 'schedule'=>$schedule, 'preference'=>$preference, 'milestones'=>$milestones, 'objectives'=>$objectives
         ]);
     }
 

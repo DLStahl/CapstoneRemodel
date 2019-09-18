@@ -9,18 +9,18 @@ use App\Resident;
 use App\ScheduleData;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Google_Client; 
+use Google_Client;
 use Google_Service_Drive;
 use Google_Service_Sheets;
 use Google_Service_Sheets_ValueRange;
-use Google_Service_Sheets_BatchUpdateSpreadsheetRequest; 
+use Google_Service_Sheets_BatchUpdateSpreadsheetRequest;
 
  require __DIR__ . '/../../../../google/vendor/autoload.php';
         /**
          * Returns an authorized API client.
          * @return Google_Client the authorized client object
          */
-        
+
 
 class PushSchedule extends Command
 {
@@ -47,9 +47,9 @@ class PushSchedule extends Command
     {
         parent::__construct();
     }
-	
+
 	public static function updateOption($date)
-    {        
+    {
         $dir = "/usr/local/webs/remodel.anesthesiology/htdocs/downloads/assignment".$date.".csv";
         $fp = null;
 
@@ -59,7 +59,8 @@ class PushSchedule extends Command
             $fp = fopen($dir, 'c');
         }
 
-        fputcsv($fp, array('date', 'room', 'patient class', 'start time', 'end time',
+       //MEGAN CHANGE
+        fputcsv($fp, array('date', 'room', 'case procedure', 'start time', 'end time',
                             'lead surgeon', 'resident', 'preference', 'milestones', 'objectives'));
         $options = null;
         if ($date == null) {
@@ -75,24 +76,27 @@ class PushSchedule extends Command
             $resident_id = $option['resident'];
 			$schedule_id = $option['schedule'];
             $date = $option['date'];
-			
+
             $room = ScheduleData::where('id', $schedule_id)->value('room');
-            $patient_class = ScheduleData::where('id', $schedule_id)->value('patient_class');
+            //MEGAN CHANGE
+            $case_procedure = ScheduleData::where('id', $schedule_id)->value('case_procedure');
             $start_time = ScheduleData::where('id', $schedule_id)->value('start_time');
             $end_time = ScheduleData::where('id', $schedule_id)->value('end_time');
             $lead_surgeon = ScheduleData::where('id', $schedule_id)->value('lead_surgeon');
             $resident = Resident::where('id', $resident_id)->value('name');
-			
-            $preference = "";
-            $milestones = "";
-            $objectives = "";
 
-            fputcsv($fp, array($date, $room, $patient_class, $start_time, $end_time,
-                            $lead_surgeon, $resident, $preference, $milestones, $objectives));   
+
+            $preference = $option['preference'];
+            $milestones = $option['milestones'];
+            $objectives = $option['objectives'];
+
+            //MEGAN CHANGE
+            fputcsv($fp, array($date, $room, $case_procedure, $start_time, $end_time,
+                            $lead_surgeon, $resident, $preference, $milestones, $objectives));
         }
         fclose($fp);
     }
-	
+
 	/**
 	* Returns an authorized API client.
 	* @return Google_Client the authorized client object
@@ -127,33 +131,33 @@ class PushSchedule extends Command
         $client = self::getClient();
         $service = new Google_Service_Sheets($client);
         $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
-        $title = date("Y-m-d"); 
-		$index = 0; 
-	
-        // create new sheet for today 
+        $title = date("Y-m-d");
+		$index = 0;
+
+        // create new sheet for today
         $newSheet = new Google_Service_Sheets_BatchUpdateSpreadsheetRequest(array(
                 'requests' => array(
                     'addSheet' => array(
                         'properties' => array(
-                            'title' => $title, 
+                            'title' => $title,
 							'index' => $index
                         )
                     )
                 )
-            ));	
+            ));
         $service->spreadsheets->batchUpdate('1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY', $newSheet);
 
-        // setup today's sheet to be ready to be added to 
+        // setup today's sheet to be ready to be added to
         $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
         $title = '\''.$title.'\'!';
-        $range = $title.'A1:J15';
+        $range = $title.'A1:K15';
 
 		//update the values in the options sheet
-		$date = date("Y-m-d"); 
+		$date = date("Y-m-d");
 		self::updateOption($date);
-		
-        // get the values from the options file and save them to an array 
-		$path = "/usr/local/webs/remodel.anesthesiology/htdocs/downloads/assignment".$date.".csv"; 
+
+        // get the values from the options file and save them to an array
+		$path = "/usr/local/webs/remodel.anesthesiology/htdocs/downloads/assignment".$date.".csv";
         $file = fopen($path, 'r');
         $csv = array();
         while (($line = fgetcsv($file)) !== FALSE) {
@@ -170,14 +174,14 @@ class PushSchedule extends Command
             'valueInputOption' => 'USER_ENTERED'
         ];
         $result = $service->spreadsheets_values->update($spreadsheetId, $range, $body, $params);
-		
-		
+
+
 		$response = $service->spreadsheets->get($spreadsheetId);
-		
+
 		if(count($response) > 30)
 		{
 			$lastEntry =  $response[count($response)-1];
-			
+
 			$properties = $lastEntry['properties'];
 
 			$sheetId = $properties['sheetId'];
@@ -188,10 +192,10 @@ class PushSchedule extends Command
 							'sheetId' => $sheetId
 					)
 				)
-			));	
+			));
 			$service->spreadsheets->batchUpdate('1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY', $delete);
 		}
-        
+
     }
 
 
