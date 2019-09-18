@@ -23,7 +23,7 @@ use App\Attending;
 use Mail;
 use \Datetime;
 
-class InitiateEvals extends Command
+class InitiateEval extends Command
 {
     /**
      * The name and signature of the console command.

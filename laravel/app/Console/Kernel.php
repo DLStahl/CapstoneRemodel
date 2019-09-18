@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
         Commands\AutoAssign::class,
         Commands\PushSchedule::class,
 		Commands\UpdateEvaluateData::class,
-		Commands\InitiateEvals::class
+		Commands\InitiateEval::class
     ];
 
     /**

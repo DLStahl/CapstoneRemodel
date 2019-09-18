@@ -17,37 +17,37 @@ class AdminAddUserTest extends TestCase
      *
      * @return void
      */
-	
+
 	public function testAddUserResidentTableHasData()
     {
         $this->assertDatabaseHas('resident',['id' => '1']);
     }
-	
+
 	public function testAddUserResidentTableHasCorrectNameData()
     {
         $this->assertDatabaseHas('resident',['name' => 'Amy Baumann']);
     }
-	
+
 	public function testAddUserResidentTableHasCorrectIDData()
     {
         $this->assertDatabaseHas('resident',['UserID' => '113643']);
     }
-	
+
 	public function testAddUserMedHubAPIConnection()
     {
-		$MHC = new MedhubController(); 
+		$MHC = new MedhubController();
 		$testPOST = json_decode($MHC->testPOST()->getBody(), true);
 		$response = $testPOST['response'];
 		$this->assertTrue($response == 'success');
     }
-	
-	public function testAddUserFindPeople()
-    {
-		$ep = new EvaluationParser(date("o", strtotime('today')).date("m", strtotime('today')).date("d", strtotime('today')), true);
-		$result = $ep->findPeopleOSU("Michael", "Bragalone");
-		$this->assertNotNull($result); 
-    }
-	
-	
-	
+
+	// public function testAddUserFindPeople()
+  //   {
+	// 	$ep = new EvaluationParser(date("o", strtotime('today')).date("m", strtotime('today')).date("d", strtotime('today')), true);
+	// 	$result = $ep->findPeopleOSU("Michael", "Bragalone");
+	// 	$this->assertNotNull($result);
+  //   }
+
+
+
 }
