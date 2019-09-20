@@ -14,6 +14,7 @@ use App\Resident;
 use App\Option;
 use App\Admin;
 use App\Assignment;
+use App\Milestone;
 use Mail;
 use GuzzleHttp\Client;
 
@@ -541,7 +542,6 @@ class ScheduleDataController extends Controller
 
 		// get the schedule data for the 3 choices
     	$schedule_data1 = ScheduleData::where('id', $split[0])->get();
-
 		// get information for first choice
 		$choice = 1;
 		$resident_data = Resident::where('email', $_SERVER["HTTP_EMAIL"])->get();
@@ -581,7 +581,9 @@ class ScheduleDataController extends Controller
 	        $attending3 = NULL;
 	    }
 
-		return view('schedules.resident.milestone', compact('room1', 'attending1', 'room2', 'attending2', 'room3', 'attending3', 'id'));
+      $milestones = Milestone::all();
+
+		return view('schedules.resident.milestone', compact('room1', 'attending1', 'room2', 'attending2', 'room3', 'attending3', 'id', 'milestones'));
 	}
 
 	public function notifyResidentOverwrittenPreferences($toName, $toEmail, $residentName, $date, $overwrittenChoices)

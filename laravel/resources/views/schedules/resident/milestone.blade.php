@@ -10,8 +10,19 @@
                 <label>Select your Milestone:</label><br>
 
                 <select name="milestones1" id="milestones1" required>
-                        <option disabled selected value> -- Select a Milestone -- </option>
-                        <option value="PC1" title="Patient Care 1">PC1 - Pre-anesthetic patient evaluation, assessment, and prep</option>
+                        <option value="" selected value> -- Select a Milestone -- </option>
+												@if(!is_null($milestones))
+													@foreach ($milestones as $milestone)
+														<?php
+																$milestone_id=$milestone['id'];
+																$category = $milestone['category'];
+																$title = $milestone['title'];
+																$detail = $milestone['detail'];
+																echo '<option value="'.$milestone_id.'" title="'.$title.'">'.$category.' - '.$detail.'</option>';
+								            ?>
+													@endforeach
+												@endif
+                        <!-- <option value="PC1" title="Patient Care 1">PC1 - Pre-anesthetic patient evaluation, assessment, and prep</option>
                         <option value="PC2" title="Patient Care 2">PC2 - Anesthetic plan and conduct</option>
                         <option value="PC3" title="Patient Care 3">PC3 - Peri-procedural pain management</option>
                         <option value="PC4" title="Patient Care 4">PC4 - Management of peri-anesthetic complications</option>
@@ -35,7 +46,7 @@
                         <option value="PRO5" title="Professionalism 5">PRO5 - Responsibility to maintain personal emotional/physical/mental health</option>
                         <option value="ICS1" title="Interpersonal and Communication Skills 1">ICS1 - Communication with patients and families</option>
                         <option value="ICS2" title="Interpersonal and Communication Skills 2">ICS2 - Communication with other professionals</option>
-                        <option value="ICS3" title="Interpersonal and Communication Skills 3">ICS3 - Team and leadership skills</option>
+                        <option value="ICS3" title="Interpersonal and Communication Skills 3">ICS3 - Team and leadership skills</option> -->
                 </select>
 
                 <br>
@@ -51,8 +62,19 @@
                 <label>Select your Milestone:</label><br>
 
                 <select name="milestones2" id="milestones2" required>
-                        <option disabled selected value> -- Select a Milestone -- </option>
-                        <option value="PC1" title="Patient Care 1">PC1 - Pre-anesthetic patient evaluation, assessment, and prep</option>
+										<option value="" selected value> -- Select a Milestone -- </option>
+										@if(!is_null($milestones))
+											@foreach ($milestones as $milestone)
+												<?php
+														$milestone_id=$milestone['id'];
+														$category = $milestone['category'];
+														$title = $milestone['title'];
+														$detail = $milestone['detail'];
+														echo '<option value="'.$milestone_id.'" title="'.$title.'">'.$category.' - '.$detail.'</option>';
+												?>
+											@endforeach
+										@endif
+                        <!-- <option value="PC1" title="Patient Care 1">PC1 - Pre-anesthetic patient evaluation, assessment, and prep</option>
                         <option value="PC2" title="Patient Care 2">PC2 - Anesthetic plan and conduct</option>
                         <option value="PC3" title="Patient Care 3">PC3 - Peri-procedural pain management</option>
                         <option value="PC4" title="Patient Care 4">PC4 - Management of peri-anesthetic complications</option>
@@ -76,7 +98,7 @@
                         <option value="PRO5" title="Professionalism 5">PRO5 - Responsibility to maintain personal emotional/physical/mental health</option>
                         <option value="ICS1" title="Interpersonal and Communication Skills 1">ICS1 - Communication with patients and families</option>
                         <option value="ICS2" title="Interpersonal and Communication Skills 2">ICS2 - Communication with other professionals</option>
-                        <option value="ICS3" title="Interpersonal and Communication Skills 3">ICS3 - Team and leadership skills</option>
+                        <option value="ICS3" title="Interpersonal and Communication Skills 3">ICS3 - Team and leadership skills</option> -->
                 </select>
 
                 <br>
@@ -93,8 +115,19 @@
                 <label>Select your Milestone:</label><br>
 
                 <select name="milestones3" id="milestones3" required>
-                        <option disabled selected value> -- Select a Milestone -- </option>
-                        <option value="PC1" title="Patient Care 1">PC1 - Pre-anesthetic patient evaluation, assessment, and prep</option>
+											<option value="" selected value> -- Select a Milestone -- </option>
+											@if(!is_null($milestones))
+												@foreach ($milestones as $milestone)
+													<?php
+															$milestone_id=$milestone['id'];
+															$category = $milestone['category'];
+															$title = $milestone['title'];
+															$detail = $milestone['detail'];
+															echo '<option value="'.$milestone_id.'" title="'.$title.'">'.$category.' - '.$detail.'</option>';
+													?>
+												@endforeach
+											@endif
+                        <!-- <option value="PC1" title="Patient Care 1">PC1 - Pre-anesthetic patient evaluation, assessment, and prep</option>
                         <option value="PC2" title="Patient Care 2">PC2 - Anesthetic plan and conduct</option>
                         <option value="PC3" title="Patient Care 3">PC3 - Peri-procedural pain management</option>
                         <option value="PC4" title="Patient Care 4">PC4 - Management of peri-anesthetic complications</option>
@@ -118,7 +151,7 @@
                         <option value="PRO5" title="Professionalism 5">PRO5 - Responsibility to maintain personal emotional/physical/mental health</option>
                         <option value="ICS1" title="Interpersonal and Communication Skills 1">ICS1 - Communication with patients and families</option>
                         <option value="ICS2" title="Interpersonal and Communication Skills 2">ICS2 - Communication with other professionals</option>
-                        <option value="ICS3" title="Interpersonal and Communication Skills 3">ICS3 - Team and leadership skills</option>
+                        <option value="ICS3" title="Interpersonal and Communication Skills 3">ICS3 - Team and leadership skills</option> -->
                 </select>
 
                 <br>

@@ -231,13 +231,10 @@ class AutoAssignment extends Model
         $pos_end = strpos($attending, "]");
         $attending = substr($attending, $pos+1, $pos_end-$pos-1);
 
-        $option = Option::where('resident', $resident)->where('date', $date)->where('schedule', $schedule);
-        $preference = $option->value('option');
-        $milestones = $option->value('milestones');
-        $objectives = $option->value('objectives');
+        $option = Option::where('resident', $resident)->where('date', $date)->where('schedule', $schedule)->value('id');
 
         Assignment::insert([
-            'date'=>$date, 'resident'=>$resident, 'attending'=>$attending, 'schedule'=>$schedule, 'preference'=>$preference, 'milestones'=>$milestones, 'objectives'=>$objectives
+            'date'=>$date, 'resident'=>$resident, 'attending'=>$attending, 'schedule'=>$schedule, 'option'=>$option
         ]);
     }
 

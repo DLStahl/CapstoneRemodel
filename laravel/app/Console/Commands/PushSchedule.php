@@ -7,6 +7,7 @@ use App\Assignment;
 use App\Option;
 use App\Resident;
 use App\ScheduleData;
+use App\Milestone;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Google_Client;
@@ -85,10 +86,11 @@ class PushSchedule extends Command
             $lead_surgeon = ScheduleData::where('id', $schedule_id)->value('lead_surgeon');
             $resident = Resident::where('id', $resident_id)->value('name');
 
-
-            $preference = $option['preference'];
-            $milestones = $option['milestones'];
-            $objectives = $option['objectives'];
+            $option_id = $option['option'];
+            $milestone_id = Option::where('id', $option_id)->value('milestones');
+            $preference = Option::where('id', $option_id)->value('option');
+            $milestones = Milestone::where('id', $milestone_id)->value('category');
+            $objectives = Option::where('id', $option_id)->value('objectives');
 
             //MEGAN CHANGE
             fputcsv($fp, array($date, $room, $case_procedure, $start_time, $end_time,
