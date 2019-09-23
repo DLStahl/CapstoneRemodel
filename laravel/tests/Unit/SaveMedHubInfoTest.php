@@ -17,12 +17,12 @@ class SaveMedHubInfo extends TestCase
      */
     public function testMedHubResidentSavedData()
     {
-        $this->assertDatabaseHas('resident',['UserID' => '112342']);
+        $this->assertDatabaseHas('resident',['medhubId' => '113643']);
     }
 	
 	public function testMedHubAttendingSavedData()
     {
-        $this->assertDatabaseHas('attending',['id' => '109585']);
+        $this->assertDatabaseHas('attending',['id' => '109589']);
     }
 	
 	    public function testMedHubAPIConnection()

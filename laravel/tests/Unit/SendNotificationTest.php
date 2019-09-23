@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\ScheduleParser;
 use App\EvaluationParser;
+use App\Resident;
 
 class SendNotificationTest extends TestCase
 {
@@ -32,10 +33,10 @@ class SendNotificationTest extends TestCase
         $this->assertDatabaseHas('resident',['name' => 'Amy Baumann']);
     }
 
-	public function testNotificationResidentTableHasCorrectIDData()
-    {
-        $this->assertDatabaseHas('resident',['UserID' => '114146']);
-    }
+	// public function testNotificationResidentTableHasCorrectIDData()
+  //   {
+  //       $this->assertDatabaseHas('resident',['medhubId' => '114146']);
+  //   }
 
 	// public function testNotificationSent()
   //   {

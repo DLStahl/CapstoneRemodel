@@ -16,20 +16,20 @@ class ResidentSelectMilestone extends TestCase
 	*/
 	public function testOptionTableHasMilestone1()
 	{
-		$this->assertDatabaseHas('option', ['milestones' => 'PBLI1']);
+		$this->assertDatabaseHas('option', ['milestones' => '1']);
 	}
 
 	public function testOptionTableHasMilestone2()
         {
-		$this->assertDatabaseHas('option',['milestones'=>'PBLI2']);
+		$this->assertDatabaseHas('option',['milestones'=>'3']);
         }
 
 	public function testOptionTableHasMilestone3()
 	{
-		$this->assertDatabaseHas('option', ['milestones'=>'PBLI3']);
+		$this->assertDatabaseHas('option', ['milestones'=>'5']);
 	} 
 	
-	public function testOptionTableHasEntryFromTestResidentBragalone()
+	public function testOptionTableHasEntryFromTestResidentGail()
 	{
 		$this->assertDatabaseHas('option', ['resident'=>'115']);
 	} 

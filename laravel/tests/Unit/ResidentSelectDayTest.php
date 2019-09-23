@@ -17,7 +17,7 @@ class ResidentSelectDay extends TestCase
 
 	public function testEvaluationDataHasTestDate()
         {
-		$this->assertDatabaseHas('evaluation_data',['date'=>'2019-04-08']);
+		$this->assertDatabaseHas('evaluation_data',['date'=>'2019-09-21']);
         }
 
 	public function testEvaluationDataHasTestLocation()
@@ -26,7 +26,7 @@ class ResidentSelectDay extends TestCase
 	} 
 	public function testEvaluationDataHasTestCreated_At()
 	{
-		$this->assertDatabaseHas('evaluation_data', ['created_at'=>'2019-04-05 05:30:00']);
+		$this->assertDatabaseHas('evaluation_data', ['created_at'=>'2019-09-23 06:00:00']);
 	} 
 	
 	

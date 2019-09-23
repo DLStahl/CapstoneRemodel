@@ -30,7 +30,7 @@ class AdminAddUserTest extends TestCase
 
 	public function testAddUserResidentTableHasCorrectIDData()
     {
-        $this->assertDatabaseHas('resident',['UserID' => '113643']);
+        $this->assertDatabaseHas('resident',['medhubId' => '113643']);
     }
 
 	public function testAddUserMedHubAPIConnection()

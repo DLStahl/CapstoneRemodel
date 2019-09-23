@@ -16,7 +16,7 @@ class ResidentViewTable extends TestCase
 	*/
 	public function testViewScheduleDataTableHasCurrentProcedure()
 	{
-		$this->assertDatabaseHas('schedule_data', ['case_procedure' => 'test']);
+		$this->assertDatabaseHas('schedule_data', ['case_procedure' => 'test 1']);
 	}
 
 	public function testViewScheduleDataHasLeadSurgeon()
@@ -31,12 +31,12 @@ class ResidentViewTable extends TestCase
 
 	public function testViewScheduleDataHasEndTime()
 	{
-		$this->assertDatabaseHas('schedule_data',['end_time'=>'15:11:00']);
+		$this->assertDatabaseHas('schedule_data',['end_time'=>'15:02:00']);
 	}
 
 	public function testViewScheduleDataHasID()
 	{
-		$this->assertDatabaseHas('schedule_data', ['id' => '22479']);
+		$this->assertDatabaseHas('schedule_data', ['id' => '1']);
 	}
 
 	public function testViewScheduleDataHasORRoom()
@@ -46,7 +46,7 @@ class ResidentViewTable extends TestCase
 	
 	public function testViewScheduleDataHasDate()
 	{
-		$this->assertDatabaseHas('schedule_data',['date'=>'2018-11-13']);
+		$this->assertDatabaseHas('schedule_data',['date'=>'2019-09-23']);
 	}
 
 	public function testViewScheduleDataHasRoom()

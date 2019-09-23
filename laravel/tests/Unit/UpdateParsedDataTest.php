@@ -23,7 +23,7 @@ class UpdateParsedDataTest extends TestCase
 	
 	public function testParsedEvaluationDataTableHasCorrectedNameData()
     {
-        $this->assertDatabaseHas('evaluation_data',['resident' => 'Amy Baumann']);
+        $this->assertDatabaseHas('evaluation_data',['resident' => 'Adam Thomas']);
     }
 	
 	public function testParsedEvaluationDataTableHasData()

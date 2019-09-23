@@ -34,7 +34,7 @@ class GenerateUserNotFoundNotificationTest extends TestCase
 	
 	public function testGenerateResidentTableHasCorrectIDData()
     {
-        $this->assertDatabaseHas('resident',['UserID' => '114146']);
+        $this->assertDatabaseHas('resident',['medhubId' => '114144']);
     }
 	
 	
