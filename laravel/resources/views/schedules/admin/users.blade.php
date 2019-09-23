@@ -24,7 +24,7 @@
         </form>
         </h5>
     </div>
-    <script type="text/javascript">                
+    <script type="text/javascript">
         function addUsers(id)
         {
             if (!document.getElementById('email_usr').value.includes("@osu.edu"))
@@ -43,12 +43,15 @@
             var role = id;
             var name = document.getElementById('name_usr').value;
             if (role.includes("Attending")) {
-                if (document.getElementById('id_usr').value == null)
+                if (document.getElementById('id_usr').value == "")
                 {
                     alert("ID is required");
                     return;
                 }
                 name = name + "<" + document.getElementById('id_usr').value + ">";
+            }
+            if (role.includes("Resident") && document.getElementById('id_usr').value != ""){
+              name = name + "<" + document.getElementById('id_usr').value + ">";
             }
             // alert(email);
 
@@ -80,10 +83,10 @@
                         <input align="center" onclick = "deleteUsers(this.id);" value="Delete User" type="button" class='btn btn-md btn-success' id="{{ $role['email'] }}_{{ $role['role'] }}">
                     @endif
                 </td>
-            </tr>                             
+            </tr>
         @endforeach
 
-        <script type="text/javascript">                
+        <script type="text/javascript">
             function deleteUsers(id)
             {
                 var email = id.substr(0, id.indexOf('_'));
@@ -95,7 +98,7 @@
                 url = url + "/deleteUser/" + role + "/" + email + "/false";
                 window.location.href = url;
             }
-    
+
         </script>
     </tr>
 </table>

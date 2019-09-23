@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddOptionMilestonesObjectivesToAssignment extends Migration
+class AddDetailToMilestoneTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class AddOptionMilestonesObjectivesToAssignment extends Migration
      */
     public function up()
     {
-        Schema::table('assignment', function($table) {
-            $table->unsignedInteger('preference');
-            $table->longText('milestones')->nullable();
-            $table->longText('objectives')->nullable(); 
+        Schema::table('milestone', function($table) {
+            $table->longText('detail')->nullable();;
         });
-
     }
 
     /**
@@ -29,9 +26,7 @@ class AddOptionMilestonesObjectivesToAssignment extends Migration
     public function down()
     {
         Schema::table('assignment', function (Blueprint $table) {
-            $table->dropColumn('preference');
-            $table->dropColumn('milestones');
-            $table->dropColumn('objectives');
+            $table->dropColumn('detail');
         });
     }
 }

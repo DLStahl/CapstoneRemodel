@@ -14,16 +14,16 @@ use App\AdminDownload;
 use App\ScheduleData;
 use App\Probability;
 use App\EvaluateData;
-use App\Rotations; 
+use App\Rotations;
 use App\Http\Requests;
 use Session;
 use \Datetime;
 
 class AdminController extends Controller
-{   
+{
     public function getIndex()
-    {         
-        return view('schedules.admin.admin');        
+    {
+        return view('schedules.admin.admin');
     }
 
     /**
@@ -35,7 +35,7 @@ class AdminController extends Controller
         $admin = Admin::where('exists', '1')->orderBy('email', 'asc')->get();
         $attending = Attending::where('exists', '1')->orderBy('email', 'asc')->get();
         $roles = array();
-        
+
         for ($i=0; $i<count($admin); $i++) {
             $role = array(
                 'name'=>$admin[$i]['name'],
@@ -44,7 +44,7 @@ class AdminController extends Controller
             );
             array_push($roles, $role);
         }
-        
+
         for ($i=0; $i<count($attending); $i++) {
             $role = array(
                 'name'=>$attending[$i]['name'],
@@ -53,7 +53,7 @@ class AdminController extends Controller
             );
             array_push($roles, $role);
         }
-        
+
         for ($i=0; $i<count($resident); $i++) {
             $role = array(
                 'name'=>$resident[$i]['name'],
@@ -74,9 +74,9 @@ class AdminController extends Controller
         if ($name == null) {
             $name = "null";
         }
-        
+
         str_replace("%20", " ", $name);
-        
+
         $data = array(
             'op'=>$op,
             'role'=>$role,
@@ -84,14 +84,14 @@ class AdminController extends Controller
             'flag'=>$flag,
             'name'=>$name
         );
-        
+
         /**
          * If the data input has not been confirmed, route user to a confirmation page.
          */
         if (strcmp($flag, "false") == 0) {
             return view('schedules.admin.users_confirm', compact('data'));
-        } 
-        
+        }
+
         /**
          * Update admin
          */
@@ -102,14 +102,14 @@ class AdminController extends Controller
             if (strcmp($op, "deleteUser") == 0) {
                 Admin::where('email', $email)->update(['exists'=> '0']);
             }
-            
+
             /**
              * Add a new admin
              */
             else if (strcmp($op, "addUser") == 0 && Admin::where('email', $email)->doesntExist()) {
                 Admin::insert(['name'=>$name, 'email'=>$email]);
-            } 
-            
+            }
+
             /**
              * Add an old admin, switch 'exists' to true
              */
@@ -117,7 +117,7 @@ class AdminController extends Controller
                 Admin::where('email', $email)->update(['exists'=> '1']);
             }
         }
-        
+
         /**
          * Update attending
          */
@@ -127,7 +127,7 @@ class AdminController extends Controller
              */
             if (strcmp($op, "deleteUser") == 0) {
                 Attending::where('email', $email)->update(['exists'=> '0']);
-            } 
+            }
 
             /**
              * Add a new attending
@@ -137,14 +137,14 @@ class AdminController extends Controller
                 $name_ = substr($name, 0, strpos($name, "<"));
                 Attending::insert(['name'=>$name_, 'email'=>$email, 'id'=>$id]);
             }
-            
+
             /**
              * Add an old attending, switch 'exists' to true
              */
             else if (strcmp($op, "addUser") == 0 && Attending::where('email', $email)->exists()) {
                 Attending::where('email', $email)->update(['exists'=> '1']);
             }
-        } 
+        }
 
         /**
          * Update resident
@@ -152,18 +152,24 @@ class AdminController extends Controller
         else if (strcmp($role, "Resident") == 0) {
             /**
              * Delete resident, switch 'exists' to false
-             */            
+             */
             if (strcmp($op, "deleteUser") == 0) {
                 Resident::where('email', $email)->update(['exists'=> '0']);
-            }             
-            
+            }
+
             /**
              * Add a new resident
              */
             else if (strcmp($op, "addUser") == 0 && Resident::where('email', $email)->doesntExist()) {
-                Resident::insert(['name'=>$name, 'email'=>$email]);
-            } 
-           
+                if (strpos($name, "<") === false){
+                  Resident::insert(['name'=>$name, 'email'=>$email, 'exists'=>1]);
+                } else {
+                  $id = substr($name, strpos($name, "<")+1, strpos($name, ">")-strpos($name, "<")-1);
+                  $name_ = substr($name, 0, strpos($name, "<"));
+                  Resident::insert(['name'=>$name_, 'email'=>$email,'exists'=>1, 'medhubId'=>$id]);
+                }
+            }
+
             /**
              * Add an old admin, switch 'exists' to true
              */
@@ -171,7 +177,7 @@ class AdminController extends Controller
                 Resident::where('email', $email)->update(['exists'=> '1']);
             }
         }
-        
+
         return view('schedules.admin.users_update');
     }
 
@@ -193,7 +199,7 @@ class AdminController extends Controller
         {
             $date = $_POST['date'];
             return view('schedules.admin.addDB', compact('date'));
-        } 
+        }
         else if (strcmp($_POST['op'], "delete") == 0)
         {
             /**
@@ -201,7 +207,7 @@ class AdminController extends Controller
              */
             AdminDownload::updateAccess();
             $urls = AdminDownload::updateURL($_POST['date']);
-            
+
             if ($urls !== null)
             {
 
@@ -216,12 +222,12 @@ class AdminController extends Controller
             }
 
             echo "Error in deleting data sets!";
-        } 
+        }
         else if (strcmp($_POST['op'], "edit") == 0)
         {
             $datasets = self::retrieveData($_POST['date']);
             $residents = Resident::orderBy('email', 'asc')->get();
-            return view('schedules.admin.editDB', compact('datasets', 'residents'));            
+            return view('schedules.admin.editDB', compact('datasets', 'residents'));
         }
 
     }
@@ -237,7 +243,7 @@ class AdminController extends Controller
             $location = is_null($schedule['location']) ? "" : $schedule['location'];
             $room = is_null($schedule['room']) ? "" : $schedule['room'];
             $case_procedure = is_null($schedule['case_procedure']) ? "" : $schedule['case_procedure'];
-            
+
             $lead_surgeon = "";
             $lead_surgeon_code = "";
             if (!is_null($schedule['lead_surgeon']))
@@ -251,7 +257,7 @@ class AdminController extends Controller
             $patient_class = is_null($schedule['patient_class']) ? "" : $schedule['patient_class'];
             $start_time = is_null($schedule['start_time']) ? "" : $schedule['start_time'];
             $end_time = is_null($schedule['end_time']) ? "" : $schedule['end_time'];
-            
+
             $assignment = "";
             $email = "";
             if (Assignment::where('schedule', $id)->exists())
@@ -282,7 +288,7 @@ class AdminController extends Controller
             } else {
                 $case_procedure.=$_POST['case_procedure_2']." [".$_POST['case_procedure_2_code']."]";
             }
-            
+
             if (strlen($_POST['case_procedure_3'])>0)
             {
                 $case_procedure.=", ".$_POST['case_procedure_3']." [".$_POST['case_procedure_3_code']."]";
@@ -292,11 +298,11 @@ class AdminController extends Controller
                     if (strlen($_POST['case_procedure_5'])>0)
                     {
                         $case_procedure.=", ".$_POST['case_procedure_5']." [".$_POST['case_procedure_5_code']."]";
-                        
+
                     }
                 }
             }
-            
+
         }
 
         return $case_procedure;
@@ -322,11 +328,11 @@ class AdminController extends Controller
             $end_time = $_POST['end_time'].":00";
             if (strcmp($start_time, $end_time) < 0) {
                 ScheduleData::insert([
-                    'date' => $date, 'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure, 
-                    'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class, 'start_time' => $start_time, 
+                    'date' => $date, 'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure,
+                    'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class, 'start_time' => $start_time,
                     'end_time' => $end_time
                 ]);
-    
+
                 $message = "Successfully add schedule data!";
             }
 
@@ -348,10 +354,10 @@ class AdminController extends Controller
             $case_procedure = self::processCaseProcedure($_POST['case_procedure_1']);
             $lead_surgeon = $_POST['lead_surgeon']." [".$_POST['lead_surgeon_code']."]";
             $patient_class = $_POST['patient_class'];
-            
+
             ScheduleData::where('id', $id)->update([
-                'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure, 
-                'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class, 
+                'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure,
+                'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class,
                 'start_time' => $start_time, 'end_time' => $end_time
             ]);
 
@@ -367,9 +373,9 @@ class AdminController extends Controller
                 $assignment = Resident::where('email', $_POST['assignment'])->value('id');
                 $date = $_POST['date'];
                 Assignment::insert([
-                    'date'=>$date, 'resident'=>$assignment, 
+                    'date'=>$date, 'resident'=>$assignment,
                     'attending'=>$_POST['lead_surgeon_code'],
-                    'schedule'=>$id, 
+                    'schedule'=>$id,
                 ]);
             }
 
@@ -377,11 +383,11 @@ class AdminController extends Controller
             $message = "Successfully edit schedule data!";
         }
 
- 
+
 
         return view('schedules.admin.addDB_OK', compact('message'));
     }
-    
+
 
 
     /**
@@ -406,10 +412,10 @@ class AdminController extends Controller
     {
         return view('schedules.admin.resetTickets');
     }
- 
+
     public function postUpdateTickets()
     {
-        
+
         // Probability::where('resident', 1)->update([
         //     'total'=>"0"
         // ]);
@@ -420,7 +426,7 @@ class AdminController extends Controller
 
     public function getEvaluation($date = null)
     {
-        
+
         date_default_timezone_set('America/New_York');
         if($date == null)
         {
@@ -428,12 +434,12 @@ class AdminController extends Controller
             $mon = date('m',strtotime('-1 day'));
             $day = date('j',strtotime('-1 day'));
             $date =  $year.'-'.$mon.'-'.$day;
-        }      
-        
+        }
+
 
         $evaluate = null;
         $evaluate = EvaluateData::whereDate('date', $date)->get();
-        
+
         $evaluate_data = array();
         foreach ($evaluate as $data)
         {
@@ -452,7 +458,7 @@ class AdminController extends Controller
 
         return view('schedules.admin.evaluation', compact('evaluate_data', 'date'));
     }
-	
+
 	public function uploadForm(){
 		return view('schedules.admin.uploadForm');
 	}
@@ -460,37 +466,37 @@ class AdminController extends Controller
 	// only meant to be used when the medhub report form is uploaded
 	public function UpdateRotationsTable()
 	{
-		
+
 		// delete all the previous entries
 		Rotations::truncate();
-				
+
 		$file = fopen("/usr/local/webs/remodel.anesthesiology/htdocs/laravel/storage/app/ResidentRotationSchedule/medhub-report.txt","r");
 		$i = 0;
 		while($line = fgets($file)){
 			if($i < 5)
 			{
 		           // This is here in order to skip over the beginning generated info that isn't important to the rotations.
-			  // Once i reaches 5 and above, the remaining information is parsed and stored properly 		
+			  // Once i reaches 5 and above, the remaining information is parsed and stored properly
 			}
 			else
 			{
-				$split = explode(',', $line); 
+				$split = explode(',', $line);
 				$department = $split[0];
 				$name = $split[2].' '.$split[1];
 				$level = $split[4];
-				$service = $split[6]; 
+				$service = $split[6];
 				$site = $split[7];
 				$startDate = $split[8];
 				$endDate = $split[9];
-				
+
 				$startDate = DateTime::createFromFormat('m/d/Y', $startDate);
 				$startDate = $startDate->format('Y-m-d');
-				
+
 				$endDate = DateTime::createFromFormat('m/d/Y', $endDate);
 				$endDate = $endDate->format('Y-m-d');
-				
-				// pediatric, preop anesth., 
-				
+
+				// pediatric, preop anesth.,
+
 				$serviceToEvalID = array(
 					"Acute Pain Service" => 0,
 					"Acute Pain Service " => 0,
@@ -508,14 +514,14 @@ class AdminController extends Controller
 					"CBY Surgery" =>0,
 					"CBY- Blood Bank/ Ultrasound" =>0,
 					"CBY- Pulmonary Consults" =>0,
-					"Chronic Pain"=>0, 
+					"Chronic Pain"=>0,
 					"Chronic Pain "=>0,
-					"CBY Hearts" => 0,					
+					"CBY Hearts" => 0,
 					"Neuroanesthesiology" =>116,
-					"Obstetrical Anesthesiology" =>0, 
+					"Obstetrical Anesthesiology" =>0,
 					"Out of Operating Room Anesthesiology" => 579,
 					"Pain- Regional" => 0,
-					"Pediatric Anesthesiology" =>0, 
+					"Pediatric Anesthesiology" =>0,
 					"Post Anesthesia Care Unit" => 541,
 					"Preop Anesthesiology" =>0,
 					"Preoperative Assessment Clinic" =>0,
@@ -525,26 +531,26 @@ class AdminController extends Controller
 					"Ross Intensive Care Unit / CV ICU" =>0,
 					"Surgical Intensive Care Unit" => 0,
 				);
-				
-				
-				$serviceInt = $serviceToEvalID[$service]; 
-				
-				
+
+
+				$serviceInt = $serviceToEvalID[$service];
+
+
 				Rotations::insert(['Name'=>$name, 'Level'=>$level, 'Service'=>$serviceInt, 'Site'=>$site, 'Start'=>$startDate, 'End'=>$endDate]);
-				
-			}				
+
+			}
 			$i++;
 		}
 	}
-	
+
 	public function uploadFormPost(Request $request){
-		
+
 		$fileName = 'medhub-report.txt';
-				
+
 		$request->fileUpload->storeAs('ResidentRotationSchedule', $fileName);
-		
-		self::UpdateRotationsTable(); 
-		
+
+		self::UpdateRotationsTable();
+
 		return view('schedules.admin.uploadSuccess');
 	}
 }
