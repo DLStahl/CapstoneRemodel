@@ -133,7 +133,7 @@ class PushSchedule extends Command
         $client = self::getClient();
         $service = new Google_Service_Sheets($client);
         $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
-        $title = date("Y-m-d");
+        $title = date("Y-m-d", strtotime('+1 day'));
 		$index = 0;
 
         // create new sheet for today
@@ -155,7 +155,7 @@ class PushSchedule extends Command
         $range = $title.'A1:K15';
 
 		//update the values in the options sheet
-		$date = date("Y-m-d");
+		$date = date("Y-m-d", strtotime('+1 day'));
 		self::updateOption($date);
 
         // get the values from the options file and save them to an array

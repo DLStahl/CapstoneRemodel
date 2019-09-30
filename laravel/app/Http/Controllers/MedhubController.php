@@ -312,17 +312,20 @@ class MedhubController extends Controller
 				//not an an Anesthesiology resident
 				$emailMessage = $emailMessage.$userType.' '.$name.' was found by OSU Find People but is not an Anesthesiology '.$userType.'. Please check the information and add user to database manually.';
 	            // self::notifyAddUser($userType, 'Gaberr', 'mralawi7@gmail.com', "$name_first $name_last", $emailMessage);
+	            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
 	            self::notifyAddUser($userType, 'Gail', 'chentianzhigail@gmail.com', $name, $emailMessage);
 			}
 		} elseif (sizeof($osuMatches)==0) {
 			echo '0 residents found in FindPeopleOSU'."\n";
         	$emailMessage = $emailMessage.'No matches for '.$userType.' '.$name.' were found by OSU Find People. The '.$userType.' may be using a preffered name at OSU. Please check the information and add user to database manually.';
     		// self::notifyAddUser($userType, 'Gaberr', 'mralawi7@gmail.com', "$name_first $name_last", $emailMessage);
+            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
             self::notifyAddUser($userType, 'Gail', 'chentianzhigail@gmail.com', $name, $emailMessage);
     	} else {
     		echo 'More than 1 residents found in FindPeopleOSU'."\n";
     		$emailMessage = $emailMessage.'Multiple matches for '.$userType.' '.$name.' were found by OSU Find People. Please check the information and add user to database manually. ';
     		// self::notifyAddUser($userType, 'Gaberr', 'mralawi7@gmail.com', "$name_first $name_last", $emailMessage);
+            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
             self::notifyAddUser($userType, 'Gail', 'chentianzhigail@gmail.com', $name, $emailMessage);
     	}
 		echo var_dump($osuMatches);
@@ -353,6 +356,7 @@ class MedhubController extends Controller
         	$emailMessage = 'No matches for '.$userType." ".$name.' were found on MedHub. ';
         	if(strcmp($userType, 'Attending') == 0){
         		// self::notifyAddUser($userType, 'Gaberr', 'mralawi7@gmail.com', "$name_first $name_last", $emailMessage);
+	            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
 	            self::notifyAddUser($userType, 'Gail', 'chentianzhigail@gmail.com', $name, $emailMessage);
         	} else {
 	        	$userAdded = self::addUserFromFindPeopleOSU($userType, $emailMessage, $name);
@@ -362,6 +366,7 @@ class MedhubController extends Controller
 			$emailMessage = 'Multiple matches for '.$userType." ".$name.' were found on MedHub. ';
 			if(strcmp($userType, 'Attending') == 0){
         		// self::notifyAddUser($userType, 'Gaberr', 'mralawi7@gmail.com', "$name_first $name_last", $emailMessage);
+	            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
 	            self::notifyAddUser($userType, 'Gail', 'chentianzhigail@gmail.com', $name, $emailMessage);
         	} else {
 	        	$userAdded = self::addUserFromFindPeopleOSU($userType, $emailMessage, $name);

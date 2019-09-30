@@ -31,9 +31,8 @@ class ScheduleParser extends Model
     {
 
         $month = intval(substr($line[Constant::DATE], 0, 2));
-        $day = intval(substr($line[Constant::DATE], 3, 5));
+        $day = intval(substr($line[Constant::DATE], 3, 2));
         $year = intval(substr($line[Constant::DATE], 6));
-
         return ($year."-".$month."-".$day);
     }
 
@@ -58,7 +57,7 @@ class ScheduleParser extends Model
     /**
      * Insert data into database.
      */
-    private function insertScheduleData()
+    private function insertScheduleData($datefile)
     {
 
         if (!file_exists($this->filepath)) {
@@ -67,9 +66,9 @@ class ScheduleParser extends Model
         }
 
         date_default_timezone_set('America/New_York');
-        ScheduleData::where('date',date("Y-m-d",strtotime('+2 day')))->delete();
-        ScheduleData::where('date',date("Y-m-d",strtotime('+4 day')))->delete();
-        Log::info("detele succ");
+        ScheduleData::where('date',date("Y-m-d",strtotime($datefile.'+2 day')))->delete();
+        ScheduleData::where('date',date("Y-m-d",strtotime($datefile.'+4 day')))->delete();
+        Log::info("delete succ");
         /**
          * Open file
          */
@@ -140,18 +139,18 @@ class ScheduleParser extends Model
          * Assign value to date
          */
         $year = intval(substr($datefile, 0, 4));
-        $month = intval(substr($datefile, 4, 6));
+        $month = intval(substr($datefile, 4, 2));
         $day = intval(substr($datefile, 6));
         $this->date = $year."-".$month."-".$day;
-
-        if (!$this->insertScheduleData())
+        Log::info($this->date);
+        if (!$this->insertScheduleData($datefile))
         {
             $this->fileExists=false;
         }
 
         date_default_timezone_set('America/New_York');
-        $this->processScheduleData(date('Y-m-d',strtotime('+2 day')));
-        $this->processScheduleData(date('Y-m-d',strtotime('+4 day')));
+        $this->processScheduleData(date('Y-m-d',strtotime($datefile.'+2 day')));
+        $this->processScheduleData(date('Y-m-d',strtotime($datefile.'+4 day')));
     }
 
     public function fileExists()

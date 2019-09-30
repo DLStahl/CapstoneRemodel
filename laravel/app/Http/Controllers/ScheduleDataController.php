@@ -672,7 +672,7 @@ class ScheduleDataController extends Controller
         Option::insert(
             ['date' => $date, 'resident' => $resident, 'schedule' => $split[0],
             'attending' => $attending, 'option' => $choice, 'milestones'=>$_REQUEST['milestones1'],
-            'objectives'=>$_REQUEST['objectives1']]
+            'objectives'=>$_REQUEST['objectives1'], 'isValid'=>1]
         );
 
         //insert second choice data
@@ -709,7 +709,7 @@ class ScheduleDataController extends Controller
 			Option::insert(
 			  ['date' => $date, 'resident' => $resident, 'schedule' => $split[1],
 			  'attending' => $attending, 'option' => $choice, 'milestones'=>$_REQUEST['milestones2'],
-			  'objectives'=>$_REQUEST['objectives2']]
+			  'objectives'=>$_REQUEST['objectives2'], 'isValid'=>1]
 			);
         }
 
@@ -749,7 +749,7 @@ class ScheduleDataController extends Controller
 			Option::insert(
 			    ['date' => $date, 'resident' => $resident, 'schedule' => $split[2],
 			    'attending' => $attending, 'option' => $choice, 'milestones'=>$_REQUEST['milestones3'],
-			    'objectives'=>$_REQUEST['objectives3']]
+			    'objectives'=>$_REQUEST['objectives3'], 'isValid'=>1]
 			);
 		}
 		// data was overwritten, send a notification

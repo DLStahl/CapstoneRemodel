@@ -47,7 +47,7 @@ class EvaluationParser extends Model
     {
 
         $month = intval(substr($line, 0, 2));
-        $day = intval(substr($line, 3, 5));
+        $day = intval(substr($line, 3, 2));
         $year = intval(substr($line, 6));
 
         return ($year."-".$month."-".$day);
@@ -74,7 +74,7 @@ class EvaluationParser extends Model
             } else {
                 $name_last = $namefl[2];
             }
-            
+
             $namefl = $name_first." ".$name_last;
 
 //            echo "doc".substr($line, 0, $ep)."\n";
@@ -174,11 +174,11 @@ class EvaluationParser extends Model
          * Assign value to date
          */
         $year = intval(substr($datefile, 0, 4));
-        $month = intval(substr($datefile, 4, 6));
+        $month = intval(substr($datefile, 4, 2));
         $day = intval(substr($datefile, 6));
         $this->date = $year."-".$month."-".$day;
 
-        if (!$this->insertEvaluateData())
+        if (!$this->insertEvaluateData($datefile))
         {
             $this->fileExists=false;
         }
@@ -191,12 +191,14 @@ class EvaluationParser extends Model
         return $this->fileExists;
     }
 
-    private function insertEvaluateData(){
+    private function insertEvaluateData($datefile){
         if (!file_exists($this->filepath)) {
             Log::info("no evaluate file");
             return false;
         }
         $fp = fopen($this->filepath, 'r');
+
+        $failedAddingUsers = array();
 
         fgetcsv($fp);
         while(($line = fgetcsv($fp)) !== false){
@@ -218,13 +220,17 @@ class EvaluationParser extends Model
                                 // Add new resident to database if doesn't exist
                                 $rId = null;
                                 if(Resident::where('name', $resident->namefl)->doesntExist()){
-                                    echo 'Resident '.$resident->namefl.' doesnt exist'."\n";
-                                    $MHC = new MedhubController();
-                                    $residentAdded = $MHC->addUserFromMedhub('Resident', $resident->namefl);
-                                    echo 'Resident added: '.$residentAdded."\n";
-                                    if ($residentAdded){
-                                        echo 'Resident '.$resident->namefl.' added'."\n";
-                                        $rId = Resident::where('name', $resident->namefl)->value('id');
+                                    if (!in_array($resident->namefl, $failedAddingUsers)){
+                                        echo 'Resident '.$resident->namefl.' doesnt exist'."\n";
+                                        $MHC = new MedhubController();
+                                        $residentAdded = $MHC->addUserFromMedhub('Resident', $resident->namefl);
+                                        echo 'Resident added: '.$residentAdded."\n";
+                                        if ($residentAdded){
+                                            echo 'Resident '.$resident->namefl.' added'."\n";
+                                            $rId = Resident::where('name', $resident->namefl)->value('id');
+                                        } else {
+                                            array_push($failedAddingUsers, $resident->namefl);
+                                        }
                                     }
                                 } else {
                                     echo 'Resident '.$resident->namefl.' exists'."\n";
@@ -234,14 +240,19 @@ class EvaluationParser extends Model
                                 // Add new attending to database if doesn't exist
                                 $aId = null;
                                 if(Attending::where('name', $attending->namefl)->doesntExist()){
-                                    echo 'Attending '.$attending->namefl.' doesnt exist'."\n";
-                                    $MHC = new MedhubController();
-                                    $attendingAdded = $MHC->addUserFromMedhub('Attending', $attending->namefl);
-                                    echo 'resident added: '.$attendingAdded."\n";
-                                    if ($attendingAdded){
-                                        echo 'Attending '.$attending->namefl.' added'."\n";
-                                        $aId = Attending::where('name', $attending->namefl)->value('id');
+                                    if (!in_array($attending->namefl, $failedAddingUsers)){
+                                        echo 'Attending '.$attending->namefl.' doesnt exist'."\n";
+                                        $MHC = new MedhubController();
+                                        $attendingAdded = $MHC->addUserFromMedhub('Attending', $attending->namefl);
+                                        echo 'resident added: '.$attendingAdded."\n";
+                                        if ($attendingAdded){
+                                            echo 'Attending '.$attending->namefl.' added'."\n";
+                                            $aId = Attending::where('name', $attending->namefl)->value('id');
+                                        } else {
+                                            array_push($failedAddingUsers, $attending->namefl);
+                                        }
                                     }
+                                    
                                 } else {
                                     echo 'Attending '.$attending->namefl.' exists'."\n";
                                     $aId = Attending::where('name', $attending->namefl)->value('id');
