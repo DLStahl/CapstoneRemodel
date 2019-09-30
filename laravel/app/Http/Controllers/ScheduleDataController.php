@@ -489,7 +489,8 @@ class ScheduleDataController extends Controller
 
     }
 
-    public function getChoice($id)
+    // public function getChoice($id)
+    public function getChoice()
     {
         /**
          * Exclude Admin from selecting preferences
@@ -497,6 +498,8 @@ class ScheduleDataController extends Controller
         if (!Resident::where('email', $_SERVER["HTTP_EMAIL"])->exists()) {
             return view('nonpermit');
         }
+        // get the id from the form
+        $id = $_REQUEST['schedule_id'];
 
 		// id is stored as id1_id2_id3, need to split it to get the individual ids
 		$split = explode("_", $id);
@@ -532,7 +535,10 @@ class ScheduleDataController extends Controller
         $input[2] = array(
             'id'=>$split[2], 'choice'=>$choice
         );
-        return view('schedules.resident.schedule_confirm', compact('schedule_data1', 'schedule_data2', 'schedule_data3','input'));
+
+        $milestones1=$_REQUEST['milestones1'];
+        $objectives1=$_REQUEST['objectives1'];
+        return view('schedules.resident.schedule_confirm', compact('schedule_data1', 'schedule_data2', 'schedule_data3','input', 'milestones1', 'objectives1'));
     }
 
 	public function selectMilestones($id){

@@ -244,14 +244,27 @@
     <script type="text/javascript">
         function storePreference(id1, id2 = '0_', id3 = '0_')
         {
-            var current_url = window.location.href;
-            var url = current_url.substr(0, current_url.search('/schedule/'));
-            if (current_url.includes('secondday')) {
-                    url = url + "/schedule/secondday/" + id1 + id2 + id3 +"/";
-            } else {
-                url = url + "/schedule/thirdday/" + id1 + id2 + id3 +"/";
-			}
-            window.location.href = url;
+            //var current_url = window.location.href;
+            //var url = current_url.substr(0, current_url.search('/schedule/'));
+            //if (current_url.includes('secondday')) {
+              //      url = url + "/schedule/secondday/" + id1 + id2 + id3 +"/";
+           // } else {
+             //   url = url + "/schedule/thirdday/" + id1 + id2 + id3 +"/";
+			//}
+           // window.location.href = url;
+
+
+        // Update url to the confirmation page
+        var current_url = window.location.href;
+        var url = current_url.substr(0, current_url.search('/schedule/'));
+        if (current_url.includes('secondday')) {
+            url = url + "/schedule/secondday/milestones/" + id1 + id2 + id3 +"/";
+        } else {
+            url = url + "/schedule/thirdday/milestones/" + id1 + id2 + id3 +"/";
+        }
+        window.location.href = url;
+
+
         }
 
 		function clearPreferences(date){

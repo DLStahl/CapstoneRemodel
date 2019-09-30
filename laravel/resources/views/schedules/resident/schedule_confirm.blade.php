@@ -16,6 +16,9 @@
 		<p>End Time: {{ $schedule_data1[0]['end_time'] }}</p>
 		<p>Patient Class: {{ $schedule_data1[0]['patient_class'] }}</p>
 
+        <p> Milestone: </p>
+        <p> Objective: </p>
+
 	<h2>Second Choice: </h2>
 		@if(is_null($schedule_data2))
 			<p>None</p>
@@ -26,6 +29,10 @@
 			<p>Start Time: {{ $schedule_data2[0]['start_time'] }}</p>
 			<p>End Time: {{ $schedule_data2[0]['end_time'] }}</p>
 			<p>Patient Class: {{ $schedule_data2[0]['patient_class'] }}</p>
+
+            <p> Milestone: {{$milestones1}}</p>
+            <p> Objective: {{$objectives1}}</p>
+
 		@endif
 
 	<h2>Third Choice: </h2>
@@ -38,6 +45,10 @@
 			<p>Start Time: {{ $schedule_data3[0]['start_time'] }}</p>
 			<p>End Time: {{ $schedule_data3[0]['end_time'] }}</p>
 			<p>Patient Class: {{ $schedule_data1[0]['patient_class'] }}</p>
+
+            <p> Milestone: </p>
+            <p> Objective: </p>
+
 		@endif
     <br><br>
 
@@ -50,11 +61,13 @@
         // Update url to the confirmation page
         var current_url = window.location.href;
         var url = current_url.substr(0, current_url.search('/schedule/'));
-        if (current_url.includes('secondday')) {
-            url = url + "/schedule/secondday/milestones/" + id;
-        } else {
-            url = url + "/schedule/thirdday/milestones/" + id;
-        }
+        // if (current_url.includes('secondday')) {
+        //     url = url + "/schedule/secondday/milestones/" + id;
+        // } else {
+        //     url = url + "/schedule/thirdday/milestones/" + id;
+        // }
+		url = url + "/schedule/submit";
+
         window.location.href = url;
     }
 

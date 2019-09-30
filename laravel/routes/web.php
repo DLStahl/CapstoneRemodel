@@ -43,8 +43,8 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
     Route::get('schedule/secondday/filter/{room}/{leadSurgeon}/{patient_class}/{starttime_endtime}','ScheduleDataController@getSecondDay');
     Route::get('schedule/thirdday/filter/{room}/{leadSurgeon}/{patient_class}/{starttime_endtime}','ScheduleDataController@getThirdDay');
 
-    Route::get('schedule/secondday/{id}', 'ScheduleDataController@getChoice');
-	Route::get('schedule/thirdday/{id}', 'ScheduleDataController@getChoice');
+    Route::post('schedule/secondday/{id}', 'ScheduleDataController@getChoice');
+	Route::post('schedule/thirdday/{id}', 'ScheduleDataController@getChoice');
 	Route::get('schedule/secondday/milestones/{id}', 'ScheduleDataController@selectMilestones');
 	Route::get('schedule/thirdday/milestones/{id}', 'ScheduleDataController@selectMilestones');
 	Route::get('schedule/secondday/preferences/clear/{date}', 'ScheduleDataController@clearOption');
