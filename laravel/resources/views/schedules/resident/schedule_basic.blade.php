@@ -87,8 +87,8 @@
         </select>
 
 		<div class="float-right">
-			<button type="button" class="btn btn-primary" onclick="filterUpdate()">Filter</button>
-			<button type="button" class="btn btn-primary" onclick="clearFilter()">Clear Filter</button>
+			<button type="button" id="filter" class="btn btn-primary" onclick="filterUpdate()">Filter</button>
+			<button type="button" id="clearFilter" class="btn btn-primary" onclick="clearFilter()">Clear Filter</button>
 		</div>
 
 	</div>
@@ -97,7 +97,7 @@
 	<br>
 
 	<div class="float-right">
-		<button type="button" class="btn btn-primary" id = "{{$year}}-{{$mon}}-{{$day}}" onclick="clearPreferences(this.id)">Clear Preferences</button>
+  		<button type="button" class="btn btn-primary" id = "{{$year}}-{{$mon}}-{{$day}}" onclick="clearPreferences(this.id)">Clear Preferences</button>
 		<button type="button" class="btn btn-primary" name = "submitButton" value="Submit" Onclick="checkPreference();">Submit</button>
 	</div>
 
@@ -268,14 +268,14 @@
         }
 
 		function clearPreferences(date){
-			var current_url = window.location.href;
-            var url = current_url.substr(0, current_url.search('/schedule/'));
-            if (current_url.includes('secondday')) {
-                    url = url + "/schedule/secondday/preferences/clear/"+ date;
-            } else {
-                url = url + "/schedule/thirdday/preferences/clear/"+ date;
-			}
-            window.location.href = url;
+			// var current_url = window.location.href;
+   //          var url = current_url.substr(0, current_url.search('/schedule/'));
+   //          if (current_url.includes('secondday')) {
+   //                  url = url + "/schedule/secondday/preferences/clear/"+ date;
+   //          } else {
+   //              url = url + "/schedule/thirdday/preferences/clear/"+ date;
+			// }
+   //          window.location.href = url;
 		}
     </script>
 
