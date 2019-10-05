@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 
 use App\Admin;
 use App\Resident;
 use App\Attending;
 use App\Option;
+use App\Milestone;
 use App\ScheduleData;
 use App\Assignment;
 use App\Status;
@@ -58,11 +58,15 @@ class PagesController extends Controller
         $date = ScheduleData::where('id', $id)->value('date');
         $location = ScheduleData::where('id', $id)->value('location');
         $room = ScheduleData::where('id', $id)->value('room');
-        $patient = ScheduleData::where('id', $id)->value('patient_class');
+        $case_procedure = ScheduleData::where('id', $id)->value('case_procedure');
+        $case_procedure = preg_replace('/[0-9]+/', '', $case_procedure);
+        $case_procedure = preg_replace('/[:\/]/', '', $case_procedure);
+        $case_procedure = preg_replace('/\(|\)/', '', $case_procedure);
+        $case_procedure = str_replace(array('[',']'),'',$case_procedure);
         $start_t = ScheduleData::where('id', $id)->value('start_time');
         $end_t = ScheduleData::where('id', $id)->value('end_time');
 
-        return $date.", ".$room.", ".$patient.", ".$start_t." - ".$end_t;
+        return "Room".$room."\n Case procedure: \n".$case_procedure."Time: ".$start_t." - ".$end_t;
     }
 
     private function processChoices($date, $id)
@@ -70,21 +74,35 @@ class PagesController extends Controller
         $day_arr = array(
             "first"=>null,
             "second"=>null,
-            "thrid"=>null
+            "third"=>null,
+            "fourth"=>null,
         );
 
         $schedule1 = Option::where('date', $date)->where('resident', $id)->where('option', 1)->value('schedule');
+        $milestone1 = Option::where('date', $date)->where('resident', $id)->where('option', 1)->value('milestones');
+        $milestone1D = milestone::where('id', $milestone1)->value('detail');
+        $objective1 = Option::where('date', $date)->where('resident', $id)->where('option', 1)->value('objectives');
         $schedule2 = Option::where('date', $date)->where('resident', $id)->where('option', 2)->value('schedule');
+        $milestone2 = Option::where('date', $date)->where('resident', $id)->where('option', 2)->value('milestones');
+        $milestone2D = milestone::where('id', $milestone2)->value('detail');
+        $objective2 = Option::where('date', $date)->where('resident', $id)->where('option', 2)->value('objectives');
         $schedule3 = Option::where('date', $date)->where('resident', $id)->where('option', 3)->value('schedule');
-        
+        $milestone3 = Option::where('date', $date)->where('resident', $id)->where('option', 3)->value('milestones');
+        $milestone3D = milestone::where('id', $milestone3)->value('detail');
+        $objective3 = Option::where('date', $date)->where('resident', $id)->where('option', 3)->value('objectives');
+
+
         if ($schedule1 != null) {
-            $day_arr['first'] = "First Choice: ".self::processSingleChoice($schedule1);
+            $day_arr['first'] = "First Choice: ".self::processSingleChoice($schedule1) ."\n  Milestone: ". $milestone1. " ".$milestone1D. "\n  Objective: ". $objective1 ;
+            $day_arr['fourth'] = "*".$schedule1;
         }
         if ($schedule2 != null) {
-            $day_arr['second'] = "Second Choice: ".self::processSingleChoice($schedule2);
+            $day_arr['second'] = "\n \n Second Choice: ".self::processSingleChoice($schedule2)."\n MileStone: ". $milestone2. " ".$milestone2D. " \n Objective: ". $objective2;
+             $day_arr['fourth'] .= ":". $schedule2;
         }
         if ($schedule3 != null) {
-            $day_arr['third'] = "Third Choice: ".self::processSingleChoice($schedule3);
+            $day_arr['third'] = "\n \n Third Choice: ".self::processSingleChoice($schedule3) ."\n MileStone: ". $milestone3. " ".$milestone3D."\n  Objective: ". $objective3;
+             $day_arr['fourth'] .= ",". $schedule3;
         }
 
         return $day_arr;
@@ -106,7 +124,7 @@ class PagesController extends Controller
         if (Admin::where('email', $email)->where('exists', '1')->exists())
         {
             array_push($roles, "Admin");
-        } 
+        }
         if (Resident::where('email', $email)->where('exists', '1')->exists())
         {
             array_push($roles, "Resident");
@@ -123,23 +141,26 @@ class PagesController extends Controller
 
         $date = self::calculateSecond();
         $secondday = self::processChoices($date, $id);
+        $fourth= $secondday['fourth'];
 
         $date = self::calculateThird();
         $thirdday = self::processChoices($date, $id);
 
-        // Parse data into array
+
+     // Parse data into array
         $data = array(
                     "name"=>$name,
                     "email"=>$email,
                     "roles"=>$roles,
                     "firstday"=>$firstday,
                     "secondday"=>$secondday,
-                    "thirdday"=>$thirdday
+                    "thirdday"=>$thirdday,
+                    "fourth" => $fourth
         );
 
         return view('pages.about', compact('data'));
     }
-    
+
     public function getContact()
         {
             return view('pages.contact');
@@ -168,11 +189,11 @@ class PagesController extends Controller
         return view('pages.contact');
     }
 
-    
+
 
     public function getAcknowledgements()
     {
-	return view('pages.acknowledgements');
+    return view('pages.acknowledgements');
     }
 
     public function getFeedback($date) {
@@ -184,7 +205,7 @@ class PagesController extends Controller
 
         return view('pages.feedback', compact('data_date'));
     }
-    
+
     public function test(){
         $parser = new EvaluationParser(date("o", strtotime('today')).date("m", strtotime('today')).date("d", strtotime('today')), true);
         return "test1";
