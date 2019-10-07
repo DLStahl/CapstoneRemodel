@@ -18,7 +18,11 @@
 								$category = $milestone['category'];
 								$title = $milestone['title'];
 								$detail = $milestone['detail'];
-								echo '<option value="'.$milestone_id.'" title="'.$title.'">'.$category.' - '.$detail.'</option>';
+								if ($milestone_id == $data1['milestone']['id']){
+									echo '<option value="'.$milestone_id.'" title="'.$title.'" selected>'.$category.' - '.$detail.'</option>';
+								} else {
+									echo '<option value="'.$milestone_id.'" title="'.$title.'">'.$category.' - '.$detail.'</option>';
+								}
 				            ?>
 						@endforeach
 					@endif
@@ -28,7 +32,7 @@
 
             <label>What is your educational objective for this OR today?</label><br>
 
-            <textarea rows="3" name="objectives1" id="objectives1" class="form-control" required></textarea><br>
+            <textarea rows="3" name="objectives1" id="objectives1" class="form-control" required>{{ $data1['objective'] }}</textarea><br>
 
 
 	        @if(is_null($data2['schedule']))
@@ -46,7 +50,11 @@
 								$category = $milestone['category'];
 								$title = $milestone['title'];
 								$detail = $milestone['detail'];
-								echo '<option value="'.$milestone_id.'" title="'.$title.'">'.$category.' - '.$detail.'</option>';
+								if ($milestone_id == $data2['milestone']['id']){
+									echo '<option value="'.$milestone_id.'" title="'.$title.'" selected>'.$category.' - '.$detail.'</option>';
+								} else {
+									echo '<option value="'.$milestone_id.'" title="'.$title.'">'.$category.' - '.$detail.'</option>';
+								}
 							?>
 						@endforeach
 					@endif
@@ -56,7 +64,7 @@
 
                 <label>What is your educational objective for this OR today?</label><br>
 
-                <textarea rows="3" name="objectives2" id="objectives2" class="form-control" required></textarea><br>
+                <textarea rows="3" name="objectives2" id="objectives2" class="form-control" required>{{ $data2['objective'] }}</textarea><br>
 	        @endif
 
 
@@ -75,7 +83,11 @@
 								$category = $milestone['category'];
 								$title = $milestone['title'];
 								$detail = $milestone['detail'];
-								echo '<option value="'.$milestone_id.'" title="'.$title.'">'.$category.' - '.$detail.'</option>';
+								if ($milestone_id == $data3['milestone']['id']){
+									echo '<option value="'.$milestone_id.'" title="'.$title.'" selected>'.$category.' - '.$detail.'</option>';
+								} else {
+									echo '<option value="'.$milestone_id.'" title="'.$title.'">'.$category.' - '.$detail.'</option>';
+								}
 							?>
 						@endforeach
 					@endif
@@ -85,7 +97,7 @@
 
                 <label>What is your educational objective for this OR today?</label><br>
 
-                <textarea rows="3" name="objectives3" id="objectives3" class="form-control" required></textarea><br>
+                <textarea rows="3" name="objectives3" id="objectives3" class="form-control" required>{{$data3['objective']}}</textarea><br>
 
                 <br>
 	        @endif

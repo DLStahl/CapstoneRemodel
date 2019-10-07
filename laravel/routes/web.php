@@ -46,8 +46,10 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
     Route::post('schedule/confirm', 'ScheduleDataController@getChoice');
     // Route::post('schedule/secondday/{id}', 'ScheduleDataController@getChoice');
 	// Route::post('schedule/thirdday/{id}', 'ScheduleDataController@getChoice');
-	Route::get('schedule/secondday/milestones/{id}', 'ScheduleDataController@selectMilestones');
-	Route::get('schedule/thirdday/milestones/{id}', 'ScheduleDataController@selectMilestones');
+	Route::get('schedule/milestones/{id}', 'ScheduleDataController@selectMilestones');
+	// Route::get('schedule/thirdday/milestones/{id}', 'ScheduleDataController@selectMilestones');
+	Route::get('schedule/milestonesEdit/{id}', 'ScheduleDataController@updateMilestones');
+	// Route::get('schedule/thirdday/milestonesEdit/{id}', 'ScheduleDataController@updateMilestones');
 	Route::get('schedule/secondday/preferences/clear/{date}', 'ScheduleDataController@clearOption');
 	Route::get('schedule/thirdday/preferences/clear/{date}', 'ScheduleDataController@clearOption');
 
