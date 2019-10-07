@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Constant;
 use App\ScheduleData;
 use App\Option;
+use App\Resident;
+use Mail;
 use Illuminate\Support\Facades\Log;
 
 class ScheduleParser extends Model
@@ -69,6 +71,7 @@ class ScheduleParser extends Model
         ScheduleData::where('date',date("Y-m-d",strtotime($datefile.'+2 day')))->delete();
         ScheduleData::where('date',date("Y-m-d",strtotime($datefile.'+4 day')))->delete();
         Log::info("delete succ");
+
         /**
          * Open file
          */
@@ -79,9 +82,14 @@ class ScheduleParser extends Model
          */
         fgetcsv($fp);
 
+        // store dates that updated schedule
+        $datesUpdated = array();
         while (($line = fgetcsv($fp)) !== false)
         {
             $date = self::getLineDate($line);
+            if(!in_array($date, $datesUpdated)){
+                array_push($datesUpdated, $date);
+            }
             $location = $line[Constant::LOCATION];
             $room = $line[Constant::ROOM];
             if (strlen($room) < 1) {
@@ -106,6 +114,23 @@ class ScheduleParser extends Model
             );
         }
 
+        // If residents already made preferences and the schedule changed, delete existing preferences and notify residents to select new preferences.
+        foreach ($datesUpdated as $date){
+            $options = Option::where('date', $date)->get()->groupBy('resident');
+            if(sizeof($options)>0){
+                foreach ($options as $residentOptions){
+                    $residentId = $residentOptions[0]['resident'];
+                    $residentName = Resident::where('id', $residentId)->value('name');
+                    $residentEmail = Resident::where('id', $residentId)->value('email');
+                    Log::info($residentName);
+                    Log::info($residentEmail);
+                    if(Option::where('date', $date)->where('resident', $residentId)->delete()){
+                        Log::info($residentName.' options deleted');
+                    }
+                    self::notifySelectNewPreferences($residentName, $residentEmail, $date);
+                }
+            }
+        }
         /**
          * Close file
          */
@@ -113,6 +138,22 @@ class ScheduleParser extends Model
 
         return true;
 
+    }
+
+
+    // Notify residents to select new preferences
+    public function notifySelectNewPreferences($toName, $toEmail, $date)
+    {
+        Log::info('send email');
+        $subject = 'REMODEL: Please select new preferences for date '.$date;
+        $body = 'Your previous preferences for date '.$date.' were deleted because the schedule is updated. Please select new preferences on REMODEL website.';
+        $heading = 'Please select new preferences for date '.$date;
+        $data = array('name'=>$toName, 'heading'=>$heading, 'body'=>$body);
+
+        Mail::send('emails.mail', $data, function($message) use ($toName, $toEmail, $subject) {
+            $message->to($toEmail, $toName)->subject($subject);
+            $message->from('OhioStateAnesthesiology@gmail.com');
+        });
     }
 
 

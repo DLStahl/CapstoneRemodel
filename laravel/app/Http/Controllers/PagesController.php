@@ -144,9 +144,15 @@ class PagesController extends Controller
         $id = Resident::where('email', $_SERVER["HTTP_EMAIL"])->value('id');
         $date = self::calculateFirst();
         $firstday = null;
-        if (Assignment::where('date', $date)->where('resident', $id)->exists()) {
-            $firstday_id = Assignment::where('date', $date)->where('resident', $id)->value('schedule');
-            $firstday = self::processSingleChoice($firstday_id);
+        $assignment = Assignment::where('date',$date)->where('resident', $id);
+        if ($assignment->exists()) {
+            $firstday_schedule_id = Assignment::where('date', $date)->where('resident', $id)->value('schedule');
+            $option = Option::where('date', $date)->where('resident', $id)->where('option', $assignment->value('option'));
+            $milestone = $option->value('milestones');
+            $milestoneC = Milestone::where('id', $milestone)->value('category');
+            $milestoneD = Milestone::where('id', $milestone)->value('detail');
+            $objective = $option->value('objectives');
+            $firstday = self::processSingleChoice($firstday_schedule_id)."\n  Milestone: ". $milestoneC. " - ".$milestoneD. "\n  Objective: ". $objective;
         }
 
         $date = self::calculateSecond();

@@ -38,8 +38,8 @@
         }
     ?></td>
                     <td align="left">
-                    @if ($data['firstday'] != null)
-                        {!! nl2br($choice) !!}
+                    @if (!is_null($data['firstday']))
+                        {!! nl2br($data['firstday']) !!}
                     @endif
                     </td>
                 </tr>
@@ -68,7 +68,6 @@
                             @foreach ($data['secondday'] as $choice)
                                 @if ($choice != null)
                                     {!! nl2br($choice) !!}
-                                    <!-- <p>{{ $choice }}</p> -->
                                 @endif
                             @endforeach
                         @endif
@@ -102,7 +101,6 @@
                             @foreach ($data['thirdday'] as $choice)
                                 @if ($choice != null)
                                     {!! nl2br($choice) !!}
-                                    <!-- <p>{{ $choice }}</p> -->
                                 @endif
                             @endforeach
                         @endif
@@ -113,39 +111,10 @@
 
 <script>
  function milestones(){
-
-        var id1 = 0;
-        var id2 = 0;
-        var id3 = 0;
         var ids = "<?php echo $data['ids'] ?>";
-
-        //  if (ids != null){
-        //    if(!ids.includes(":") ){
-        //       id1 = ids.substring(1);
-        //     }
-        //     else if(ids.includes(":") && !ids.includes(",")) {
-        //       id1 = ids.substring(1, ids.indexOf(":"));
-        //       id2 = ids.substring( ids.indexOf(":")+1);
-        //    }
-
-        //     else{
-        //       id1 = ids.substring(1, ids.indexOf(":"));
-        //       id2 = ids.substring(ids.indexOf(":") + 1, ids.indexOf(","));
-        //       id3 = ids.substring(ids.indexOf(",") + 1 );
-        //     }
-
-        // }
-
         var current_url = window.location.href;
         var url = current_url.substr(0, current_url.search('/resident/'));
-        // if (date == 'secondday') {
-            // url = url + "/resident/schedule/milestonesEdit/" + id1 + "_" + id2 + "_" + id3 +"/";
-
-            url = url + "/resident/schedule/milestonesEdit/" + ids +"/";
-        // } else {
-            // url = url + "/resident/schedule/thirdday/milestonesEdit/" + id1 + "_" + id2 + "_" + id3 +"/"
-        // }
-        // alert(url);
+        url = url + "/resident/schedule/milestonesEdit/" + ids +"/";
 
         window.location.href = url;
     }
