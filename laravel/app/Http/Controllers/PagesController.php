@@ -98,21 +98,18 @@ class PagesController extends Controller
 
         if ($schedule1 != null) {
             $day_arr['first'] = "First Choice: ".self::processSingleChoice($schedule1) ."\n  Milestone: ". $milestone1C. " - ".$milestone1D. "\n  Objective: ". $objective1 ;
-            // $day_arr['ids'] = "*".$schedule1;
             $day_arr['ids'] = $schedule1."_";
         } else {
             $day_arr['ids'] = "0_";
         }
         if ($schedule2 != null) {
             $day_arr['second'] = "\n \n Second Choice: ".self::processSingleChoice($schedule2)."\n MileStone: ". $milestone2C. " - ".$milestone2D. " \n Objective: ". $objective2;
-             // $day_arr['ids'] .= ":". $schedule2;
             $day_arr['ids'] .= $schedule2."_" ;
         } else {
             $day_arr['ids'] .= "0_";
         }
         if ($schedule3 != null) {
             $day_arr['third'] = "\n \n Third Choice: ".self::processSingleChoice($schedule3) ."\n MileStone: ". $milestone3C. " - ".$milestone3D."\n  Objective: ". $objective3;
-             // $day_arr['ids'] .= ",". $schedule3;
              $day_arr['ids'] .= $schedule3."_";
         } else {
             $day_arr['ids'] .= "0_";
