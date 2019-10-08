@@ -63,14 +63,20 @@
             <br><button class="btn btn-md btn-success" onclick="milestones()">Edit milestones</button>
         @endif
     </td>
-                    <td align="left">
-                        @if(!is_null($data['secondday']['first']))
-                            @foreach ($data['secondday'] as $choice)
-                                @if ($choice != null)
-                                    {!! nl2br($choice) !!}
-                                @endif
-                            @endforeach
-                        @endif
+                    <td align="left"><?php
+                        if(!is_null($data['secondday']['first'])){
+                            $count = 0;
+                            foreach($data['secondday'] as $choice){
+                                if ($count < sizeof($data['secondday']) - 1){
+                                    $count += 1;
+                                    if($choice != null){
+                                        echo nl2br($choice);
+                                    }
+                                }
+                            }
+                        }
+                    ?>
+                        
                     </td>
                 </tr>
                 <tr>
@@ -97,13 +103,19 @@
         @endif
     </td>
                     <td align="left">
-                        @if(!is_null($data['thirdday']['first']))
-                            @foreach ($data['thirdday'] as $choice)
-                                @if ($choice != null)
-                                    {!! nl2br($choice) !!}
-                                @endif
-                            @endforeach
-                        @endif
+                        <?php
+                        if(!is_null($data['thirdday']['first'])){
+                            $count = 0;
+                            foreach($data['thirdday'] as $choice){
+                                if ($count < sizeof($data['thirdday']) - 1){
+                                    $count += 1;
+                                    if($choice != null){
+                                        echo nl2br($choice);
+                                    }
+                                }
+                            }
+                        }
+                        ?>
                     </td>
                 </tr>
             </table>

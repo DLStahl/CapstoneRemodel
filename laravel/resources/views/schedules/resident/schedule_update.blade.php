@@ -2,10 +2,7 @@
     <head>
         <title>REMODEL</title>
         <?php
-            $url = "/laravel/public/resident/schedule/";
-            if (strpos($_SERVER['REQUEST_URI'], 'secondday') !== false) {
-                $url = "/laravel/public/resident/schedule/";
-            }
+            $url = "/laravel/public/resident/about/";
             
         ?>
         <meta http-equiv="refresh" content="0; URL={{ $url }}">

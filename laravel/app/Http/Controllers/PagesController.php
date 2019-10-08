@@ -67,7 +67,7 @@ class PagesController extends Controller
         $start_t = ScheduleData::where('id', $id)->value('start_time');
         $end_t = ScheduleData::where('id', $id)->value('end_time');
 
-        return "Room".$room."\n Case procedure: \n".$case_procedure."Time: ".$start_t." - ".$end_t;
+        return "Room ".$room."\n Case procedure: \n".$case_procedure."Time: ".$start_t." - ".$end_t;
     }
 
     private function processChoices($date, $id)
@@ -103,13 +103,13 @@ class PagesController extends Controller
             $day_arr['ids'] = "0_";
         }
         if ($schedule2 != null) {
-            $day_arr['second'] = "\n \n Second Choice: ".self::processSingleChoice($schedule2)."\n MileStone: ". $milestone2C. " - ".$milestone2D. " \n Objective: ". $objective2;
+            $day_arr['second'] = "\n \n Second Choice: ".self::processSingleChoice($schedule2)."\n Milestone: ". $milestone2C. " - ".$milestone2D. " \n Objective: ". $objective2;
             $day_arr['ids'] .= $schedule2."_" ;
         } else {
             $day_arr['ids'] .= "0_";
         }
         if ($schedule3 != null) {
-            $day_arr['third'] = "\n \n Third Choice: ".self::processSingleChoice($schedule3) ."\n MileStone: ". $milestone3C. " - ".$milestone3D."\n  Objective: ". $objective3;
+            $day_arr['third'] = "\n \n Third Choice: ".self::processSingleChoice($schedule3) ."\n Milestone: ". $milestone3C. " - ".$milestone3D."\n  Objective: ". $objective3;
              $day_arr['ids'] .= $schedule3."_";
         } else {
             $day_arr['ids'] .= "0_";

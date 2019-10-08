@@ -234,10 +234,6 @@
                 var url = current_url.search('/filter/') > -1 ? current_url.substr(0, current_url.search('/filter/')) : current_url;
                 window.location.href = url;
             }
-            else
-            {
-
-            }
 
         }
 
