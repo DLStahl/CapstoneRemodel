@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="{{ app()->getLocale() }}">
-    <head>       
+    <head>
         <style>
             th {
                 cursor: pointer;
@@ -11,34 +11,34 @@
             }
 
         </style>
-        @include('partials._header') 
+        @include('partials._header')
     </head>
     <body>
         @include('partials._nav')
         <div class="container">
-            @yield('content')   
+            @yield('content')
             <br><br><br>
             <input align = "left" type="button" value="Return" id="return" class='btn btn-md btn-success' onclick="goBack();">
-            <script>function goBack() { 
+            <script>function goBack() {
 				if(window.location.pathname==("/laravel/public/admin/addDB"))
 				{
-					window.history.go(-2); 
+					window.history.go(-2);
 				}
 				else
 				{
-					window.history.back(); 
+					window.history.back();
 				}
 			}
 			</script>
             <script>
-                if (window.location.pathname == "/" || window.location.pathname.includes("true"))
+                if (window.location.pathname == "/" || window.location.pathname.includes("true") || window.location.pathname.includes("secondday"))
                 {
                     document.getElementById("return").style.visibility = "hidden";
                 }
-            </script>       
+            </script>
         </div>
-
-        @include('partials._footer')
-        
+        <div id="page_footer">
+          @include('partials._footer')
+        </div>
     </body>
 </html>

@@ -483,7 +483,7 @@ class ScheduleDataController extends Controller
         $this->processInput($room, $leadSurgeon, $patient_class, $start_time_end_time);
         $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'patient_class' => $this->patient_class,
                                                 'start_time' => $this->start_time, 'end_time' => $this->end_time));
-        $flag = 3;
+        $flag = 2;
 
         return view('schedules.resident.schedule_table',compact('schedule_data', 'year', 'mon', 'day', 'flag'));
 
@@ -597,7 +597,7 @@ class ScheduleDataController extends Controller
 
         // id is stored as id1_id2_id3, need to split it to get the individual ids
 		$split = explode("_", $id);
-        
+
         //Initiate first choice data
         $data1 = array(
           'schedule' => null,
@@ -660,7 +660,7 @@ class ScheduleDataController extends Controller
 
         // id is stored as id1_id2_id3, need to split it to get the individual ids
         $split = explode("_", $id);
-        
+
         //Initiate first choice data
         $data1 = array(
             'schedule' => null,
@@ -703,7 +703,7 @@ class ScheduleDataController extends Controller
             $attending_string = $schedule_data2[0]['lead_surgeon'];
             $attending = substr($attending_string, strpos($attending_string, "[")+1, strpos($attending_string, "]")-(strpos($attending_string, "[")+1));
             $attending2 = substr($attending_string, 0, strpos($attending_string, "["));
-            
+
             // Store second choice data
             $data2['schedule'] = $schedule_data2[0];
             $data2['attending'] = $attending2;
@@ -732,7 +732,7 @@ class ScheduleDataController extends Controller
             $attending_string = $schedule_data3[0]['lead_surgeon'];
             $attending = substr($attending_string, strpos($attending_string, "[")+1, strpos($attending_string, "]")-(strpos($attending_string, "[")+1));
             $attending3 = substr($attending_string, 0, strpos($attending_string, "["));
-            
+
             // Store second choice data
             $data3['schedule'] = $schedule_data3[0];
             $data3['attending'] = $attending3;

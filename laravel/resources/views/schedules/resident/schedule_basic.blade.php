@@ -2,7 +2,9 @@
 @extends('main')
 
 @section('content')
-    <h3>Date: {{ $mon }}/{{ $day }}/{{ $year }}</h3>
+    @include('schedules.resident.schedule_dates')
+
+    <!-- <h3>Date: {{ $mon }}/{{ $day }}/{{ $year }}</h3> -->
 
     <?php
 
@@ -50,20 +52,20 @@
 
     <div id="filter">
 
-        <!--//patient class filter-->
+        <!--//room filter-->
         <select id="room">
             <option value="null" label ="{{ $room }}"></option>
         </select>
 
-        <!--//patient class filter-->
+        <!--//lead surgeon filter-->
         <select id="leadSurgeon">
             <option value="null" label ="{{ $leadSurgeon }}"></option>
         </select>
 
         <!--//patient class filter-->
-        <select id="patientClasses">
+        <!-- <select id="patientClasses">
             <option value="null" label ="{{ $patientClass }}"></option>
-        </select>
+        </select> -->
 
         <!--//start after filter-->
         <select id="start_after">
@@ -95,20 +97,9 @@
     </div>
 
     <br>
-    <br>
 
-    <div class="float-right">
-        <!-- <button type="button" class="btn btn-primary" id = "{{$year}}-{{$mon}}-{{$day}}" onclick="clearPreferences(this.id)">Clear Preferences</button> -->
 
-        <button type="button" class="btn btn-primary" id = "{{$year}}-{{$mon}}-{{$day}}" onclick="window.location.reload();">Clear Preferences</button>
-        <button type="button" class="btn btn-primary" name = "submitButton" value="Submit" Onclick="checkPreference();">Submit</button>
-    </div>
-
-    <br><br>
-
-    <div class = "container">
         @yield('table_generator')
-    </div>
 
 
         <script type="text/javascript">
@@ -241,6 +232,10 @@
 
     <!--Preference JS -->
     <script type="text/javascript">
+        $(document).ready(function() {
+
+        });
+
         function storePreference(id1, id2 = '0_', id3 = '0_')
         {
             // Update url to the selecting milestone/objective page
@@ -252,16 +247,16 @@
 
         }
 
-        function clearPreferences(date){
-            var current_url = window.location.href;
-            var url = current_url.substr(0, current_url.search('/schedule/'));
-            if (current_url.includes('secondday')) {
-                    url = url + "/schedule/secondday/preferences/clear/"+ date;
-            } else {
-                url = url + "/schedule/thirdday/preferences/clear/"+ date;
-            }
-            window.location.href = url;
-        }
+        // function clearPreferences(date){
+        //     var current_url = window.location.href;
+        //     var url = current_url.substr(0, current_url.search('/schedule/'));
+        //     if (current_url.includes('secondday')) {
+        //             url = url + "/schedule/secondday/preferences/clear/"+ date;
+        //     } else {
+        //         url = url + "/schedule/thirdday/preferences/clear/"+ date;
+        //     }
+        //     window.location.href = url;
+        // }
     </script>
 
 @endsection('content')

@@ -7,4 +7,5 @@
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('css/jquery.skedTape.css') }}">
 <title>REMODEL @yield('title') </title> <!-- Change this title for each page -->
