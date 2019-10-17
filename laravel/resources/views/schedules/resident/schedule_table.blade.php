@@ -3,185 +3,7 @@
 @section('table_generator')
     @if(sizeof($schedule_data)>0)
         <div id="schedule_table"></div>
-        <div id="sched_table_container" class="container">
-        <table class="table table-bordered" id="sched_table" style="border: 1px solid black; ">
-            <tbody style="overflow: scroll; height: 100px;">
-            <tr style="border: 2px solid gray; background-color:#bb0000; color: white; font-size: 18px;">
-                <th onclick=""><u>Room</u></th>
-                <th onclick=""><u>Case Procedures</u></th>
-                <th onclick=""><u>Lead Surgeon</u></th>
-                <th onclick=""><u>Patient Class</u></th>
-                <th onclick=""><u>Start Time</u></th>
-                <th onclick=""><u>End Time</u></th>
-                @if ($flag == 1)
-                    <th onclick="sortTable(7)">Assignment</th>
-                @elseif($flag==2)
-                    <th>Preference</th>
-                @endif
-            </tr>
-
-
-            <?php
-                // rowID is used to group the different rows that all occur in the same room together
-                $rowID = 0;
-            ?>
-
-            @foreach ($schedule_data as $row)
-
-                <?php
-
-
-                    $case_procedure = $row['case_procedure'];
-                    $lead_surgeon=$row['lead_surgeon'];
-                    $patient_class=$row['patient_class'];
-                    // trim off the extra whitespace
-                    $case_procedure = trim($case_procedure);
-                    // add a newline character to the last line again so that we know when to end
-                    $case_procedure = $case_procedure."\n";
-
-                    $tmp_case_procedure = $case_procedure;
-
-                    $rowSpan = 0;
-                    while(strlen($tmp_case_procedure) > 0)
-                    {
-                        $casePos= stripos($tmp_case_procedure, "\n");
-                        $tmp_case_procedure=substr($tmp_case_procedure, $casePos+1);
-
-                        $rowSpan++;
-                        $tmp_tmp_procedure= substr($tmp_case_procedure, 0,$casePos);
-                        if($tmp_tmp_procedure == '\n' || strlen($tmp_tmp_procedure) == 0){
-                            break;
-                        }
-                    }
-
-                    $isFirstRow = true;
-                    while (strlen($case_procedure) > 0) {
-                        // used to stripe the table based on the row groupings
-                        if($rowID%2){
-                            echo '<tr class ="'.$rowID.'" style = "background-color: #F0F0F0">';
-                        }
-                        else{
-                            echo '<tr class ="'.$rowID.'" style = "background-color: #FFFFFF">';
-                        }
-
-                        if($isFirstRow)
-                        {
-                            echo '<td rowspan = "'.$rowSpan.'" align="left">'.$row['room'].'</td>';
-                        }
-
-                        $casePos= stripos($case_procedure, "\n");
-                        $tmp_procedure= substr($case_procedure, 0,$casePos);
-                        if($tmp_procedure == '\n' || strlen($tmp_procedure) == 0){
-                            //echo "</tr>";
-                            break;
-                        }
-
-                        // $tmp_procedure in this format: (start_time-end_time)procedure, procedure, procedure, ...
-                        // Get start/end time of the surgery.
-                        $timeIndex = strpos($tmp_procedure, ")");
-                        $time_duration = substr($tmp_procedure, 1, $timeIndex-1);
-                        $connectIndex = strpos($time_duration, "-");
-                        $start_time = substr($time_duration, 0, $connectIndex);
-                        $end_time = substr($time_duration, $connectIndex+1);
-                        $tmp_procedure = substr($tmp_procedure, $timeIndex+1);
-
-                        $leadPos= stripos($lead_surgeon, "\n");
-                        $tmp_surgeon= substr($lead_surgeon, 0,$leadPos);
-                        $patientPos= stripos($patient_class, "\n");
-                        $tmp_patient= substr($patient_class, 0,$patientPos);
-                        echo '<td align="left" >';
-                            echo '<ul class = "three" style="list-style-type:disc">';
-                            // cases/procedures are connected by ','
-                            $procedures = explode(",", $tmp_procedure);
-                            foreach ($procedures as $tmp_procedure){
-                                $tmp_procedure = trim($tmp_procedure);
-                                $ep = stripos($tmp_procedure, '[');
-                                if ($ep){
-                                    echo '<li>'.substr($tmp_procedure, 0, $ep).'</li>';
-                                } else {
-                                    echo '<li>'.$tmp_procedure.'</li>';
-                                }
-                            }
-                        echo "</td>";
-                        echo '<td align="left" >';
-                            echo '<ul class = "three" style="list-style-type:none">';
-                            while ($tmp_surgeon!=false) {
-                                $ep = stripos($tmp_surgeon, '[');
-                                echo '<li>'.substr($tmp_surgeon, 0, $ep).'</li>';
-                                $ep = stripos(substr($tmp_surgeon, 0), ']');
-                                $tmp_surgeon = substr($tmp_surgeon, $ep+1);
-                            }
-                        echo "</td>";
-                        echo '<td align="left" >';
-                            echo $tmp_patient;
-                        echo "</td>";
-
-                        $case_procedure=substr($case_procedure, $casePos+1);
-                        $lead_surgeon=substr($lead_surgeon, $leadPos+1);
-                        $patient_class=substr($patient_class, $patientPos+1);
-
-                        echo '<td align="left" >';
-                            if (strlen($start_time) < 1){
-                                echo "N/A";
-                            } else {
-                                echo $start_time;
-                            }
-                        echo "</td>";
-
-                        echo '<td align="left" >';
-                            if (strlen($end_time) < 1){
-                                echo "N/A";
-                            } else {
-                                echo $end_time;
-                            }
-                        echo "</td>";
-
-                        if($isFirstRow)
-                        {
-                            ?>
-
-                            @if ($flag == 1)
-                                @if ($row['resident'] != null)
-                                    <td <?php echo 'rowspan = "'.$rowSpan.'"';?> align="left">{{ $row['resident'] }}</td>
-                                @else
-                                    <td <?php echo 'rowspan = "'.$rowSpan.'"';?> align="left">TBD</td>
-                                @endif
-                            @elseif($flag==2)
-                                <td <?php echo 'rowspan = "'.$rowSpan.'"';?>>
-                                    <select class = "PreferenceSelector" name = "RM {{$row['room']}}<br>{{$row['start_time']}}-{{$row['end_time']}}" id = "{{ $row['id'] }}_">
-                                        <option selected="selected" value= "">Choose here</option>
-                                        <option value= "1">First</option>
-                                        <option value= "2">Second</option>
-                                        <option value= "3">Third</option>
-                                    </select>
-                                </td>
-                            @endif
-                            </tr>
-
-                            <?php
-                            $isFirstRow = false;
-                        }
-
-
-                    }
-
-                ?>
-
-
-            <?php
-                // increase the row number now that we are done with that particular grouping by room
-                $rowID = $rowID + 1;
-            ?>
-
-            @endforeach
-
-
-
-        </tbody>
-    </table>
-    </div>
-
-    <br><br>
+    <br>
         <div id="schedule_footer">
             <div id="preferences" class="row">
                 <div class="col-4 col-sm-3 preferences ">
@@ -209,21 +31,20 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-
-                first = $('table select [value=1]:selected');
-                second = $('table select [value=2]:selected');
-                third = $('table select [value=3]:selected');
+                var first = $('#schedule_table select [value=1]:selected');
+                var second = $('#schedule_table select [value=2]:selected');
+                var third = $('#schedule_table select [value=3]:selected');
                 if(first.length > 0){
-                    $('#first').html(first.parent().attr('name'));
-                    highlightPreference(first.parent())
+                    $('#first').html(first.parent().attr('title').replace(/\n/g, "<br>"));
+                    highlightPreference(first);
                 }
                 if(second.length > 0){
-                    $('#second').html(second.parent().attr('name'));
-                    highlightPreference(second.parent())
+                    $('#second').html(second.parent().attr('title').replace(/\n/g, "<br>"));
+                    highlightPreference(second);
                 }
                 if(third.length > 0){
-                    $('#third').html(third.parent().attr('name'));
-                    highlightPreference(third.parent())
+                    $('#third').html(third.parent().attr('title').replace(/\n/g, "<br>"));
+                    highlightPreference(third);
                 }
 
                 if (window.location.href.indexOf("firstday") > -1){
@@ -231,11 +52,9 @@
                 } else {
                     $('#page_footer hr').hide();
                     adjustWidth();
-                    adjustHeight();
                     $(window).resize(
                         function() {
                             adjustWidth();
-                            adjustHeight();
                      });
                 }
 
@@ -255,11 +74,6 @@
                     }
                 }
 
-                // adjust the height of the schedule table
-                function adjustHeight(){
-                    $('#sched_table_container').css('height',$('#schedule_footer').offset().top-100)
-                }
-
                 // Update information when a new preference is selected
                 $("select").on('focus', function () {
                     var selection = $(this);
@@ -273,13 +87,11 @@
                         console.log(id);
                         console.log(id.substring(0, id.length - 1));
                         // Get previous selected first preference
-                        // var prevFirst = $('table select[id!='+id+'] [value=1]:selected').parent();
                         var prevFirst = $('div.sked-tape__location select[id!='+id+'] [value=1]:selected').parent();
                         console.log(prevFirst);
                         // Deselect previous selected first preference
                         clearPrevious(prevFirst, previous);
                         // update current selection info
-                        // $('#first').html($(this).attr('name'));
                         $('#first').html($(this).parent().attr('title').replace(/\n/g, "<br>"));
                         // Highlight the selected room
                         highlightPreference($(this));
@@ -288,12 +100,10 @@
                         console.log(id);
                         console.log(id.substring(0, id.length - 1));
                         // Get previous selected second preference
-                        // prevSecond = $('table select[id!='+id+'] [value=2]:selected').parent();
                         var prevSecond = $('div.sked-tape__location select[id!='+id+'] [value=2]:selected').parent();
                         // Deselect previous selected second preference
                         clearPrevious(prevSecond, previous);
                         // update current selection info
-                        // $('#second').html($(this).attr('name'));
                         $('#second').html($(this).parent().attr('title').replace(/\n/g, "<br>"));
                         // Highlight the selected room
                         highlightPreference($(this));
@@ -302,12 +112,10 @@
                         console.log(id);
                         console.log(id.substring(0, id.length - 1));
                         // Get previous selected third preference
-                        // var prevThird = $('table select[id!='+id+'] [value=3]:selected').parent();
                         var prevThird = $('div.sked-tape__location select[id!='+id+'] [value=3]:selected').parent();
                         // Deselect previous selected thrid preference
                         clearPrevious(prevThird, previous);
                         // update current selection info
-                        // $('#third').html($(this).attr('name'));
                         $('#third').html($(this).parent().attr('title').replace(/\n/g, "<br>"));
                         // Highlight the selected room
                         highlightPreference($(this));
@@ -328,15 +136,9 @@
                     $('#third').html("N/A");
                 }
                 // Change the background color of previous selected room to default
-                // var prevClass = prevSelected.parent().parent().attr('class');
                 var prevDataId = prevSelected.parent().attr('data-id');
                 console.log(prevSelected)
-                // if(prevClass%2){
-                //     $('.'+prevClass).css('background-color', '#F0F0F0');
-                // } else {
-                //     $('.'+prevClass).css('background-color', '#FFFFFF');
-                // }
-                if($('[data-id="'+prevDataId+'"]').is(':odd')){
+                if($('[data-id="'+prevDataId+'"]').is(':even')){
                     $('[data-id="'+prevDataId+'"]').css('background-color', '#F4F4F4');
                     $('.'+prevDataId).css('background-color', '#F4F4F4');
                 } else {
@@ -349,15 +151,11 @@
             function highlightPreference(selected){
                 // var selectedClass = selected.parent().parent().attr('class');
                 var selectedRoomId = selected.parent().attr('data-id');
-                // $('.'+selectedClass).css('background-color', 'rgba(255, 215, 215, 0.65)');
                 $('[data-id="'+selectedRoomId+'"]').css('background-color', 'rgba(255, 215, 215, 0.65)');
                 $('.'+selectedRoomId).css('background-color', 'rgba(255, 215, 215, 0.65)');
             }
 
             function clearPreferences(){
-                // var first = $('table select [value=1]:selected');
-                // var second = $('table select [value=2]:selected');
-                // var third = $('table select [value=3]:selected');
                 var first = $('#schedule_table select [value=1]:selected');
                 var second = $('#schedule_table select [value=2]:selected');
                 var third = $('#schedule_table select [value=3]:selected');
@@ -372,52 +170,10 @@
                 }
             }  
 
-
-            function sortTable(n) {
-                var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-                table = document.getElementById("sched_table");
-                switching = true;
-                dir = "asc";
-
-                while (switching) {
-                    switching = false;
-                    rows = table.rows;
-                    for (i = 1; i < (rows.length - 1); i++) {
-                        shouldSwitch = false;
-                        x = rows[i].getElementsByTagName("TD")[n];
-                        y = rows[i + 1].getElementsByTagName("TD")[n];
-                        if (dir == "asc") {
-                            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                                shouldSwitch= true;
-                                break;
-                            }
-                        } else if (dir == "desc") {
-                            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                                shouldSwitch = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (shouldSwitch) {
-                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                        switching = true;
-                        switchcount ++;
-                    } else {
-                        if (switchcount == 0 && dir == "asc") {
-                        dir = "desc";
-                        switching = true;
-                      }
-                    }
-                }
-            }
-
             function submitPreference()
             {
                 // Store preferences
                 var preferencedIDs = ["", "", ""];
-                // var first = $('table select [value=1]:selected');
-                // var second = $('table select [value=2]:selected');
-                // var third = $('table select [value=3]:selected');
                 var first = $('#schedule_table select [value=1]:selected');
                 var second = $('#schedule_table select [value=2]:selected');
                 var third = $('#schedule_table select [value=3]:selected');
@@ -432,7 +188,6 @@
                 }
 
                 // Check Preferences
-                // make sure that all 3 preferences are selected
                 if(preferencedIDs[0] != "" && preferencedIDs[1] != "" && preferencedIDs[2] != ""){
                     // send 3 preferences to be stored and processed
                     storePreference(preferencedIDs[0], preferencedIDs[1], preferencedIDs[2]);

@@ -389,7 +389,7 @@ SkedTape.prototype = {
 	        $select.append($('<option value= "3">Third</option>'));
 			$location.append($select);
 		} else {
-			$location.append($('<div class="sked-tape__location-text">Resident TBD</div>'));
+			$location.append($('<div class="sked-tape__location-text" />'));
 		}
 		var canAdd = this.isAdding()
 			? this.canAddIntoLocation(location, this.dummyEvent)
@@ -727,23 +727,22 @@ SkedTape.prototype = {
 				width: this.computeEventWidth(event),
 				left: this.computeEventOffset(event)
 			});
-		// if (this.showEventTime || this.showEventDuration) {
-		// 	var html = $event.html();
-		// 	var duration = this.format.roundDuration(event.end - event.start);
-		// 	if (this.showEventTime) {
-		// 		html += this.format.time(event.start)
-		// 			+ ' - ' + this.format.time(new Date(event.start.getTime() + duration)) + ' ';
-		// 	}
-		// 	if (this.showEventDuration) {
-		// 		html += "("+this.format.duration(duration) + ')<br>';
-		// 	}
-		// 	$event.html(html);
-		// }
+		if (this.showEventTime || this.showEventDuration) {
+			var html = $event.html();
+			var duration = this.format.roundDuration(event.end - event.start);
+			if (this.showEventTime) {
+				html += this.format.time(event.start)
+					+ ' - ' + this.format.time(new Date(event.start.getTime() + duration)) + ' ';
+			}
+			if (this.showEventDuration) {
+				html += "("+this.format.duration(duration) + ')<br>';
+			}
+			$event.html(html);
+		}
 
 		var event_html = $event.html();
 		event_html += event.userData['time']+'<br>';
-		event_html += 'Lead Surgeon: '+ event.userData['lead_surgeon'] + '<br>';
-		event_html += 'Patient Class: '+ event.userData['patient_class'] + '<br>';
+		event_html += 'Surgeon: '+ event.userData['lead_surgeon'] + '<br>';
 		event_html += '<hr>';
 		event_html += '- '+event.userData['case'].replace(/\n/g, "<br>- ");
 		$event.html(event_html);
