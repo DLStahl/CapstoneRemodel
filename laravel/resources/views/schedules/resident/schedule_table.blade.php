@@ -209,7 +209,7 @@
         </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="{{ asset('js/jquery.skedTape.js') }}"></script>
+    <script src="{{ asset('js/jquery.skedTape.js?v=1.1') }}"></script>
     <script type="text/javascript">
         // --------------------------- Data --------------------------------
         
