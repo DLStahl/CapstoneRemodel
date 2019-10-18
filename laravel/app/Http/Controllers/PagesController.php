@@ -66,6 +66,12 @@ class PagesController extends Controller
         $case_procedure = str_replace(array('[',']'),'',$case_procedure);
         $start_t = ScheduleData::where('id', $id)->value('start_time');
         $end_t = ScheduleData::where('id', $id)->value('end_time');
+        if(strlen($start_t) < 1){
+            $start_t = "N/A";
+        }
+        if(strlen($end_t) < 1){
+            $end_t = "N/A";
+        }
 
         return "Room ".$room."\n Case procedure: \n".$case_procedure."Time: ".$start_t." - ".$end_t;
     }
@@ -147,7 +153,7 @@ class PagesController extends Controller
         $assignment = Assignment::where('date',$date)->where('resident', $id);
         if ($assignment->exists()) {
             $firstday_schedule_id = Assignment::where('date', $date)->where('resident', $id)->value('schedule');
-            $option = Option::where('date', $date)->where('resident', $id)->where('option', $assignment->value('option'));
+            $option = Option::where('id', $assignment->value('option'));
             $milestone = $option->value('milestones');
             $milestoneC = Milestone::where('id', $milestone)->value('category');
             $milestoneD = Milestone::where('id', $milestone)->value('detail');

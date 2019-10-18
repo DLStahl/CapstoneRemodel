@@ -1,10 +1,166 @@
-﻿@extends('schedules.resident.schedule_basic')
+﻿@extends('main')
+@section('content')
+    @include('schedules.resident.schedule_dates')
 
-@section('table_generator')
+    <?php
+
+        $url = $_SERVER['REQUEST_URI'];
+
+        //echo $url;
+
+        $urlSplit = explode("/", $url);
+
+        if( sizeof($urlSplit) == 6){
+            $room = "null";
+            $leadSurgeon = "null";
+            $patientClass ="null";
+            $rotation = "null";
+            $start_after = "null";
+            $end_before = "null";
+        }
+        else
+        {
+            $room = str_replace("%20", " ", $urlSplit[7]);
+            $leadSurgeon = str_replace("%20", " ", $urlSplit[8]);
+            $patientClass =str_replace("%20", " ", $urlSplit[9]); //always null
+            $rotation = str_replace("%20", " ", $urlSplit[10]);
+            $timeSplit = explode("_", $urlSplit[11]);
+            $start_after = $timeSplit[0];
+            $end_before = $timeSplit[1];
+        }
+
+    ?>
+
+    <div id="filter">
+
+        <!--room filter-->
+        <select id="room">
+            <option value="null" selected> - Room - </option>
+            @foreach ($filter_options['rooms'] as $roomOption)
+                <option value="{{$roomOption}}" > {{$roomOption}}</option>
+            @endforeach
+        </select>
+
+        <!--lead surgeon filter-->
+        <select id="leadSurgeon">
+            <option value="null" selected> - Surgeon - </option>
+            @foreach ($filter_options['leadSurgeons'] as $leadSurgeonOption)
+                <option value="{{$leadSurgeonOption}}" > {{$leadSurgeonOption}}</option>
+            @endforeach
+        </select>
+
+        <!-- rotation filter -->
+        <select id="rotation">
+            <option value="null" selected> - Rotation - </option>
+        </select>
+
+        <!--//patient class filter-->
+        <!-- <select id="patientClass">
+            <option value="null" selected> - Patient Class - </option>
+        </select> -->
+
+        <!--start after filter-->
+        <select id="start_after">
+            <option value="null" selected> - Start After - </option>
+            @for($i=0; $i<10; $i++)
+                <option value="0{{$i}}:00:00">0{{$i}}:00:00</option>
+            @endfor
+            @for($i=10; $i<24; $i++)
+                <option value="{{$i}}:00:00">{{$i}}:00:00</option>
+            @endfor
+        </select>
+
+        <!--end before filter-->
+        <select id="end_before">
+            <option value="null" selected> - End Before - </option>
+            @for($i=0; $i<10; $i++)
+                <option value="0{{$i}}:00:00">0{{$i}}:00:00</option>
+            @endfor
+            @for($i=10; $i<24; $i++)
+                <option value="{{$i}}:00:00">{{$i}}:00:00</option>
+            @endfor
+        </select>
+
+        <div class="float-right">
+            <button type="button" class="btn btn-primary" onclick="filterUpdate()">Filter</button>
+            <button type="button" class="btn btn-primary" onclick="clearFilter()">Clear Filter</button>
+        </div>
+
+    </div>
+
+    <br>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var filter_options = <?php echo json_encode($filter_options); ?>;
+            console.log(filter_options);
+
+            var room = "<?php echo $room ?>";
+            $('#room').val(room);
+
+            var leadSurgeon = "<?php echo $leadSurgeon ?>";
+            $('#leadSurgeon').val(leadSurgeon);
+
+            var rotation = "<?php echo $rotation ?>";
+            $('#rotation').val(rotation);
+
+            var start_after = "<?php echo $start_after ?>";
+            $('#start_after').val(start_after);
+
+            var end_before = "<?php echo $end_before ?>";
+            $('#end_before').val(end_before);
+        });
+        
+        // Update filter
+        function filterUpdate()
+        {
+            var room = document.getElementById("room");
+            var leadSurgeon = document.getElementById("leadSurgeon");
+            // var patient_class = document.getElementById("patientClass");
+            var rotation = document.getElementById("rotation");
+            var start_after = document.getElementById("start_after");
+            var end_before = document.getElementById("end_before");
+
+            var room_selected = room.options[room.selectedIndex].value;
+            var leadSurgeon_selected = leadSurgeon.options[leadSurgeon.selectedIndex].value;
+            // var patient_class_selected = patient_class.options[patient_class.selectedIndex].value;
+            var patient_class_selected = "null";
+            var rotation_selected = rotation.options[rotation.selectedIndex].value;
+            var start_after_selected = start_after.options[start_after.selectedIndex].value;
+            var end_before_selected = end_before.options[end_before.selectedIndex].value;
+
+            if (start_after_selected.localeCompare(end_before_selected) >= 0 &&
+                start_after_selected.localeCompare("null") != 0 &&
+                end_before_selected.localeCompare("null") != 0)
+            {
+                alert("Invalid selection!");
+                return;
+            }
+
+            /**
+             * Update url.
+             */
+            var current_url = window.location.href;
+            var url = current_url.search('/filter/') > -1 ? current_url.substr(0, current_url.search('/filter/')) : current_url;
+            url = url + "/filter/" + room_selected + "/" + leadSurgeon_selected + "/" + patient_class_selected + "/" + rotation_selected + "/" + start_after_selected + "_" + end_before_selected;
+            window.location.href = url;
+        }
+
+        function clearFilter()
+        {
+            var current_url = window.location.href;
+            if(window.location.href.indexOf("filter") > -1){
+                var url = current_url.search('/filter/') > -1 ? current_url.substr(0, current_url.search('/filter/')) : current_url;
+                window.location.href = url;
+            }
+
+        }
+
+    </script>
+
     @if(sizeof($schedule_data)>0)
         <div id="schedule_table"></div>
     <br>
-        <div id="schedule_footer">
+        <div id="schedule_footer" style="display:none">
             <div id="preferences" class="row">
                 <div class="col-4 col-sm-3 preferences ">
                     <strong>1st</strong>
@@ -47,9 +203,9 @@
                     highlightPreference(third);
                 }
 
-                if (window.location.href.indexOf("firstday") > -1){
-                    $("#schedule_footer").hide();
-                } else {
+                // if current page is not first day, display information of selected information;
+                if (window.location.href.indexOf("firstday") == -1){
+                    $("#schedule_footer").show();
                     $('#page_footer hr').hide();
                     adjustWidth();
                     $(window).resize(
@@ -138,7 +294,7 @@
                 // Change the background color of previous selected room to default
                 var prevDataId = prevSelected.parent().attr('data-id');
                 console.log(prevSelected)
-                if($('[data-id="'+prevDataId+'"]').is(':even')){
+                if($('[data-id="'+prevDataId+'"]').is(':odd')){
                     $('[data-id="'+prevDataId+'"]').css('background-color', '#F4F4F4');
                     $('.'+prevDataId).css('background-color', '#F4F4F4');
                 } else {
@@ -168,7 +324,18 @@
                 if(third.length > 0){
                     clearPrevious(third.parent(), 3);
                 }
-            }  
+            }
+
+            function storePreference(id1, id2 = '0_', id3 = '0_')
+            {
+                // Update url to the selecting milestone/objective page
+                var current_url = window.location.href;
+                var url = current_url.substr(0, current_url.search('/schedule/'));
+                url = url + "/schedule/milestones/" + id1 + id2 + id3 +"/";
+                window.location.href = url;
+
+
+            }
 
             function submitPreference()
             {
@@ -206,16 +373,16 @@
                 }
             }
 
+            
+
         </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="{{ asset('js/jquery.skedTape.js?v=1.1') }}"></script>
     <script type="text/javascript">
         // --------------------------- Data --------------------------------
-        
         var locations = [];
         var events = [];
-
         var schedule_data = <?php echo json_encode($schedule_data); ?>;
         schedule_data.forEach(function(schedule){
             // add room and start/end time of each room to locations in this format:
@@ -383,7 +550,7 @@
         $sked2.skedTape(sked2Config);
     </script>
     @else
-        <h2>Error loading table! <br>No schedule of the chosen date can be found.</h2>
+        <h2>No schedule found.</h2>
     @endif
     
 

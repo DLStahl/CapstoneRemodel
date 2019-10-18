@@ -49,6 +49,7 @@ class ScheduleDataController extends Controller
         $end_time = !isset($args['end_time']) ? '23:59:59' : $args['end_time'];
 		$room = !isset($args['room']) ? 'TBD' : $args['room'];
 		$patient_class = !isset($args['patient_class']) ? 'TBD' : $args['patient_class'];
+        $rotation = !isset($args['rotation']) ? 'TBD' : $args['rotation'];
 
 
 
@@ -402,11 +403,56 @@ class ScheduleDataController extends Controller
 
     }
 
+    // Get all rooms, surgeons and rotations of the given date
+    private function getFilterOptions($date){
+        $schedule = ScheduleData::where('date', $date);
+        // [{room: 'Room name'}, {room: 'Room name'}, {room: 'Room name'}, ...]
+        $roomsData = $schedule->select('room')->get();
+        $rooms = array();
+        foreach($roomsData as $room){
+            array_push($rooms, $room['room']);
+        }
+        sort($rooms);
+
+        // lead surgeons with duplicates
+        $allLeadSurgeons = $schedule->select('lead_surgeon')->get();
+        // lead surgeons without duplicates
+        $noDuplicateSurgeons = array();
+        foreach ($allLeadSurgeons as $surgeons){
+            $leadSurgeon = $surgeons['lead_surgeon'];
+            while (strlen($leadSurgeon) > 0){
+                $leadPos = strpos($leadSurgeon, "\n");
+                $tmp_surgeon= substr($leadSurgeon, 0, $leadPos);
+                // get rid of [number] after the surgeon name
+                $ep = strpos($tmp_surgeon, '[');
+                if ($ep != -1){
+                    $tmp_surgeon = substr($tmp_surgeon, 0, $ep);
+                }
+                $tmp_surgeon = trim($tmp_surgeon);
+                if (!in_array($tmp_surgeon, $noDuplicateSurgeons)){
+                    array_push($noDuplicateSurgeons, $tmp_surgeon);
+                }
+                $leadSurgeon = substr($leadSurgeon, $leadPos+1);
+            }
+        }
+        sort($noDuplicateSurgeons);
+
+        $rotations = array();
+
+        $filterOptions = array(
+            "rooms" => $rooms,
+            "leadSurgeons" => $noDuplicateSurgeons,
+            "rotations" => $rotations
+        );
+
+        return $filterOptions;
+    }
+
 
     /**
      * Public functions
      */
-    public function getFirstDay($room = null, $leadSurgeon = null, $patient_class = null, $start_time_end_time=null)
+    public function getFirstDay($room = null, $leadSurgeon = null, $patient_class = null, $rotation = null, $start_time_end_time=null)
     {
         // // Test
         // $parser = new ScheduleParser("20180614");
@@ -431,12 +477,12 @@ class ScheduleDataController extends Controller
         $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'patient_class' => $this->patient_class,
                                                 'start_time' => $this->start_time, 'end_time' => $this->end_time));
         $flag = 1;
-
-        return view('schedules.resident.schedule_table',compact('schedule_data', 'year', 'mon', 'day', 'flag'));
+        $filter_options = self::getFilterOptions($date);
+        return view('schedules.resident.schedule_table',compact('schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
 
     }
 
-    public function getSecondDay($room = null, $leadSurgeon = null, $patient_class = null, $start_time_end_time=null)
+    public function getSecondDay($room = null, $leadSurgeon = null, $patient_class = null, $rotation = null, $start_time_end_time=null)
     {
         date_default_timezone_set('America/New_York');
         $year = date("o", strtotime('+2 day'));
@@ -458,11 +504,11 @@ class ScheduleDataController extends Controller
         $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'patient_class' => $this->patient_class,
                                                 'start_time' => $this->start_time, 'end_time' => $this->end_time));
         $flag = 2;
-
-        return view('schedules.resident.schedule_table',compact('schedule_data', 'year', 'mon', 'day', 'flag'));
+        $filter_options = self::getFilterOptions($date);
+        return view('schedules.resident.schedule_table',compact('schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
     }
 
-    public function getThirdDay($room = null, $leadSurgeon = null, $patient_class = null, $start_time_end_time=null)
+    public function getThirdDay($room = null, $leadSurgeon = null, $patient_class = null, $rotation = null, $start_time_end_time=null)
     {
         date_default_timezone_set('America/New_York');
         $year = date("o", strtotime('+3 day'));
@@ -485,7 +531,8 @@ class ScheduleDataController extends Controller
                                                 'start_time' => $this->start_time, 'end_time' => $this->end_time));
         $flag = 2;
 
-        return view('schedules.resident.schedule_table',compact('schedule_data', 'year', 'mon', 'day', 'flag'));
+        $filter_options = self::getFilterOptions($date);
+        return view('schedules.resident.schedule_table',compact('schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
 
     }
 
