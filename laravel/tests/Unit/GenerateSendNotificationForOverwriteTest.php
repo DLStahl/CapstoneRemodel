@@ -45,6 +45,11 @@ class GenerateSendNotificationForOverwrite extends TestCase
         $compare = ($countPref2 == 0); 
         $this->assertTrue(true);
 		$this->assertTrue($compare);    
+
+		$countPref3 = Option::where('resident', '300')->where('option', '3')->where('date', '2019-09-25')->count();
+        $compare = ($countPref3 == 0); 
+        $this->assertTrue(true);
+		$this->assertTrue($compare); 
 	}
 	public function testResidentonlysubmit2Prefernce()
 	{
@@ -53,9 +58,14 @@ class GenerateSendNotificationForOverwrite extends TestCase
         $this->assertTrue(true);
 		$this->assertTrue($compare);   
 
-		// $countPref2 = Option::where('resident', '113')->where('option', '2')->count();
-        // $compare = ($countPref2 == 1); 
-        // $this->assertTrue(true);
-		// $this->assertTrue($compare);    
+		$countPref2 = Option::where('resident', '113')->where('option', '2')->where('date','2019-09-25')->count();
+        $compare = ($countPref2 == 1); 
+        $this->assertTrue(true);
+		$this->assertTrue($compare);  
+		
+		$countPref3 = Option::where('resident', '113')->where('option', '3')->where('date', '2019-09-25')->count();
+        $compare = ($countPref3 == 0); 
+        $this->assertTrue(true);
+		$this->assertTrue($compare); 
 	}
 }
