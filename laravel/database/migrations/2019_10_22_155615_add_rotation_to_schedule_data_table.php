@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddDetailToMilestoneTable extends Migration
+class AddRotationToScheduleDataTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddDetailToMilestoneTable extends Migration
      */
     public function up()
     {
-        Schema::table('milestone', function($table) {
-            $table->longText('detail')->nullable();
+        Schema::table('schedule_data', function (Blueprint $table) {
+            $table->longText('rotation')->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddDetailToMilestoneTable extends Migration
      */
     public function down()
     {
-        Schema::table('assignment', function (Blueprint $table) {
-            $table->dropColumn('detail');
+        Schema::table('schedule_data', function (Blueprint $table) {
+            $table->dropColumn('rotation');
         });
     }
 }

@@ -26,7 +26,7 @@ class ScheduleDataController extends Controller
      */
     protected $room = null;
 	protected $leadSurgeon = null;
-	protected $patient_class = null;
+	protected $rotation = null;
     protected $start_time = null;
     protected $end_time = null;
 
@@ -48,8 +48,7 @@ class ScheduleDataController extends Controller
         $start_time = !isset($args['start_time']) ? '00:00:00' : $args['start_time'];
         $end_time = !isset($args['end_time']) ? '23:59:59' : $args['end_time'];
 		$room = !isset($args['room']) ? 'TBD' : $args['room'];
-		$patient_class = !isset($args['patient_class']) ? 'TBD' : $args['patient_class'];
-        $rotation = !isset($args['rotation']) ? 'TBD' : $args['rotation'];
+		$rotation = !isset($args['rotation']) ? 'TBD' : $args['rotation'];
 
 
 
@@ -62,8 +61,8 @@ class ScheduleDataController extends Controller
             $room = "TBD";
         }
 
-		if (strcmp($patient_class, "null") == 0) {
-            $patient_class = "TBD";
+		if (strcmp($rotation, "null") == 0) {
+            $rotation = "TBD";
         }
 
         if (strcmp($start_time, "null") == 0) {
@@ -75,34 +74,34 @@ class ScheduleDataController extends Controller
 
         $schedule_data = null;
 		// check that all filters are filled out
-        if (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($patient_class, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
+        if (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
 		// only 4 filters are filled out
-		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($patient_class, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0)
+		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($patient_class, "TBD") != 0 && strcmp($end_time, "23:59:59") != 0)
+		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
@@ -117,33 +116,33 @@ class ScheduleDataController extends Controller
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif (strcmp($room, "TBD") != 0 && strcmp($patient_class, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
+		elseif (strcmp($room, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
                                 ->where('room', $room)
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif ( strcmp($leadSurgeon, "TBD") != 0 && strcmp($patient_class, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
+		elseif ( strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
 		// only 3 filters are filled out
-		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($patient_class, "TBD") != 0)
+		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
-								->where('patient_class', $patient_class)
+								->where('rotation', $rotation)
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
@@ -174,28 +173,28 @@ class ScheduleDataController extends Controller
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif (strcmp($room, "TBD") != 0 && strcmp($patient_class, "TBD") != 0  && strcmp($end_time, "23:59:59") != 0)
+		elseif (strcmp($room, "TBD") != 0 && strcmp($rotation, "TBD") != 0  && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
                                 ->where('room', $room)
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif (strcmp($room, "TBD") != 0 && strcmp($patient_class, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 )
+		elseif (strcmp($room, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 )
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
                                 ->where('room', $room)
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif ( strcmp($patient_class, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
+		elseif ( strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
@@ -210,20 +209,20 @@ class ScheduleDataController extends Controller
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif (strcmp($leadSurgeon, "TBD") != 0 && strcmp($patient_class, "TBD") != 0  && strcmp($end_time, "23:59:59") != 0)
+		elseif (strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0  && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif ( strcmp($leadSurgeon, "TBD") != 0 && strcmp($patient_class, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 )
+		elseif ( strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 )
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
@@ -237,19 +236,19 @@ class ScheduleDataController extends Controller
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif (strcmp($room, "TBD") != 0 && strcmp($patient_class, "TBD") != 0 )
+		elseif (strcmp($room, "TBD") != 0 && strcmp($rotation, "TBD") != 0 )
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
                                 ->where('room', $room)
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif (strcmp($leadSurgeon, "TBD") != 0 && strcmp($patient_class, "TBD") != 0 )
+		elseif (strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 )
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
 								->where('lead_surgeon','LIKE', "%{$leadSurgeon}%")
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
@@ -285,18 +284,18 @@ class ScheduleDataController extends Controller
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif (strcmp($patient_class, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0)
+		elseif (strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif (strcmp($patient_class, "TBD") != 0 && strcmp($end_time, "23:59:59") != 0)
+		elseif (strcmp($rotation, "TBD") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
-								->where('patient_class','LIKE', "%{$patient_class}%")
+								->where('rotation','LIKE', "%{$rotation}%")
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
@@ -317,10 +316,10 @@ class ScheduleDataController extends Controller
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
-		elseif (strcmp($patient_class, "TBD") != 0)
+		elseif (strcmp($rotation, "TBD") != 0)
         {
             $schedule_data = ScheduleData::whereDate('date', $date)
-								->where('patient_class', 'LIKE', "%{$patient_class}%")
+								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->orderBy('room', 'asc')
                                 ->get();
         }
@@ -362,17 +361,24 @@ class ScheduleDataController extends Controller
                 $resident = Resident::where('id', $resident_id)->value('name');
             }
             array_push($schedule, array(
-                'date'=>$data['date'], 'room'=>$data['room'], 'lead_surgeon'=>$data['lead_surgeon'],
-                'id'=>$data['id'], 'resident'=>$resident, 'case_procedure'=>$data['case_procedure'],
-                'patient_class'=>$data['patient_class'], 'start_time'=>$data['start_time'], 'end_time'=>$data['end_time']
+                'date'=>$data['date'], 
+                'room'=>$data['room'], 
+                'lead_surgeon'=>$data['lead_surgeon'],
+                'id'=>$data['id'], 
+                'resident'=>$resident, 
+                'case_procedure'=>$data['case_procedure'], 
+                'patient_class'=>$data['patient_class'], 
+                'rotation'=>$data['rotation'], 
+                'start_time'=>$data['start_time'], 
+                'end_time'=>$data['end_time']
             ));
         }
         return $schedule;
     }
 
-    private function processInput($room, $leadSurgeon, $patient_class, $start_time_end_time)
+    private function processInput($room, $leadSurgeon, $rotation, $start_time_end_time)
     {
-        if ($room == null && $leadSurgeon == null && $patient_class == null && $start_time_end_time == null) return;
+        if ($room == null && $leadSurgeon == null && $rotation == null && $start_time_end_time == null) return;
 
         /**
          * Get times
@@ -383,7 +389,7 @@ class ScheduleDataController extends Controller
 
 		$this->room = $room;
 		$this->leadSurgeon = $leadSurgeon;
-		$this->patient_class = $patient_class;
+		$this->rotation = $rotation;
 
         if (strcmp($this->room, "null") == 0) {
             $this->room = null;
@@ -391,8 +397,8 @@ class ScheduleDataController extends Controller
 		if (strcmp($this->leadSurgeon, "null") == 0) {
             $this->leadSurgeon = null;
         }
-		if (strcmp($this->patient_class, "null") == 0) {
-            $this->patient_class = null;
+		if (strcmp($this->rotation, "null") == 0) {
+            $this->rotation = null;
         }
         if (strcmp($this->start_time, "null") == 0) {
             $this->start_time = null;
@@ -452,7 +458,7 @@ class ScheduleDataController extends Controller
     /**
      * Public functions
      */
-    public function getFirstDay($room = null, $leadSurgeon = null, $patient_class = null, $rotation = null, $start_time_end_time=null)
+    public function getFirstDay($room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time=null)
     {
         // // Test
         // $parser = new ScheduleParser("20180614");
@@ -473,16 +479,15 @@ class ScheduleDataController extends Controller
 
         $date =  $year.'-'.$mon.'-'.$day;
 
-        $this->processInput($room, $leadSurgeon, $patient_class, $start_time_end_time);
-        $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'patient_class' => $this->patient_class,
-                                                'start_time' => $this->start_time, 'end_time' => $this->end_time));
+        $this->processInput($room, $leadSurgeon, $rotation, $start_time_end_time);
+        $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
         $flag = 1;
         $filter_options = self::getFilterOptions($date);
         return view('schedules.resident.schedule_table',compact('schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
 
     }
 
-    public function getSecondDay($room = null, $leadSurgeon = null, $patient_class = null, $rotation = null, $start_time_end_time=null)
+    public function getSecondDay($room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time=null)
     {
         date_default_timezone_set('America/New_York');
         $year = date("o", strtotime('+2 day'));
@@ -500,15 +505,14 @@ class ScheduleDataController extends Controller
 
         $date =  $year.'-'.$mon.'-'.$day;
 
-        $this->processInput($room, $leadSurgeon, $patient_class, $start_time_end_time);
-        $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'patient_class' => $this->patient_class,
-                                                'start_time' => $this->start_time, 'end_time' => $this->end_time));
+        $this->processInput($room, $leadSurgeon, $rotation, $start_time_end_time);
+        $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
         $flag = 2;
         $filter_options = self::getFilterOptions($date);
         return view('schedules.resident.schedule_table',compact('schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
     }
 
-    public function getThirdDay($room = null, $leadSurgeon = null, $patient_class = null, $rotation = null, $start_time_end_time=null)
+    public function getThirdDay($room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time=null)
     {
         date_default_timezone_set('America/New_York');
         $year = date("o", strtotime('+3 day'));
@@ -526,9 +530,8 @@ class ScheduleDataController extends Controller
 
         $date =  $year.'-'.$mon.'-'.$day;
 
-        $this->processInput($room, $leadSurgeon, $patient_class, $start_time_end_time);
-        $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'patient_class' => $this->patient_class,
-                                                'start_time' => $this->start_time, 'end_time' => $this->end_time));
+        $this->processInput($room, $leadSurgeon, $rotation, $start_time_end_time);
+        $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
         $flag = 2;
 
         $filter_options = self::getFilterOptions($date);

@@ -7,6 +7,7 @@ use App\Constant;
 use App\ScheduleData;
 use App\Option;
 use App\Resident;
+use App\FilterRotation;
 use Mail;
 use Illuminate\Support\Facades\Log;
 
@@ -54,6 +55,27 @@ class ScheduleParser extends Model
         $minuteInt = intval(substr($line[$index], 2));
 
         return ($hourInt.":".$minuteInt.":00");
+    }
+
+    private static function getRotation($surgeon)
+    {
+        if (strlen($surgeon) == 0) return null;
+        $name = substr($surgeon, 0, strpos($surgeon, ','));
+        $name = explode(" ", $name);
+        $name_first = $name[0];
+        $name_last = $name[1];
+        if(sizeof($name) > 2){
+            $name_last = $name[2];
+        }
+        $surgeon_rotations = FilterRotation::where('surgeon', 'LIKE', "%{$name_last}%")
+                                            ->where('surgeon', 'LIKE', "%{$name_first}%")
+                                            ->get();
+        $rotation = "";
+        foreach ($surgeon_rotations as $row){
+            $rotation .= $row['rotation']." ";
+        }
+        $rotation = trim($rotation);
+        return $rotation;
     }
 
     /**
@@ -104,14 +126,21 @@ class ScheduleParser extends Model
             $case_procedure = $line[Constant::CASE_PROCEDURE];
             $lead_surgeon = $line[Constant::LEAD_SURGEON];
             $patient_class = $line[Constant::PATIENT_CLASS];
+            $rotation = self::getRotation($lead_surgeon);
             $start_time = self::getLineTime($line, Constant::START_TIME);
             $end_time = self::getLineTime($line, Constant::END_TIME);
 
-            ScheduleData::insert(
-                ['date' => $date, 'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure,
-                'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class, 'start_time' => $start_time,
-                'end_time' => $end_time]
-            );
+            ScheduleData::insert([
+                'date' => $date, 
+                'location' => $location, 
+                'room' => $room, 
+                'case_procedure' => $case_procedure, 
+                'lead_surgeon' => $lead_surgeon, 
+                'patient_class' => $patient_class, 
+                'rotation' => $rotation,
+                'start_time' => $start_time,
+                'end_time' => $end_time
+            ]);
         }
 
         // If residents already made preferences and the schedule changed, delete existing preferences and notify residents to select new preferences.
@@ -213,6 +242,7 @@ class ScheduleParser extends Model
             $case_procedure=null;
             $lead_surgeon=null;
             $patient_class=null;
+            $rotation=null;
             $start_time=null;
             $end_time=null;
             Log::info($item['room']." numbers\n ".count($records));
@@ -231,6 +261,7 @@ class ScheduleParser extends Model
                 $case_procedure=$case_procedure.$line;
                 $lead_surgeon=$lead_surgeon.$records[$i]['lead_surgeon']."\n";
                 $patient_class=$patient_class.$records[$i]['patient_class']."\n";
+                $rotation=$rotation.$records[$i]['rotation']."\n";
 
 
                  // $case_procedure = preg_replace('/^[^A-Za-z]+/', '', $case_procedure);
@@ -239,10 +270,16 @@ class ScheduleParser extends Model
 
             }
             ScheduleData::where('date',$date)->where('room',$room)->delete();
-            ScheduleData::insert(
-                ['date' => $date, 'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure,
-                    'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class, 'start_time' => $start_time,
-                    'end_time' => $end_time]
+            ScheduleData::insert([
+                'date' => $date, 
+                'location' => $location, 
+                'room' => $room, 
+                'case_procedure' => $case_procedure,
+                'lead_surgeon' => $lead_surgeon, 
+                'patient_class' => $patient_class, 
+                'rotation' => $rotation, 
+                'start_time' => $start_time,
+                'end_time' => $end_time]
             );
         }
     }

@@ -13,7 +13,6 @@
         if( sizeof($urlSplit) == 6){
             $room = "null";
             $leadSurgeon = "null";
-            $patientClass ="null";
             $rotation = "null";
             $start_after = "null";
             $end_before = "null";
@@ -22,9 +21,8 @@
         {
             $room = str_replace("%20", " ", $urlSplit[7]);
             $leadSurgeon = str_replace("%20", " ", $urlSplit[8]);
-            $patientClass =str_replace("%20", " ", $urlSplit[9]); //always null
-            $rotation = str_replace("%20", " ", $urlSplit[10]);
-            $timeSplit = explode("_", $urlSplit[11]);
+            $rotation = $urlSplit[9];
+            $timeSplit = explode("_", $urlSplit[10]);
             $start_after = $timeSplit[0];
             $end_before = $timeSplit[1];
         }
@@ -52,12 +50,13 @@
         <!-- rotation filter -->
         <select id="rotation">
             <option value="null" selected> - Rotation - </option>
+            <option value="Basic"> Basic </option>
+            <option value="Liver"> Liver </option>
+            <option value="Neuro"> Neuro </option>
+            <option value="Thoracic"> Thoracic </option>
+            <option value="Cardiac"> Cardiac </option>
+            <option value="Vascular"> Vascular </option>
         </select>
-
-        <!--//patient class filter-->
-        <!-- <select id="patientClass">
-            <option value="null" selected> - Patient Class - </option>
-        </select> -->
 
         <!--start after filter-->
         <select id="start_after">
@@ -115,15 +114,12 @@
         {
             var room = document.getElementById("room");
             var leadSurgeon = document.getElementById("leadSurgeon");
-            // var patient_class = document.getElementById("patientClass");
             var rotation = document.getElementById("rotation");
             var start_after = document.getElementById("start_after");
             var end_before = document.getElementById("end_before");
 
             var room_selected = room.options[room.selectedIndex].value;
             var leadSurgeon_selected = leadSurgeon.options[leadSurgeon.selectedIndex].value;
-            // var patient_class_selected = patient_class.options[patient_class.selectedIndex].value;
-            var patient_class_selected = "null";
             var rotation_selected = rotation.options[rotation.selectedIndex].value;
             var start_after_selected = start_after.options[start_after.selectedIndex].value;
             var end_before_selected = end_before.options[end_before.selectedIndex].value;
@@ -141,7 +137,7 @@
              */
             var current_url = window.location.href;
             var url = current_url.search('/filter/') > -1 ? current_url.substr(0, current_url.search('/filter/')) : current_url;
-            url = url + "/filter/" + room_selected + "/" + leadSurgeon_selected + "/" + patient_class_selected + "/" + rotation_selected + "/" + start_after_selected + "_" + end_before_selected;
+            url = url + "/filter/" + room_selected + "/" + leadSurgeon_selected + "/" + rotation_selected + "/" + start_after_selected + "_" + end_before_selected;
             window.location.href = url;
         }
 
@@ -294,7 +290,7 @@
                 // Change the background color of previous selected room to default
                 var prevDataId = prevSelected.parent().attr('data-id');
                 console.log(prevSelected)
-                if($('[data-id="'+prevDataId+'"]').is(':odd')){
+                if($('[data-id="'+prevDataId+'"]').is(':even')){
                     $('[data-id="'+prevDataId+'"]').css('background-color', '#F4F4F4');
                     $('.'+prevDataId).css('background-color', '#F4F4F4');
                 } else {
@@ -384,6 +380,7 @@
         var locations = [];
         var events = [];
         var schedule_data = <?php echo json_encode($schedule_data); ?>;
+        console.log(schedule_data);
         schedule_data.forEach(function(schedule){
             // add room and start/end time of each room to locations in this format:
             // var locations = [
