@@ -24,11 +24,11 @@ class ResidentViewPreferences extends TestCase
 	} 
 	public function testAssignTableHasEntryFromTestResidentBragalone()
 	{
-		$this->assertDatabaseHas('assignment', ['resident'=>'115']);
+		$this->assertDatabaseHas('assignment', ['resident'=>'107']);
 	} 
 	public function testAssignTableHasEntryFromTestResidentKader()
 	{
-		$this->assertDatabaseHas('assignment', ['resident'=>'113']);
+		$this->assertDatabaseHas('assignment', ['resident'=>'43']);
 	} 
 
 	

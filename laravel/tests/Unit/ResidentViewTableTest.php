@@ -37,7 +37,7 @@ class ResidentViewTable extends TestCase
 
 	public function testViewScheduleDataHasID()
 	{
-		$this->assertDatabaseHas('schedule_data', ['id' => '1']);
+		$this->assertDatabaseHas('schedule_data', ['id' => '15']);
 	}
 
 	public function testViewScheduleDataHasORRoom()

@@ -20,7 +20,7 @@ class ResidentSubmitsFromOneScreen extends TestCase
 	}
 	public function testOptionTableHasTestSubmissionOfPref2()
 	{
-		$this->assertDatabaseHas('option', ['id' => '2']);
+		$this->assertDatabaseHas('option', ['id' => '11']);
 	}
 	public function testOptionTableHasTestSubmissionOfPref3()
 	{

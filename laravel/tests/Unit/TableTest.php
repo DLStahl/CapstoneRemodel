@@ -140,7 +140,7 @@ class ExampleTest extends TestCase
         $this->assertFalse($attending);
 
         $this->assertTrue(true);
-        $this->assertDatabaseHas('resident',['email' => 'yue.137@osu.edu']);
+        $this->assertDatabaseHas('resident',['email' => 'chow.140@osu.edu']);
     }
 
     public function testGetInstruction()
@@ -151,7 +151,7 @@ class ExampleTest extends TestCase
         $this->assertFalse($id);
         $this->assertFalse($attending);
         $this->assertTrue(true);
-        $this->assertDatabaseHas('resident',['email' => 'yue.137@osu.edu']);
+        $this->assertDatabaseHas('resident',['email' => 'chow.140@osu.edu']);
     }
 
     public function testGetSchedule()
@@ -162,7 +162,7 @@ class ExampleTest extends TestCase
         $this->assertFalse($id);
         $this->assertFalse($attending);
         $this->assertTrue(true);
-        $this->assertDatabaseHas('admin',['email' => 'yue.137@osu.edu']);
+        $this->assertDatabaseHas('admin',['email' => 'chow.140@osu.edu']);
     }
 
     public function testAbout()

@@ -20,9 +20,9 @@ class AdminDeleteDataSetTest extends TestCase
 	
 	public function testAdminDeleteDataSetDataTableHasData()
     {
-        $this->assertDatabaseHas('attending',['id' => '1']);
+        $this->assertDatabaseHas('attending',['id' => '105319']);
 		$this->assertDatabaseHas('option',['id' => '1']);
-		$this->assertDatabaseHas('schedule_data',['id' => '1']);
+		$this->assertDatabaseHas('schedule_data',['id' => '121']);
     }
 	
 	// public function testAdminDeleteDataSetPost()

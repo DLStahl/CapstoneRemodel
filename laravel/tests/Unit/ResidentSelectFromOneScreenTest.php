@@ -16,14 +16,14 @@ class ResidentSelectFromOneScreen extends TestCase
 	*/
 	public function testResidentSelectHasScheduleData1()
 	{
-		$this->assertDatabaseHas('schedule_data', ['case_procedure' => 'test 1']);
+		$this->assertDatabaseHas('schedule_data', ['case_procedure' => 'Test 1']);
 	}
 	public function testResidentSelectHasScheduleData2()
 	{
-		$this->assertDatabaseHas('schedule_data', ['case_procedure' => 'test 2']);
+		$this->assertDatabaseHas('schedule_data', ['case_procedure' => 'Test 2']);
 	}
 	public function testResidentSelectHasScheduleData3()
 	{
-		$this->assertDatabaseHas('schedule_data', ['case_procedure' => 'test 3']);
+		$this->assertDatabaseHas('schedule_data', ['case_procedure' => 'Test 3']);
 	}
 }

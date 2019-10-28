@@ -17,11 +17,11 @@ class ResidentSubmitsSelectionText extends TestCase
 	}
 	public function testOptionTableHasSubmissionOfPref2()
 	{
-		$this->assertDatabaseHas('option', ['id' => '2']);
+		$this->assertDatabaseHas('option', ['id' => '3']);
 	}
 	public function testOptionTableHasSubmissionOfPref3()
 	{
-		$this->assertDatabaseHas('option', ['id' => '3']);
+		$this->assertDatabaseHas('option', ['id' => '7']);
 	}	
 
 	
