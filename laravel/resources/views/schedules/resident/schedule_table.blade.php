@@ -1,9 +1,8 @@
-﻿@extends('main')
+@extends('main')
+
 @section('content')
     @include('schedules.resident.schedule_dates')
-
     <?php
-
         $url = $_SERVER['REQUEST_URI'];
 
         //echo $url;
@@ -11,6 +10,7 @@
         $urlSplit = explode("/", $url);
 
         if( sizeof($urlSplit) == 6){
+            // No filter option selected
             $room = "null";
             $leadSurgeon = "null";
             $rotation = "null";
@@ -19,6 +19,7 @@
         }
         else
         {
+            // get filter options from Request URI
             $room = str_replace("%20", " ", $urlSplit[7]);
             $leadSurgeon = str_replace("%20", " ", $urlSplit[8]);
             $rotation = $urlSplit[9];
@@ -26,10 +27,7 @@
             $start_after = $timeSplit[0];
             $end_before = $timeSplit[1];
         }
-
-    ?>
-
-    <div id="filter">
+    ?><div id="filter">
 
         <!--room filter-->
         <select id="room">
@@ -90,9 +88,11 @@
     <br>
     <script type="text/javascript">
         $(document).ready(function() {
+            // print filter options in console for test
             var filter_options = <?php echo json_encode($filter_options); ?>;
             console.log(filter_options);
 
+            // Set initial filter options
             var room = "<?php echo $room ?>";
             $('#room').val(room);
 
@@ -107,6 +107,7 @@
 
             var end_before = "<?php echo $end_before ?>";
             $('#end_before').val(end_before);
+
         });
         
         // Update filter
@@ -143,6 +144,7 @@
 
         function clearFilter()
         {
+            $('#filter select').val('null');
             var current_url = window.location.href;
             if(window.location.href.indexOf("filter") > -1){
                 var url = current_url.search('/filter/') > -1 ? current_url.substr(0, current_url.search('/filter/')) : current_url;
@@ -156,6 +158,7 @@
     @if(sizeof($schedule_data)>0)
         <div id="schedule_table"></div>
     <br>
+        <!-- A block fixed at the bottom of the page. Display information for selected preferences. -->
         <div id="schedule_footer" style="display:none">
             <div id="preferences" class="row">
                 <div class="col-4 col-sm-3 preferences ">
@@ -175,6 +178,8 @@
                     <button type="button" class="btn btn-primary" name = "submitButton" value="Submit" Onclick="submitPreference();">Submit</button>
                 </div>
             </div>
+
+            <!-- Display buttons horizontally for small screens. -->
             <div class="float-right" id='horizontalButtons'>
                 <button type="button" class="btn btn-primary" onclick="clearPreferences()">Clear Preferences</button>
                 <button type="button" class="btn btn-primary" name = "submitButton" value="Submit" Onclick="submitPreference();">Submit</button>
@@ -183,27 +188,12 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                var first = $('#schedule_table select [value=1]:selected');
-                var second = $('#schedule_table select [value=2]:selected');
-                var third = $('#schedule_table select [value=3]:selected');
-                if(first.length > 0){
-                    $('#first').html(first.parent().attr('title').replace(/\n/g, "<br>"));
-                    highlightPreference(first);
-                }
-                if(second.length > 0){
-                    $('#second').html(second.parent().attr('title').replace(/\n/g, "<br>"));
-                    highlightPreference(second);
-                }
-                if(third.length > 0){
-                    $('#third').html(third.parent().attr('title').replace(/\n/g, "<br>"));
-                    highlightPreference(third);
-                }
-
                 // if current page is not first day, display information of selected information;
                 if (window.location.href.indexOf("firstday") == -1){
                     $("#schedule_footer").show();
                     $('#page_footer hr').hide();
                     adjustWidth();
+                    // adjust the width of the footer when the window is resized
                     $(window).resize(
                         function() {
                             adjustWidth();
@@ -227,7 +217,7 @@
                 }
 
                 // Update information when a new preference is selected
-                $("select").on('focus', function () {
+                $('.sked-tape__location select').on('focus', function () {
                     var selection = $(this);
                     selection.data('previous', selection.val());
                 }).on('change', function () {
@@ -290,7 +280,7 @@
                 // Change the background color of previous selected room to default
                 var prevDataId = prevSelected.parent().attr('data-id');
                 console.log(prevSelected)
-                if($('[data-id="'+prevDataId+'"]').is(':even')){
+                if($('[data-id="'+prevDataId+'"]').is(':nth-child(even)')){
                     $('[data-id="'+prevDataId+'"]').css('background-color', '#F4F4F4');
                     $('.'+prevDataId).css('background-color', '#F4F4F4');
                 } else {
@@ -301,12 +291,12 @@
 
             // highlight the selected room
             function highlightPreference(selected){
-                // var selectedClass = selected.parent().parent().attr('class');
                 var selectedRoomId = selected.parent().attr('data-id');
                 $('[data-id="'+selectedRoomId+'"]').css('background-color', 'rgba(255, 215, 215, 0.65)');
                 $('.'+selectedRoomId).css('background-color', 'rgba(255, 215, 215, 0.65)');
             }
 
+            // Clear currently selected preferences on the page
             function clearPreferences(){
                 var first = $('#schedule_table select [value=1]:selected');
                 var second = $('#schedule_table select [value=2]:selected');
@@ -322,15 +312,17 @@
                 }
             }
 
-            function storePreference(id1, id2 = '0_', id3 = '0_')
+            // store selected schedule ids in url, then redirects to the milestone and educational objective selection page
+            function storePreference(id1, id2, id3)
             {
                 // Update url to the selecting milestone/objective page
                 var current_url = window.location.href;
                 var url = current_url.substr(0, current_url.search('/schedule/'));
+                var id1 = id1 || '0_';
+                var id2 = id2 || '0_';
+                var id3 = id3 || '0_';
                 url = url + "/schedule/milestones/" + id1 + id2 + id3 +"/";
                 window.location.href = url;
-
-
             }
 
             function submitPreference()
@@ -387,13 +379,16 @@
             //     {id: 'schedule['id']_', name: 'room name', userData: {'time':'start-end'}},
             //     {id: 'schedule['id']_', name: 'room name', userData: {'time':'start-end' }},
             // ];
+
+            // add rooms that have available start/end time
             if(schedule['start_time'] != null && schedule['end_time'] != null){
                 locations.push({
                     id: schedule['id']+'_', 
                     name: schedule['room'], 
                     userData: {'time': schedule['start_time']+'-'+schedule['end_time']}
                 });
-            } else {
+            } 
+            else {
                 locations.push({
                     id: schedule['id']+'_', 
                     name: schedule['room'], 
@@ -470,6 +465,9 @@
                 //         }
                 //     }, {...}
                 //]
+
+
+                // add surgeries that have not null start/end time
                 if(start_time.length > 0 && end_time.length > 0){
                     events.push({
                         name: schedule['room'] + '-' + count,
@@ -483,20 +481,21 @@
                             'patient_class': tmp_patient,
                         }
                     })
-                } else {
-                    events.push({
-                        name: schedule['room'] + '-' + count,
-                        location: schedule['id']+'_',
-                        start: today(4+(count-1)*3, 0),
-                        end: today(4+(count-1)*3 + 2, 0),
-                        userData: {
-                            'time': 'Time N/A',
-                            'case': complete_cases,
-                            'lead_surgeon': tmp_surgeon,
-                            'patient_class': tmp_patient,
-                        }
-                    })
                 }
+                // else {
+                //     events.push({
+                //         name: schedule['room'] + '-' + count,
+                //         location: schedule['id']+'_',
+                //         start: today(4+(count-1)*3, 0),
+                //         end: today(4+(count-1)*3 + 2, 0),
+                //         userData: {
+                //             'time': 'Time N/A',
+                //             'case': complete_cases,
+                //             'lead_surgeon': tmp_surgeon,
+                //             'patient_class': tmp_patient,
+                //         }
+                //     })
+                // }
                 
                 // Get information of next surgery in the room
                 case_procedure = case_procedure.substring(casePos+1);
@@ -531,7 +530,7 @@
         // Set configuration of Sked Tape Timeline
         var sked2Config = {
             caption: 'Rooms',
-            start: today(4, 0),
+            start: today(6, 30),
             end: tomorrow(0, 0),
             showEventTime: false,
             showEventDuration: false,
@@ -549,6 +548,4 @@
     @else
         <h2>No schedule found.</h2>
     @endif
-    
-
-@endsection
+@endsection('content')

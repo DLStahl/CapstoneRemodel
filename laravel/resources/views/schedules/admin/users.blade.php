@@ -27,7 +27,7 @@
     <script type="text/javascript">
         function addUsers(id)
         {
-            if (!document.getElementById('email_usr').value.includes("@osu.edu"))
+            if (document.getElementById('email_usr').value.indexOf("@osu.edu") == -1)
             {
                 alert("Valid osu.edu email address is required");
                 return;
@@ -42,7 +42,7 @@
             email = email.substr(0, email.indexOf(".edu")+4);
             var role = id;
             var name = document.getElementById('name_usr').value;
-            if (role.includes("Attending")) {
+            if (role.indexOf("Attending") != -1) {
                 if (document.getElementById('id_usr').value == "")
                 {
                     alert("ID is required");
@@ -50,7 +50,7 @@
                 }
                 name = name + "<" + document.getElementById('id_usr').value + ">";
             }
-            if (role.includes("Resident") && document.getElementById('id_usr').value != ""){
+            if ((role.indexOf("Resident") != -1) && document.getElementById('id_usr').value != ""){
               name = name + "<" + document.getElementById('id_usr').value + ">";
             }
             // alert(email);

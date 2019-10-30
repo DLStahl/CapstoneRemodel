@@ -31,7 +31,7 @@
 			}
 			</script>
             <script>
-                if (window.location.pathname == "/" || window.location.pathname.includes("true") || window.location.pathname.includes("secondday"))
+                if (window.location.pathname == "/" || (window.location.pathname.indexOf("true") != -1) || (window.location.pathname.indexOf("secondday") != -1))
                 {
                     document.getElementById("return").style.visibility = "hidden";
                 }

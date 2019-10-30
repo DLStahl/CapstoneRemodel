@@ -6,7 +6,6 @@
         echo date("l", strtotime('+2 day')),' ', date('F',strtotime('+2 day')),' ',date('j',strtotime('+2 day'));
     }
     else{
-        // echo date("l", strtotime('+1 day')),' ', date('F',strtotime('+1 day')),' ',date('j',strtotime('+1 day'));
         echo 'Tomorrow';
     }
 ?></button>
@@ -48,22 +47,21 @@
 <br>
 
 <script type="text/javascript">
-    // $(document).ready(function() {
-        if (window.location.href.indexOf("firstday") > -1){
-            $('#1stbutton').css('background-color', '#bb0000');
-        } else if (window.location.href.indexOf("secondday") > -1){
-            $('#2ndbutton').css('background-color', '#bb0000');
-        // } else if (window.location.href.indexOf("thirdday") > -1){
-            // $('#3rdbutton').css('background-color', '#bb0000');
-        }
+    // Set the selected date button to red (hex color #bb0000)
+    if (window.location.href.indexOf("firstday") > -1){
+        $('#1stbutton').css('background-color', '#bb0000');
+    } else if (window.location.href.indexOf("secondday") > -1){
+        $('#2ndbutton').css('background-color', '#bb0000');
+    // } else if (window.location.href.indexOf("thirdday") > -1){
+        // $('#3rdbutton').css('background-color', '#bb0000');
+    }
 
-        function updateURL(day)
-        {
-            // Update url to the selected date
-            var current_url = window.location.href;
-            var url = current_url.substr(0, current_url.search('/schedule/'));
-            url = url + "/schedule/" + day +"/";
-            window.location.href = url;
-        }
-    // });
+    function updateURL(day)
+    {
+        // Update url to the selected date
+        var current_url = window.location.href;
+        var url = current_url.substr(0, current_url.search('/schedule/'));
+        url = url + "/schedule/" + day +"/";
+        window.location.href = url;
+    }
 </script>

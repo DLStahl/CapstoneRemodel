@@ -1,6 +1,6 @@
 @extends('main')
 @section('content')
-
+	<!-- Use a hidden form to store selected schedule ids, milestones and education objectives. -->
 	<form method="POST" action="./submit">
 		<input type="hidden" name="schedule_id" value="{{ $id }}">
 	<div class="row">

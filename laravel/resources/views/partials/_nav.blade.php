@@ -17,43 +17,29 @@
                     <a class="nav-link" href="/laravel/public/">Home<span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/laravel/public/about" id="about">My Selections</a>
-                    <script>
-                        // document.getElementById("about").href = window.location.pathname + "/about";
-                        //if (window.location.pathname == "/")
-                        //{
-                        //    document.getElementById("return").style.visibility = "hidden";
-                        //}
-                        if (window.location.pathname.includes("resident"))
-                        {
-                            document.getElementById("about").href = "/laravel/public/resident/about";
-                        } else if (window.location.pathname.includes("admin"))
-                        {
-                            document.getElementById("about").href = "/laravel/public/admin/about";
-                        }
-                    </script> 
+                    <a class="nav-link" href="/laravel/public/resident/about" id="about">My Selections</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/laravel/public/contact" id="contact">Contact Us</a>
                     <script>
-                            if (window.location.pathname.includes("resident"))
+                            if (window.location.pathname.indexOf("resident") != -1 )
                             {
                                 document.getElementById("contact").href = "/laravel/public/resident/contact";
-                            } else if (window.location.pathname.includes("admin"))
+                            } else if (window.location.pathname.indexOf("admin") != -1 )
                             {
                                 document.getElementById("contact").href = "/laravel/public/admin/contact";
                             }
-                    </script> 
+                    </script>
                 </li>
 
-		<li class="nav-item"> 
+		<li class="nav-item">
 			<a class="nav-link" href="/laravel/public/acknowledgements" id="acknowledgements">Acknowledgements</a>
 		<script>
-			if(window.location.pathname.includes("resident"))
+			if(window.location.pathname.indexOf("resident") != -1)
 			{
 				document.getElementById("acknowledgements").href = "/laravel/public/resident/acknowledgements";
 			}
-			else if (window.location.pathname.includes("admin"))
+			else if (window.location.pathname.indexOf("admin") != -1)
 			{
 				document.getElementById("acknowledgements").href = "/laravel/public/admin/acknowledgements";
 			}
