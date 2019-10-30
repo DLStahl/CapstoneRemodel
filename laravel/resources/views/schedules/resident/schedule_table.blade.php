@@ -505,10 +505,18 @@
             var startMinutes  = parseInt(time.substr(3, 2));
             return today(startHour, startMinutes);
         }
+
+        var minTime = "<?php echo $minTime ?>";
+        console.log(minTime);
+        var startTime = createTime(minTime);
+        
+        var maxTime = "<?php echo $maxTime ?>";
+        console.log(maxTime);
+        var endTime = createTime(maxTime);
         // Set configuration of Sked Tape Timeline
         var sked2Config = {
             caption: 'Rooms',
-            start: today(6, 30),
+            start: startTime,
             end: tomorrow(0, 0),
             showEventTime: false,
             showEventDuration: false,

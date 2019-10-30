@@ -35,7 +35,8 @@
 	<a class="btn btn-primary" href="admin">Admin Page</a> -->
 
 	<script type="text/javascript">
-        function resident(access)
+        
+		function resident(access)
         {
             if(access){
                 window.location.href = "resident";
