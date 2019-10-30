@@ -57,6 +57,7 @@ class ScheduleParser extends Model
         return ($hourInt.":".$minuteInt.":00");
     }
 
+    // Identify rotation based on surgeon
     private static function getRotation($surgeon)
     {
         if (strlen($surgeon) == 0) return null;
@@ -64,6 +65,7 @@ class ScheduleParser extends Model
         $name = explode(" ", $name);
         $name_first = $name[0];
         $name_last = $name[1];
+        // Escape middle name
         if(sizeof($name) > 2){
             $name_last = $name[2];
         }
@@ -71,6 +73,7 @@ class ScheduleParser extends Model
                                             ->where('surgeon', 'LIKE', "%{$name_first}%")
                                             ->get();
         $rotation = "";
+        // store rotation as "rotation1 rotation2 rotation3 ..."
         foreach ($surgeon_rotations as $row){
             $rotation .= $row['rotation']." ";
         }
@@ -233,10 +236,11 @@ class ScheduleParser extends Model
      */
     public function processScheduleData($date)
     {
-
-        $items=ScheduleData::select('room')->where('date', $date)->distinct()->get();
+        // find rooms that has not null start/end time
+        $items=ScheduleData::select('room')->where('date', $date)->whereNotNull('start_time')->whereNotNull('end_time')->distinct()->get();
         foreach($items as $item){
-            $records=ScheduleData::where('date', $date)->where('room',$item['room'])->orderBy('start_time')->get();
+            // find schedule data that has not null start/end time
+            $records=ScheduleData::where('date', $date)->where('room',$item['room'])->whereNotNull('start_time')->whereNotNull('end_time')->orderBy('start_time')->get();
             $location=null;
             $room=null;
             $case_procedure=null;
@@ -262,14 +266,9 @@ class ScheduleParser extends Model
                 $lead_surgeon=$lead_surgeon.$records[$i]['lead_surgeon']."\n";
                 $patient_class=$patient_class.$records[$i]['patient_class']."\n";
                 $rotation=$rotation.$records[$i]['rotation']."\n";
-
-
-                 // $case_procedure = preg_replace('/^[^A-Za-z]+/', '', $case_procedure);
-                 // $start_time = $start_time.$records[$i]['start_time']."\n";
-                 // $end_time = $end_time.$records[$i]['end_time']."\n";
-
             }
-            ScheduleData::where('date',$date)->where('room',$room)->delete();
+            // delete schedule data that has not null start/end time
+            ScheduleData::where('date',$date)->where('room',$room)->whereNotNull('start_time')->whereNotNull('end_time')->delete();
             ScheduleData::insert([
                 'date' => $date, 
                 'location' => $location, 

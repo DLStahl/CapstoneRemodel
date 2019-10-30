@@ -77,6 +77,8 @@ class ScheduleDataController extends Controller
         if (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
 								->where('rotation', 'LIKE', "%{$rotation}%")
@@ -89,6 +91,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
 								->where('rotation', 'LIKE', "%{$rotation}%")
@@ -99,6 +103,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
 								->where('rotation', 'LIKE', "%{$rotation}%")
@@ -109,6 +115,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
                                 ->whereTime('start_time', '>=', $start_time)
@@ -119,6 +127,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
@@ -129,6 +139,8 @@ class ScheduleDataController extends Controller
 		elseif ( strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
 								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
@@ -140,6 +152,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
 								->where('rotation', $rotation)
@@ -149,6 +163,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0  && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
                                 ->whereTime('end_time', '<=', $end_time)
@@ -158,6 +174,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 &&  strcmp($start_time, "00:00:00") != 0 )
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
                                 ->whereTime('start_time', '>=', $start_time)
@@ -167,6 +185,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->whereTime('end_time', '<=', $end_time)
@@ -176,6 +196,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($rotation, "TBD") != 0  && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('end_time', '<=', $end_time)
@@ -185,6 +207,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 )
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
@@ -194,6 +218,8 @@ class ScheduleDataController extends Controller
 		elseif ( strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->whereTime('end_time', '<=', $end_time)
@@ -203,6 +229,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($leadSurgeon, "TBD") != 0  && strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->whereTime('end_time', '<=', $end_time)
@@ -212,6 +240,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0  && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
 								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('end_time', '<=', $end_time)
@@ -221,6 +251,8 @@ class ScheduleDataController extends Controller
 		elseif ( strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0 )
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
 								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
@@ -231,6 +263,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($leadSurgeon, "TBD") != 0 )
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
                                 ->orderBy('room', 'asc')
@@ -239,6 +273,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($rotation, "TBD") != 0 )
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
 								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->orderBy('room', 'asc')
@@ -247,6 +283,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($leadSurgeon, "TBD") != 0 && strcmp($rotation, "TBD") != 0 )
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('lead_surgeon','LIKE', "%{$leadSurgeon}%")
 								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->orderBy('room', 'asc')
@@ -255,6 +293,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
@@ -263,6 +303,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($room, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->orderBy('room', 'asc')
@@ -271,6 +313,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($leadSurgeon, "TBD") != 0  && strcmp($start_time, "00:00:00") != 0 )
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->orderBy('room', 'asc')
@@ -279,6 +323,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($leadSurgeon, "TBD") != 0  && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
@@ -287,6 +333,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($rotation, "TBD") != 0 && strcmp($start_time, "00:00:00") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->orderBy('room', 'asc')
@@ -295,6 +343,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($rotation, "TBD") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('rotation','LIKE', "%{$rotation}%")
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
@@ -303,6 +353,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($start_time, "00:00:00") != 0 && strcmp($end_time, "23:59:59") != 0)
         {
              $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
@@ -312,6 +364,8 @@ class ScheduleDataController extends Controller
         elseif (strcmp($room, "TBD") != 0)
         {
             $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->where('room', $room)
                                 ->orderBy('room', 'asc')
                                 ->get();
@@ -319,6 +373,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($rotation, "TBD") != 0)
         {
             $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('rotation', 'LIKE', "%{$rotation}%")
                                 ->orderBy('room', 'asc')
                                 ->get();
@@ -326,6 +382,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($leadSurgeon, "TBD") != 0)
         {
             $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
 								->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%")
                                 ->orderBy('room', 'asc')
                                 ->get();
@@ -333,6 +391,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($start_time, "00:00:00") != 0)
         {
             $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->whereTime('start_time', '>=', $start_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
@@ -340,6 +400,8 @@ class ScheduleDataController extends Controller
 		elseif (strcmp($end_time, "23:59:59") != 0)
         {
             $schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->whereTime('end_time', '<=', $end_time)
                                 ->orderBy('room', 'asc')
                                 ->get();
@@ -347,6 +409,8 @@ class ScheduleDataController extends Controller
 		else
 		{
 			$schedule_data = ScheduleData::whereDate('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time')
                                 ->orderBy('room', 'asc')
                                 ->get();
 		}
@@ -411,7 +475,9 @@ class ScheduleDataController extends Controller
 
     // Get all rooms, surgeons and rotations of the given date
     private function getFilterOptions($date){
-        $schedule = ScheduleData::where('date', $date);
+        $schedule = ScheduleData::where('date', $date)
+                                ->whereNotNull('start_time')
+                                ->whereNotNull('end_time');
         // [{room: 'Room name'}, {room: 'Room name'}, {room: 'Room name'}, ...]
         $roomsData = $schedule->select('room')->get();
         $rooms = array();

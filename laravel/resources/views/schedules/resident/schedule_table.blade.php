@@ -377,22 +377,15 @@
             // add room and start/end time of each room to locations in this format:
             // var locations = [
             //     {id: 'schedule['id']_', name: 'room name', userData: {'time':'start-end'}},
-            //     {id: 'schedule['id']_', name: 'room name', userData: {'time':'start-end' }},
+            //     {id: 'schedule['id']_', name: 'room name', userData: {'time':'start-end'}},
             // ];
 
-            // add rooms that have available start/end time
+            // add rooms that have not null start/end time
             if(schedule['start_time'] != null && schedule['end_time'] != null){
                 locations.push({
                     id: schedule['id']+'_', 
                     name: schedule['room'], 
                     userData: {'time': schedule['start_time']+'-'+schedule['end_time']}
-                });
-            } 
-            else {
-                locations.push({
-                    id: schedule['id']+'_', 
-                    name: schedule['room'], 
-                    userData: {'time': 'Time: N/A'}
                 });
             }
 
@@ -450,7 +443,7 @@
                     tmp_surgeon = tmp_surgeon.substring(0, ep);
                 }
 
-                // Add surgery to events in this format:
+                // Add surgeries to events in this format:
                 // var events = [
                 //     {
                 //         name: 'room name + number',
@@ -465,7 +458,6 @@
                 //         }
                 //     }, {...}
                 //]
-
 
                 // add surgeries that have not null start/end time
                 if(start_time.length > 0 && end_time.length > 0){
@@ -482,20 +474,6 @@
                         }
                     })
                 }
-                // else {
-                //     events.push({
-                //         name: schedule['room'] + '-' + count,
-                //         location: schedule['id']+'_',
-                //         start: today(4+(count-1)*3, 0),
-                //         end: today(4+(count-1)*3 + 2, 0),
-                //         userData: {
-                //             'time': 'Time N/A',
-                //             'case': complete_cases,
-                //             'lead_surgeon': tmp_surgeon,
-                //             'patient_class': tmp_patient,
-                //         }
-                //     })
-                // }
                 
                 // Get information of next surgery in the room
                 case_procedure = case_procedure.substring(casePos+1);

@@ -9,11 +9,13 @@ use App\Assignment;
 use App\Resident;
 use App\Probability;
 use App\ScheduleData;
+use Illuminate\Support\Facades\Log;
 
 class AutoAssignment extends Model
 {
     public static function assignment($date)
     {
+        Log::info("auto assignment");
         if (Option::where('date', $date)->where('isValid', "1")->doesntExist())
         {
             return;
