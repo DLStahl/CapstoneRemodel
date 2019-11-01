@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-md-12">
 		
-            <p><a href="https://remodel-anesthesiology.osu.edu/">REMODEL (REsident MilestOne-baseD Educational Learning)</a> would simply not exist without the hard work of the following students who contributed to the project as part of their <a href="https://cse.osu.edu/courses/capstone-design-software-applications-5911">Capstone course</a> (part of their undergraduate degree in the <a href="https://cse.osu.edu/">Department of Computer Science and Engineering</a>). Special thanks to <a href="https://cse.osu.edu/people/cline.4">Professor Al Cline</a> for his guidance and collaboration.</p>
+            <p><a href="https://remodel-anesthesiology.osu.edu/">REMODEL (REsident MilestOne-baseD Educational Learning)</a> would simply not exist without the hard work of the following students who contributed to the project as part of their <a href="https://cse.osu.edu/courses/capstone-design-software-applications-5911">Capstone course</a> (part of their undergraduate degree in the <a href="https://cse.osu.edu/">Department of Computer Science and Engineering</a>). Special thanks to Professor Al Cline and <a href="https://cse.osu.edu/people/shafer.1"> Professor Keith Shafer </a>for his guidance and collaboration.</p>
 			<ul>
 				<li> Spring 2018
 					<ul>
@@ -25,7 +25,7 @@
 					</ul>
 				</li>
 				<p></p>
-				<li> Fall 2019
+				<li> Fall 2018
 					<ul>
 						<li>Zachary Fackler</li>
 						<li>Xiao Yue</li>
@@ -39,6 +39,14 @@
 						<li>Jeb Alawi</li>
 						<li>JJ Harris</li>
 						<li>Michael Bragalone</li>	
+					</ul>
+				</li>
+				<p></p>
+				<li> Fall 2019
+					<ul>
+						<li>Gail Chen</li>
+						<li>Dorothy Chow</li>
+						<li>Megan Clippinger</li>
 					</ul>
 				</li>
 			</ul>

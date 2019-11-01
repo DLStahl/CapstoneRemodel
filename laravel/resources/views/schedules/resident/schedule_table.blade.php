@@ -109,7 +109,7 @@
             $('#end_before').val(end_before);
 
         });
-        
+
         // Update filter
         function filterUpdate()
         {
@@ -361,7 +361,7 @@
                 }
             }
 
-            
+
 
         </script>
 
@@ -383,8 +383,8 @@
             // add rooms that have not null start/end time
             if(schedule['start_time'] != null && schedule['end_time'] != null){
                 locations.push({
-                    id: schedule['id']+'_', 
-                    name: schedule['room'], 
+                    id: schedule['id']+'_',
+                    name: schedule['room'],
                     userData: {'time': schedule['start_time']+'-'+schedule['end_time']}
                 });
             }
@@ -474,7 +474,7 @@
                         }
                     })
                 }
-                
+
                 // Get information of next surgery in the room
                 case_procedure = case_procedure.substring(casePos+1);
                 lead_surgeon = lead_surgeon.substring(leadPos+1);
@@ -509,7 +509,7 @@
         var minTime = "<?php echo $minTime ?>";
         console.log(minTime);
         var startTime = createTime(minTime);
-        
+
         var maxTime = "<?php echo $maxTime ?>";
         console.log(maxTime);
         var endTime = createTime(maxTime);
