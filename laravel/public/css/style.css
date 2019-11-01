@@ -98,6 +98,7 @@ td.inTable{
     position: fixed;
     bottom: 35px;
     z-index: 5;
+    background-color: white;
 }
 
 div#preferences {

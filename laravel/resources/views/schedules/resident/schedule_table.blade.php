@@ -157,7 +157,7 @@
 
     @if(sizeof($schedule_data)>0)
         <div id="schedule_table"></div>
-    <br>
+    <br><br>
         <!-- A block fixed at the bottom of the page. Display information for selected preferences. -->
         <div id="schedule_footer" style="display:none">
             <div id="preferences" class="row">
@@ -366,7 +366,7 @@
         </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="{{ asset('js/jquery.skedTape.js?v=1.1') }}"></script>
+    <script src="{{ asset('js/jquery.skedTape.js?v=1.2') }}"></script>
     <script type="text/javascript">
         // --------------------------- Data --------------------------------
         var locations = [];
@@ -505,11 +505,19 @@
             var startMinutes  = parseInt(time.substr(3, 2));
             return today(startHour, startMinutes);
         }
+
+        var minTime = "<?php echo $minTime ?>";
+        console.log(minTime);
+        var startTime = createTime(minTime);
+        
+        var maxTime = "<?php echo $maxTime ?>";
+        console.log(maxTime);
+        var endTime = createTime(maxTime);
         // Set configuration of Sked Tape Timeline
         var sked2Config = {
             caption: 'Rooms',
-            start: today(6, 30),
-            end: tomorrow(0, 0),
+            start: startTime,
+            end: endTime,
             showEventTime: false,
             showEventDuration: false,
             showDates: false,

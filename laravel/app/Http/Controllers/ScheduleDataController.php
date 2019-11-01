@@ -73,37 +73,36 @@ class ScheduleDataController extends Controller
         }
 
         $schedule_data = null;
-        $schedule_data_test = null;
-		
         // Get filtered schedule
         if (strcmp($room, "TBD") != 0){
-            $schedule_data_test = ScheduleData::whereDate('date', $date)
+            $schedule_data = ScheduleData::whereDate('date', $date)
                                 ->whereNotNull('start_time')
                                 ->whereNotNull('end_time')
                                 ->where('room', $room);
         } else {
-            $schedule_data_test = ScheduleData::whereDate('date', $date)
+            $schedule_data = ScheduleData::whereDate('date', $date)
                                 ->whereNotNull('start_time')
                                 ->whereNotNull('end_time');
         }
         if (strcmp($leadSurgeon, "TBD") != 0){
-            $schedule_data_test = $schedule_data_test->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%");
+            $schedule_data = $schedule_data->where('lead_surgeon', 'LIKE', "%{$leadSurgeon}%");
         }
         if (strcmp($rotation, "TBD") != 0){
-            $schedule_data_test = $schedule_data_test->where('rotation', 'LIKE', "%{$rotation}%");
+            $schedule_data = $schedule_data->where('rotation', 'LIKE', "%{$rotation}%");
         }
         if (strcmp($start_time, "00:00:00") != 0){
-            $schedule_data_test = $schedule_data_test->whereTime('start_time', '>=', $start_time);
+            $schedule_data = $schedule_data->whereTime('start_time', '>=', $start_time);
         }
         if (strcmp($end_time, "23:59:59") != 0){
-            $schedule_data_test = $schedule_data_test->whereTime('end_time', '<=', $end_time);
+            $schedule_data = $schedule_data->whereTime('end_time', '<=', $end_time);
         }
-        $schedule_data_test = $schedule_data_test->orderBy('room', 'asc')->get();
+        $minTime = $schedule_data->min('start_time');
+        $maxTime = $schedule_data->max('end_time');
+        $schedule_data = $schedule_data->orderBy('room', 'asc')->get();
 
 
         $schedule = array();
-        // foreach ($schedule_data as $data)
-        foreach ($schedule_data_test as $data)
+        foreach ($schedule_data as $data)
         {
             $resident = null;
             if (Assignment::where('schedule', $data['id'])->exists())
@@ -124,7 +123,13 @@ class ScheduleDataController extends Controller
                 'end_time'=>$data['end_time']
             ));
         }
-        return $schedule;
+        $result = array(
+            "minTime" => $minTime,
+            "maxTime" => $maxTime,
+            "schedule" => $schedule
+        );
+        // return $schedule;
+        return $result;
     }
 
     private function processInput($room, $leadSurgeon, $rotation, $start_time_end_time)
@@ -233,10 +238,13 @@ class ScheduleDataController extends Controller
         $date =  $year.'-'.$mon.'-'.$day;
 
         $this->processInput($room, $leadSurgeon, $rotation, $start_time_end_time);
-        $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
+        $TimeRange_ScheduleData = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
+        $minTime = $TimeRange_ScheduleData['minTime'];
+        $maxTime = $TimeRange_ScheduleData['maxTime'];
+        $schedule_data = $TimeRange_ScheduleData['schedule'];
         $flag = 1;
         $filter_options = self::getFilterOptions($date);
-        return view('schedules.resident.schedule_table',compact('schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
+        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
 
     }
 
@@ -259,10 +267,13 @@ class ScheduleDataController extends Controller
         $date =  $year.'-'.$mon.'-'.$day;
 
         $this->processInput($room, $leadSurgeon, $rotation, $start_time_end_time);
-        $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
+        $TimeRange_ScheduleData = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
+        $minTime = $TimeRange_ScheduleData['minTime'];
+        $maxTime = $TimeRange_ScheduleData['maxTime'];
+        $schedule_data = $TimeRange_ScheduleData['schedule'];
         $flag = 2;
         $filter_options = self::getFilterOptions($date);
-        return view('schedules.resident.schedule_table',compact('schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
+        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
     }
 
     public function getThirdDay($room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time=null)
@@ -284,11 +295,14 @@ class ScheduleDataController extends Controller
         $date =  $year.'-'.$mon.'-'.$day;
 
         $this->processInput($room, $leadSurgeon, $rotation, $start_time_end_time);
-        $schedule_data = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
+        $TimeRange_ScheduleData = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
+        $minTime = $TimeRange_ScheduleData['minTime'];
+        $maxTime = $TimeRange_ScheduleData['maxTime'];
+        $schedule_data = $TimeRange_ScheduleData['schedule'];
         $flag = 2;
 
         $filter_options = self::getFilterOptions($date);
-        return view('schedules.resident.schedule_table',compact('schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
+        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
 
     }
 
