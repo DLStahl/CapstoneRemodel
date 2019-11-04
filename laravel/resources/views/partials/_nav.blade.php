@@ -3,7 +3,7 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
-
+<html>
 <nav class="navbar">
     <div class="container">
         <a class="navbar-brand" href="https://wexnermedical.osu.edu">
@@ -13,10 +13,13 @@
 </nav>
 <nav class="navbar navbar-expand-lg" style="background-color: #bb0000;">
     <div class="container">
-        <!-- <a class="navbar-brand" href="/laravel/public/" style="font-size:3vw">REMODEL: REsident MilestOne-baseD Educational Learning</a> -->
-        <a class="navbar-brand" href="/laravel/public/">REMODEL: REsident MilestOne-baseD Educational Learning</a>
+    
+    
+        <!-- <a class="navbar-brand" href="/laravel/public/" style="font-size:3.5vw">REMODEL: REsident MilestOne-baseD Educational Learning</a> -->
+        <a class="navbar-brand2" href="/laravel/public/"  >REMODEL: REsident MilestOne-baseD Educational Learning</a>
+        
         <button class="navbar-toggler ml-auto custom-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+        <font color="white">Menu</font>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
@@ -55,10 +58,38 @@
         </div>
 </nav>
 <br>
-
+</html>
+<script>
+if ($(window).width() < 770) {
+   console.log("hi");
+}
+</script>
 <style>
 .custom-toggler.navbar-toggler {
     border-color: rgb(255,255,255);
     background-color:#e7e7e7 color: black;
 }
+
+.navbar-brand2 {
+    display: inline-block;
+    padding-top: .3125rem;
+    padding-bottom: .3125rem;
+    margin-right: 1rem;
+    line-height: inherit;
+    white-space: nowrap;
+    
+
+}
+@media screen and (max-width: 770px){
+    .navbar-brand2 
+        {
+            font-size: 2.5vw;
+        }
+    }
+@media  screen and (min-width: 770px){
+    .navbar-brand2 
+        {
+            font-size: 1.25rem;
+        }
+    }
 </style>
