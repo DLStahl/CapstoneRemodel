@@ -139,19 +139,19 @@
     }
     /* Zebra striping */
     tr:nth-of-type(odd) { 
-      background: #eee;
-      border: 1px solid #ccc;
+      background: rgba(0,0,0,.05);
+      border: 1px solid #dee2e6;
     }
     th { 
       background: white; 
       font-weight: bold; 
       text-align: center; 
       padding: 6px; 
-      border: 1px solid #ccc; 
+      border: 1px solid #dee2e6; 
     }
     td{ 
       padding: 6px; 
-      border: 1px solid #ccc; 
+      border: 1px solid #dee2e6; 
       text-align: left; 
       /*hyphens: auto;*/
     }
@@ -172,8 +172,8 @@ and also iPads specifically.
 only screen and (max-width: 760px),
 (min-device-width: 768px) and (max-device-width: 1024px)  {
     .btn{
-        padding: .3rem .7rem;
-        font-size: 14px;
+        /*padding: .3rem .7rem;*/
+        /*font-size: 14px;*/
     }
 
     /* Force table to not be like tables anymore */
@@ -188,12 +188,12 @@ only screen and (max-width: 760px),
         left: -9999px;
     }
     
-    tr { border: 1px solid #ccc; }
+    tr { border: 1px solid #dee2e6; }
     
     td { 
         /* Behave  like a "row" */
         border: none;
-        border-bottom: 1px solid #eee; 
+        border-bottom: 1px solid rgba(0,0,0,.05); 
         position: relative;
         padding-left: 30%; 
     }
