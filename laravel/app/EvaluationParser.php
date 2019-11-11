@@ -196,6 +196,7 @@ class EvaluationParser extends Model
             Log::info("no evaluate file");
             return false;
         }
+        Log::info("parse evaluation data");
         $fp = fopen($this->filepath, 'r');
 
         $failedAddingUsers = array();

@@ -13,7 +13,7 @@
             <br>
                         
             <label>Select the date:</label>
-            <input type="date" name="date" required>
+            <input id="dateInput" type="date" name="date" required>
                 
             <br>
             
@@ -21,4 +21,8 @@
 
 		</div>
     </form>
+    <script type="text/javascript">
+        var utc = new Date().toJSON().slice(0,10);
+        $('#dateInput').val(utc);
+    </script>
 @endsection

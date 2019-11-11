@@ -30,15 +30,15 @@
     ?><div id="filter">
 
         <!--room filter-->
-        <select id="room">
-            <option value="null" selected> - Room - </option>
+        <select id="room" onchange="filterUpdate()">
+            <option value="null" selected  > - Room - </option>
             @foreach ($filter_options['rooms'] as $roomOption)
                 <option value="{{$roomOption}}" > {{$roomOption}}</option>
             @endforeach
         </select>
 
         <!--lead surgeon filter-->
-        <select id="leadSurgeon">
+        <select id="leadSurgeon"  onchange="filterUpdate()">
             <option value="null" selected> - Surgeon - </option>
             @foreach ($filter_options['leadSurgeons'] as $leadSurgeonOption)
                 <option value="{{$leadSurgeonOption}}" > {{$leadSurgeonOption}}</option>
@@ -46,7 +46,7 @@
         </select>
 
         <!-- rotation filter -->
-        <select id="rotation">
+        <select id="rotation"  onchange="filterUpdate()">
             <option value="null" selected> - Rotation - </option>
             <option value="Basic"> Basic </option>
             <option value="Liver"> Liver </option>
@@ -57,7 +57,7 @@
         </select>
 
         <!--start after filter-->
-        <select id="start_after">
+        <select id="start_after" onchange="filterUpdate()">
             <option value="null" selected> - Start After - </option>
             @for($i=0; $i<10; $i++)
                 <option value="0{{$i}}:00:00">0{{$i}}:00:00</option>
@@ -68,7 +68,7 @@
         </select>
 
         <!--end before filter-->
-        <select id="end_before">
+        <select id="end_before"  onchange="filterUpdate()">
             <option value="null" selected> - End Before - </option>
             @for($i=0; $i<10; $i++)
                 <option value="0{{$i}}:00:00">0{{$i}}:00:00</option>
@@ -79,7 +79,6 @@
         </select>
 
         <div class="float-right">
-            <button type="button" class="btn btn-primary" onclick="filterUpdate()">Filter</button>
             <button type="button" class="btn btn-primary" onclick="clearFilter()">Clear Filter</button>
         </div>
 
@@ -109,7 +108,7 @@
             $('#end_before').val(end_before);
 
         });
-
+        
         // Update filter
         function filterUpdate()
         {
@@ -361,7 +360,7 @@
                 }
             }
 
-
+            
 
         </script>
 
@@ -383,8 +382,8 @@
             // add rooms that have not null start/end time
             if(schedule['start_time'] != null && schedule['end_time'] != null){
                 locations.push({
-                    id: schedule['id']+'_',
-                    name: schedule['room'],
+                    id: schedule['id']+'_', 
+                    name: schedule['room'], 
                     userData: {'time': schedule['start_time']+'-'+schedule['end_time']}
                 });
             }
@@ -474,7 +473,7 @@
                         }
                     })
                 }
-
+                
                 // Get information of next surgery in the room
                 case_procedure = case_procedure.substring(casePos+1);
                 lead_surgeon = lead_surgeon.substring(leadPos+1);
@@ -509,7 +508,7 @@
         var minTime = "<?php echo $minTime ?>";
         console.log(minTime);
         var startTime = createTime(minTime);
-
+        
         var maxTime = "<?php echo $maxTime ?>";
         console.log(maxTime);
         var endTime = createTime(maxTime);

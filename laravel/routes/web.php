@@ -20,7 +20,7 @@ Route::prefix('/')->group(function () {
     Route::get('contact','PagesController@getContact');
     Route::post('contact', 'PagesController@postContact');
     Route::get('test','PagesController@test');
-	Route::get('acknowledgements', 'PagesController@getAcknowledgements');
+    Route::get('acknowledgements', 'PagesController@getAcknowledgements');
 });
 
 /**
@@ -32,7 +32,7 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
     Route::get('about', 'PagesController@getAbout');
     Route::get('contact','PagesController@getContact');
     Route::post('contact', 'PagesController@postContact');
-	Route::get('acknowledgements', 'PagesController@getAcknowledgements');
+    Route::get('acknowledgements', 'PagesController@getAcknowledgements');
 
     Route::get('schedule', 'ResidentController@getSchedule');
     Route::get('schedule/firstday', 'ScheduleDataController@getFirstDay');
@@ -44,10 +44,10 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
     Route::get('schedule/thirdday/filter/{room}/{leadSurgeon}/{rotation}/{starttime_endtime}','ScheduleDataController@getThirdDay');
 
     Route::post('schedule/confirm', 'ScheduleDataController@getChoice');
-	Route::get('schedule/milestones/{id}', 'ScheduleDataController@selectMilestones');
-	Route::get('schedule/milestonesEdit/{id}', 'ScheduleDataController@updateMilestones');
-	Route::get('schedule/secondday/preferences/clear/{date}', 'ScheduleDataController@clearOption');
-	Route::get('schedule/thirdday/preferences/clear/{date}', 'ScheduleDataController@clearOption');
+    Route::get('schedule/milestones/{id}', 'ScheduleDataController@selectMilestones');
+    Route::get('schedule/milestonesEdit/{id}', 'ScheduleDataController@updateMilestones');
+    Route::get('schedule/secondday/preferences/clear/{date}', 'ScheduleDataController@clearOption');
+    Route::get('schedule/thirdday/preferences/clear/{date}', 'ScheduleDataController@clearOption');
 
     Route::post('schedule/submit', 'ScheduleDataController@postSubmit');
 
@@ -65,11 +65,18 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('about', 'PagesController@getAbout');
     Route::get('contact','PagesController@getContact');
     Route::post('contact', 'PagesController@postContact');
-	Route::get('acknowledgements', 'PagesController@getAcknowledgements');
+    Route::get('acknowledgements', 'PagesController@getAcknowledgements');
 
     Route::get('users', 'AdminController@getUsers');
     Route::get('users/{op}/{role}/{email}/{flag}/{name?}', 'AdminController@getUpdateUsers');
-	Route::get('/evaluation/{date}', 'AdminController@getEvaluation');
+    Route::get('/evaluation/{date}', 'AdminController@getEvaluation');
+
+    Route::get('milestones', 'AdminController@getMilestones');
+    Route::post('milestones/uploadConfirm', 'AdminController@getUploadedMilestones');
+    Route::post('milestones/uploadUpdate', 'AdminController@uploadMilestones');
+    Route::post('milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}', 'AdminController@getUpdateMilestone');
+    Route::get('milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}', 'AdminController@getUpdateMilestone');
+
 
     Route::get('schedules', 'AdminController@getSchedules');
     Route::post('updateDB', 'AdminController@postUpdateDB');
@@ -80,8 +87,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('postmessage', 'AdminController@getMessages');
     Route::get('download', 'AdminController@getDownload');
     Route::get('evaluation', 'AdminController@getEvaluation');
-	Route::get('uploadForm', 'AdminController@uploadForm');
-	Route::post('upload', 'AdminController@uploadFormPost');
+    Route::get('uploadForm', 'AdminController@uploadForm');
+    Route::post('upload', 'AdminController@uploadFormPost');
 
 
     /**

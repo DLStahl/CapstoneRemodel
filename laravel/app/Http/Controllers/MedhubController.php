@@ -46,7 +46,12 @@ class MedhubController extends Controller
 
         $message = 'MedHub Active Residents';
 
-        return view('schedules.admin.medhubTestPage', compact('message','usersArr'));
+				$form = self::evaluationFormsPOST()->getBody();//get string JSON
+        $formArr = json_decode($form, true); //turn json into an array
+				$types = self::evaluationTypesPOST()->getBody();//get string JSON
+        $typesArr = json_decode($types, true); //turn json into an array
+
+        return view('schedules.admin.medhubTestPage', compact('message','usersArr', 'facArr', 'formArr', 'typesArr'));
 	}
 
 

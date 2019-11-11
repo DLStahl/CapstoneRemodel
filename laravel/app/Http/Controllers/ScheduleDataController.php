@@ -50,9 +50,6 @@ class ScheduleDataController extends Controller
 		$room = !isset($args['room']) ? 'TBD' : $args['room'];
 		$rotation = !isset($args['rotation']) ? 'TBD' : $args['rotation'];
 
-
-
-
         if (strcmp($leadSurgeon, "null") == 0) {
             $leadSurgeon = "TBD";
         }
@@ -465,7 +462,7 @@ class ScheduleDataController extends Controller
             $data3['attending'] = $attending3;
 	    }
 
-        $milestones = Milestone::all();
+        $milestones = Milestone::where('exists', 1)->get();
 
         return view('schedules.resident.milestone', compact('id', 'milestones', 'data1', 'data2', 'data3'));
 	}

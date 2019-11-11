@@ -60,7 +60,7 @@
         }
         ?>
         @if(!is_null($data['secondday']['first']))
-            <br><button class="btn btn-md btn-success" onclick="milestones()">Edit milestones</button>
+            <br><button class="btn btn-md btn-success" onclick="milestones()">Edit <br>Milestones Objectives</button>
         @endif
     </td>
                     <td align="left"><?php
@@ -134,4 +134,9 @@
 </script>
         </div>
     </div>
+<style>
+    .btn{
+        white-space: normal;
+    }
+</style>
 @endsection

@@ -31,24 +31,16 @@ th{
 
 .osu-red {background-color:#bb0000;}
 
-.btn-primary,
-.btn-primary:hover,
-.btn-primary:active,
-.btn-primary:visited,
-.btn-primary:focus {
+.btn,
+.btn:active,
+.btn:enabled,
+.btn:visited,
+.btn:focus{
+    color: #fff;
     background-color: #26686d;
     border-color: #666666;
 }
-
-.btn-success,
-.btn-success:hover,
-.btn-success:active,
-.btn-success:visited,
-.btn-success:focus {
-    background-color: #26686d;
-    border-color: #666666;
-}
-.btn:hover{
+.btn:not(:disabled):hover{
     background-color: #bb0000;
 }
 

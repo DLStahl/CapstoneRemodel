@@ -15,6 +15,7 @@ use App\ScheduleData;
 use App\Probability;
 use App\EvaluateData;
 use App\Rotations;
+use App\Milestone;
 use App\Http\Requests;
 use Session;
 use \Datetime;
@@ -187,6 +188,167 @@ class AdminController extends Controller
     public function getSchedules()
     {
         return view('schedules.admin.schedules');
+    }
+
+    /**
+     * Route to update milestone page
+     */
+    public function getMilestones()
+    {
+        $milestone = Milestone::where('exists', 1)->orderBy('category', 'asc')->get();
+        return view('schedules.admin.milestones', compact('milestone'));
+    }
+
+    /**
+     * Route to update milestone with csv file confirmation page
+     */
+    public function getUploadedMilestones(Request $request){
+        $filename = "Milestones".date("Ymd G:i")."csv";
+        $request->fileUpload->storeAs('UpdateMilestones', $filename);
+
+        $filepath = __DIR__."/../../../storage/app/UpdateMilestones/".$filename;
+        $fp = fopen($filepath, 'r');
+        // Read the first row
+        $line = fgetcsv($fp);
+        // count number of columns
+        $numcols = count($line);
+        if ($numcols < 3){
+            $data = array();
+            // csv file is invalid
+            $valid = 0;
+        } else {
+            // csv file is valid
+            $valid = 1;
+
+            // store all milestones together
+            $data = array('valid'=>array(), 'invalid'=>array());
+            // Read rows until null
+            while (($line = fgetcsv($fp)) !== false)
+            {
+                $abbr_name = $line[0];
+                $full_name = $line[1];
+                $detail = $line[2];
+                // Valid milestones info
+                if (strlen($abbr_name) > 0 && strlen($full_name) > 0 && strlen($detail) > 0){
+                    array_push($data['valid'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]); 
+                } else {
+                    // ignore empty rows
+                    // Invalid milestone info
+                    // must have data in all three columns
+                    if(strlen($abbr_name) > 0 || strlen($full_name) > 0 || strlen($detail) > 0){
+                        array_push($data['invalid'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]); 
+                    }
+                }
+            }
+        }
+
+        // Close file
+        fclose($fp);
+
+        return view('schedules.admin.milestones_upload_confirm', compact('data', 'filepath', 'valid'));
+    }
+
+    /**
+     * Route to update milestone with csv file
+     */
+    public function uploadMilestones(){
+        // get the filepath
+        $filepath = $_REQUEST['filepath'];
+
+        $fp = fopen($filepath, 'r');
+        // Read the first row
+        fgetcsv($fp);
+
+        // Read rows until null
+        while (($line = fgetcsv($fp)) !== false)
+        {
+            $abbr_name = $line[0];
+            $full_name = $line[1];
+            $detail = $line[2];
+            if (strlen($abbr_name) > 0 && strlen($full_name) > 0 && strlen($detail) > 0){
+                if(Milestone::where('category', $abbr_name)->where('exists', 1)->doesntExist()){
+                    // insert new milestone
+                    Milestone::where('category', $abbr_name)->insert(
+                        ['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]
+                    ); 
+                } else {
+                    // mark previous on as not exist and insert a new one
+                    Milestone::where('category', $abbr_name)->where('exists', 1)->update(['exists'=>0]);
+                    Milestone::where('category', $abbr_name)->insert(
+                        ['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]
+                    );  
+                }
+            }
+        }
+        // Close file
+        fclose($fp);
+        return view('schedules.admin.milestones_update', compact('data'));
+    }
+
+    /**
+     * Route to update user page
+     */
+    public function getUpdateMilestone($op, $flag, $id=null, $abbr_name=null, $full_name=null, $detail=null)
+    {
+        $old_abbr_name = null;
+        $old_full_name = null;
+        $old_detail = null;
+
+        if (strcmp($op, "add") == 0 && strcmp($flag, "false") == 0) {
+        // get user input of new milestone info
+            $abbr_name = $_REQUEST['newCode'];
+            $full_name = $_REQUEST['newCategory'];
+            $detail = $_REQUEST['newDetail'];
+        } else if(strcmp($op, "delete") == 0 ){
+            // get milestone info that will be deleted
+            $milestone = Milestone::where('id', $id);
+            $old_abbr_name = $milestone->value('category');
+            $old_full_name = $milestone->value('title');
+            $old_detail = $milestone->value('detail');
+        } else if(strcmp($op, "update") == 0 ){
+            // get previous and current milestone info that will be updated
+            $milestone = Milestone::where('id', $id);
+            $old_abbr_name = $milestone->value('category');
+            $old_full_name = $milestone->value('title');
+            $old_detail = $milestone->value('detail');
+        }
+
+        str_replace("%20", " ", $abbr_name);
+        str_replace("%20", " ", $full_name);
+        str_replace("%20", " ", $detail);
+
+        $data = array(
+            'op'=>$op,
+            'flag'=>$flag,
+            'id'=>$id,
+            'abbr_name'=>$abbr_name,
+            'full_name'=>$full_name,
+            'detail'=>$detail,
+            'old_abbr_name'=>$old_abbr_name,
+            'old_full_name'=>$old_full_name,
+            'old_detail'=>$old_detail
+        );
+
+        /**
+         * If the data input has not been confirmed, route user to a confirmation page.
+         */
+        if (strcmp($flag, "false") == 0) {
+            return view('schedules.admin.milestones_confirm', compact('data'));
+        }
+
+        // Delete a milestone
+        if (strcmp($op, "delete") == 0) {
+            Milestone::where('id', $id)->update(['exists' => 0]);
+        }
+
+        // Add a new milestone
+        else if (strcmp($op, "add") == 0){
+            Milestone::insert(['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]);
+        } else if (strcmp($op, "update") == 0){
+            Milestone::where('id', $id)->update(['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]);
+        }
+
+        return view('schedules.admin.milestones_update');
     }
 
 

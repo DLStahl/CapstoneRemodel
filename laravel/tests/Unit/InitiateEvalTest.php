@@ -6,39 +6,46 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use App\Http\Controllers\MedhubController;
+use GuzzleHttp\Client;
+use App\Console\Commands\InitiateEval;
 
-class InitiateEval extends TestCase
+class InitiateEvalTest extends TestCase
 {
     public function testMedHubAPIConnection()
     {
-		$MHC = new MedhubController(); 
-		$testPOST = json_decode($MHC->testPOST()->getBody(), true);
-		$response = $testPOST['response'];
-		$this->assertTrue($response == 'success');
+        $initiateEval = new InitiateEval(); 
+        $testPOST = json_decode($initiateEval->medhubPOST('info/test', json_encode(array('programID' => 73)))->getBody(), true);
+        echo json_encode($testPOST);
+        $response = $testPOST['response'];
+        $this->assertTrue($response == 'success');
     }
 	
-	// /**
-     // * A basic test to check the active residents call returns values 
-     // *
-     // * @return void
-     // */
-    // public function testMedHubInitiateEvalResidentAttendingPOST()
+	// public function testMedHubInitResidentEvalAttendingPOST()
+ //    {
+ //        $initiateEval = new InitiateEval(); 
+
+ //        // test with medhubPOSt
+ //        // $initEvalPOST = json_decode($initiateEval->medhubPOST('evals/initiate',json_encode(array('evaluationID' => 1353, 'evaluation_type' => 2, 'evaluator_userID' => 114141, 'programID' => 73, 'evaluatee_userID' => 114709)))->getBody(), true);
+
+ //        // $initEvalPOST = json_decode($response->getBody(), true);
+ //        // echo json_encode($initEvalPOST)."\n";
+ //        // $this->assertTrue($initEvalPOST['responseID'] != 0);
+
+ //        // test with initResidentEvalAttendingPOST
+ //        $initEvalPOST = json_decode($initiateEval->initResidentEvalAttendingPOST(114708,114709)->getBody(), true);
+ //        echo json_encode($initEvalPOST);
+ //        $this->assertTrue($initEvalPOST['responseID'] != 0);
+
+ //    }
+
+    // public function testMedHubInitAttendingEvalResidentPOST()
     // {
-		// $MHC = new MedhubController(); 
-		// $usersArr = json_decode($MHC->initEvalResidentAttendingPOST(109589,114706)->getBody(), true);
-		// $this->assertNotNull($usersArr);
-    // }
-	
-	// /**
-     // * A basic test to check the active residents call returns values 
-     // *
-     // * @return void
-     // */
-    // public function testMedHubInitiateEvalAttendingResidentPOST()
-    // {
-		// $MHC = new MedhubController(); 
-		// $usersArr = json_decode($MHC->initEvalAttendingResidentPOST(114706,109589)->getBody(), true);
-		// $this->assertNotNull($usersArr);
+    //     $initiateEval = new InitiateEval(); 
+
+    //     // test with initAttendingEvalResidentPOST
+    //     $initEvalPOST = json_decode($initiateEval->initAttendingEvalResidentPOST(114708,114709, 580)->getBody(), true);
+    //     echo json_encode($initEvalPOST);
+    //     $this->assertTrue($initEvalPOST['responseID'] != 0);
+
     // }
 }

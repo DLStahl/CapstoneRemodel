@@ -201,7 +201,7 @@ class ScheduleParser extends Model
      */
     public function __construct($datefile, $isConsole=false)
     {
-        Log::info('here');
+        Log::info('parse schedule data');
         $this->filepath = $isConsole ? Constant::CONSOLE_PATH.$datefile.Constant::EXTENSION
                             :Constant::WEB_PATH.$datefile.Constant::EXTENSION;
 

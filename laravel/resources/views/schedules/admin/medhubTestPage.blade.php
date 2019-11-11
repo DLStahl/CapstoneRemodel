@@ -23,10 +23,20 @@
                     <td align="left">{{ $user['employeeID'] }}</td>
                     <td align="left">{{ $user['typeID'] }}</td>
                     <td align="left">{{ $user['level'] }}</td>
-                </tr>                             
+                </tr>
             @endforeach
 
         </tr>
     </table>
-</div>        
+</div>
+<script>
+    var usersArr = <?php echo json_encode($usersArr); ?>;
+    console.log(usersArr);
+    var facArr = <?php echo json_encode($facArr); ?>;
+    console.log(facArr);
+    var EvalsForm = <?php echo json_encode($formArr); ?>;
+    console.log(EvalsForm);
+    var EvaluationTypes = <?php echo json_encode($typesArr); ?>;
+    console.log(EvaluationTypes);
+</script>
 @endsection

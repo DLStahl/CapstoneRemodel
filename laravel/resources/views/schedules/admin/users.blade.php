@@ -25,6 +25,8 @@
         </h5>
     </div>
     <script type="text/javascript">
+
+    
         function addUsers(id)
         {
             if (document.getElementById('email_usr').value.indexOf("@osu.edu") == -1)
@@ -66,25 +68,32 @@
 </div>
 
 <br><br>
-
-<table class="table table-striped table-bordered" id="users_table">
-    <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Role</th>
-        <th>Operations</th>
+<div id="tb">
+<table id="users_table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Operation</th>
+        </tr>
+    </thead>
+    <tbody>
         @foreach ($roles as $role)
             <tr>
                 <td align="left">{{ $role['name'] }}</td>
                 <td align="left">{{ $role['email'] }}</td>
                 <td align="left">{{ $role['role'] }}</td>
-                <td>
+                <td id="button">
                     @if ($role['role'] != "Admin")
                         <input align="center" onclick = "deleteUsers(this.id);" value="Delete User" type="button" class='btn btn-md btn-success' id="{{ $role['email'] }}_{{ $role['role'] }}">
+                    @else
+                        <br>
                     @endif
                 </td>
             </tr>
         @endforeach
+    </tbody>
 
         <script type="text/javascript">
             function deleteUsers(id)
@@ -102,4 +111,96 @@
         </script>
     </tr>
 </table>
+</div>
+
+
+<style>
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+    }
+    /* Zebra striping */
+    tr:nth-of-type(odd) { 
+      background: #eee;
+      border: 1px solid #ccc;
+    }
+    th { 
+      background: white; 
+      font-weight: bold; 
+      text-align: center; 
+      padding: 6px; 
+      border: 1px solid #ccc; 
+    }
+    td{ 
+      padding: 6px; 
+      border: 1px solid #ccc; 
+      text-align: left; 
+      /*hyphens: auto;*/
+    }
+</style>
+<!--[if !IE]><!-->
+<style>
+/* 
+Max width before this PARTICULAR table gets nasty
+This query will take effect for any screen smaller than 760px
+and also iPads specifically.
+*/
+@media 
+only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+    .btn{
+        padding: .3rem .7rem;
+        font-size: 14px;
+    }
+
+    /* Force table to not be like tables anymore */
+    table, thead, tbody, th, td, tr { 
+        display: block; 
+    }
+    
+    /* Hide table headers (but not display: none;, for accessibility) */
+    thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    tr { border: 1px solid #ccc; }
+    
+    td { 
+        /* Behave  like a "row" */
+        border: none;
+        border-bottom: 1px solid #eee; 
+        position: relative;
+        padding-left: 30%; 
+    }
+
+    tr:nth-of-type(odd) td:not(:last-of-type){
+        border-bottom: 1px solid white; 
+    }
+    
+    td:before { 
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%; 
+        padding-right: 5px; 
+        white-space: nowrap;
+    }
+    
+    /*
+    Label the data
+    */
+    td:nth-of-type(1):before { content: "Name"; }
+    td:nth-of-type(2):before { content: "Email"; }
+    td:nth-of-type(3):before { content: "Role"; }
+    td:nth-of-type(4):before { content: "Operation"; }
+}
+
+</style>
+
+<!--<![endif]-->
+
 @endsection

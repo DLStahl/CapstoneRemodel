@@ -44,7 +44,7 @@
 				<p></p>
 				<li> Fall 2019
 					<ul>
-						<li>Gail Chen</li>
+						<li>Tianzhi (Gail) Chen</li>
 						<li>Dorothy Chow</li>
 						<li>Megan Clippinger</li>
 					</ul>
