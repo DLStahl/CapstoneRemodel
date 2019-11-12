@@ -56,8 +56,8 @@
         @endforeach
     </tbody>
 </table>
-
 <script type="text/javascript">
+	console.log("test");
     // Check a csv file is uploaded
     function fileValidation(){
         $('#uploadFileForm').validate({
@@ -78,7 +78,7 @@
     });
 
     // enable "update" and "undo" buttons when user changes the content 
-    $('[contenteditable="true"]').on('input', function(){
+    $('[contenteditable="true"]').on('input keyup paste', function(){
         var changeID = $(this).parent().parent()[0].id;
         console.log('.'+changeID+'.update');
         $('.'+changeID+'.update').prop('disabled', false);
@@ -92,7 +92,8 @@
     function addMilestone()
     {
         var code = $('#code').val();
-        if(Object.values(codes).includes(code)){
+        myObjects = Object.keys(codes).map(function(item) { return codes[item]; });
+        if(myObjects.indexOf(code) != -1){
             alert("code "+ code + " already exists");
             return false;
         } else {
@@ -108,13 +109,23 @@
         window.location.href = url; 
     }
 
+    function val2key(val, array){
+    for (var key in array) {
+        if(array[key] == val){
+            return key;
+        }
+    }
+		return false;
+	}
+
     function updateMilestone(id)
     {
         var code = $('.'+id+'.code')[0].innerText;
         var category = $('.'+id+'.category')[0].innerText;
         var detail = $('.'+id+'.detail')[0].innerText;
         // check if abbr is duplicated
-        if(Object.values(codes).includes(code) && Object.keys(codes).find(key => codes[key] === code) != id){
+        myObjects = Object.keys(codes).map(function(item) { return codes[item]; });
+        if(myObjects.indexOf(code) != -1 && val2key(code, codes) != id){
             alert("code "+ code + " already exists");
             return;
         }
