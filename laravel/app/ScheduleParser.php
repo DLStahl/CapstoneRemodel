@@ -61,7 +61,10 @@ class ScheduleParser extends Model
     private static function getRotation($surgeon)
     {
         if (strlen($surgeon) == 0) return null;
-        $name = substr($surgeon, 0, strpos($surgeon, ','));
+        $name = $surgeon;
+        if (strpos($surgeon, ',')){
+            $name = substr($surgeon, 0, strpos($surgeon, ','));
+        }
         $name = explode(" ", $name);
         $name_first = $name[0];
         $name_last = $name[1];

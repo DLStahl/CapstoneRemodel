@@ -1,3 +1,5 @@
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
     <head>
@@ -21,8 +23,8 @@
         </nav>
         <nav class="navbar navbar-expand-lg" style="background-color: #bb0000;">
             <div class="container">
-                <a class="navbar-brand" href="/">REMODEL: REsident MilestOne-baseD Educational Learning</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand2" href="/">REMODEL: REsident MilestOne-baseD Educational Learning</a>
+                <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -31,7 +33,7 @@
                             <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
                         </li>
                     </ul>
-                </div>
+                </div> -->
             </div>
         </nav>
         <br>
@@ -53,3 +55,26 @@
 
     </body>
 </html>
+
+<style>
+.navbar-brand2 {
+    display: inline-block;
+    padding-top: .3125rem;
+    padding-bottom: .3125rem;
+    margin-right: 1rem;
+    line-height: inherit;
+    white-space: nowrap;
+}
+@media screen and (max-width: 770px){
+    .navbar-brand2 
+        {
+            font-size: 2.5vw;
+        }
+    }
+@media  screen and (min-width: 770px){
+    .navbar-brand2 
+        {
+            font-size: 1.25rem;
+        }
+    }
+</style>

@@ -59,7 +59,7 @@
         <!--start after filter-->
         <select id="start_after" onchange="filterUpdate()">
             <option value="null" selected> - Start After - </option>
-            @for($i=0; $i<10; $i++)
+            @for($i=5; $i<10; $i++)
                 <option value="0{{$i}}:00:00">0{{$i}}:00:00</option>
             @endfor
             @for($i=10; $i<24; $i++)
@@ -70,7 +70,7 @@
         <!--end before filter-->
         <select id="end_before"  onchange="filterUpdate()">
             <option value="null" selected> - End Before - </option>
-            @for($i=0; $i<10; $i++)
+            @for($i=5; $i<10; $i++)
                 <option value="0{{$i}}:00:00">0{{$i}}:00:00</option>
             @endfor
             @for($i=10; $i<24; $i++)
