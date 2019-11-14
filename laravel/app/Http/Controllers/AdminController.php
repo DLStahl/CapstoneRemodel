@@ -210,33 +210,41 @@ class AdminController extends Controller
         $fp = fopen($filepath, 'r');
         // Read the first row
         $line = fgetcsv($fp);
-        // count number of columns
-        $numcols = count($line);
-        if ($numcols < 3){
+        // The first line should be headers "abbr code / full name category / detail"
+        if($line == false){
             $data = array();
             // csv file is invalid
             $valid = 0;
         } else {
-            // csv file is valid
-            $valid = 1;
+            // count number of columns
+            $numcols = count($line);
+            // the file must have 3 columns
+            if ($numcols < 3){
+                $data = array();
+                // csv file is invalid
+                $valid = 0;
+            } else {
+                // csv file is valid
+                $valid = 1;
 
-            // store all milestones together
-            $data = array('valid'=>array(), 'invalid'=>array());
-            // Read rows until null
-            while (($line = fgetcsv($fp)) !== false)
-            {
-                $abbr_name = $line[0];
-                $full_name = $line[1];
-                $detail = $line[2];
-                // Valid milestones info
-                if (strlen($abbr_name) > 0 && strlen($full_name) > 0 && strlen($detail) > 0){
-                    array_push($data['valid'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]); 
-                } else {
-                    // ignore empty rows
-                    // Invalid milestone info
-                    // must have data in all three columns
-                    if(strlen($abbr_name) > 0 || strlen($full_name) > 0 || strlen($detail) > 0){
-                        array_push($data['invalid'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]); 
+                // store all milestones together
+                $data = array('valid'=>array(), 'invalid'=>array());
+                // Read rows until null
+                while (($line = fgetcsv($fp)) !== false)
+                {
+                    $abbr_name = $line[0];
+                    $full_name = $line[1];
+                    $detail = $line[2];
+                    // Valid milestones info
+                    if (strlen($abbr_name) > 0 && strlen($full_name) > 0 && strlen($detail) > 0){
+                        array_push($data['valid'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]); 
+                    } else {
+                        // ignore empty rows
+                        // Invalid milestone info
+                        // must have data in all three columns
+                        if(strlen($abbr_name) > 0 || strlen($full_name) > 0 || strlen($detail) > 0){
+                            array_push($data['invalid'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]); 
+                        }
                     }
                 }
             }
