@@ -125,6 +125,8 @@ class ScheduleParser extends Model
                     $room = "CCCT TBD";
                 } elseif (strpos($location, "UH")){
                     $room = "UH TBD";
+                } elseif (strpos($location, "ROSS")){
+                    $room = "ROSS TBD";
                 } else {
                     $room = "TBD";
                 }
