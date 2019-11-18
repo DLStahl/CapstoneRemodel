@@ -228,7 +228,7 @@ class AdminController extends Controller
                 $valid = 1;
 
                 // store all milestones together
-                $data = array('valid'=>array(), 'invalid'=>array());
+                $data = array('new'=>array(), 'update'=>array(), 'invalid'=>array());
                 // Read rows until null
                 while (($line = fgetcsv($fp)) !== false)
                 {
@@ -237,7 +237,11 @@ class AdminController extends Controller
                     $detail = $line[2];
                     // Valid milestones info
                     if (strlen($abbr_name) > 0 && strlen($full_name) > 0 && strlen($detail) > 0){
-                        array_push($data['valid'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]); 
+                        if(Milestone::where('category', $abbr_name)->where('exists', 1)->doesntExist()){
+                            array_push($data['new'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]);
+                        } else {
+                            array_push($data['update'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]); 
+                        }
                     } else {
                         // ignore empty rows
                         // Invalid milestone info
