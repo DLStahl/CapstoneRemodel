@@ -64,7 +64,7 @@
             rules:{
                 fileUpload: {
                     required: true,
-                    extension: "xls|csv"
+                    extension: "csv"
                 }
             },
             messages: {
