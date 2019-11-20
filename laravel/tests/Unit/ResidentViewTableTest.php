@@ -33,6 +33,8 @@ class ResidentViewTable extends TestCase
 	public function testViewScheduleDataHasEndTime()
 	{
 		$this->assertDatabaseHas('schedule_data',['end_time'=>'15:02:00']);
+		sleep(10);
+
 	}
 
 	public function testViewScheduleDataHasID()
@@ -53,6 +55,7 @@ class ResidentViewTable extends TestCase
 	public function testViewScheduleDataHasRoom()
 	{
 		$this->assertDatabaseHas('schedule_data',['room'=>'UH-16']);
+		sleep(6);
 	}
 
 	

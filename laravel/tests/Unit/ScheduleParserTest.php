@@ -38,5 +38,6 @@ class ScheduleParserTest extends TestCase
             // 'start_time'=> date('07:30:00'),
             // 'end_time'=> date('15:15:00'),
         ]);
+        sleep(16);
     }
 }

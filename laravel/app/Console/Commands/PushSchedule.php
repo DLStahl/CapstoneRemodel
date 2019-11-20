@@ -51,7 +51,7 @@ class PushSchedule extends Command
 
 	public static function updateOption($date)
     {
-        $dir = "/usr/local/webs/remodel.anesthesiology/htdocs/downloads/assignment".$date.".csv";
+        $dir = "/usr/local/webs/remodel.anesthesiology_dev/htdocs/downloads/assignment".$date.".csv";
         $fp = null;
 
         if (file_exists($dir)) {
@@ -110,7 +110,7 @@ class PushSchedule extends Command
 		$client->setScopes(Google_Service_Sheets::DRIVE);
 		$client->addScope(Google_Service_Sheets::DRIVE_FILE);
 		$client->addScope(Google_Service_Sheets::SPREADSHEETS);
-		$client->setAuthConfig('/usr/local/webs/remodel.anesthesiology/htdocs/REMODEL-0dfb917af5de.json');
+		$client->setAuthConfig('/usr/local/webs/remodel.anesthesiology_dev/htdocs/REMODEL-0dfb917af5de.json');
 
 		// Load previously authorized token from a file, if it exists.
 		$tokenPath = '/htdocs/token.json';
@@ -159,7 +159,7 @@ class PushSchedule extends Command
 		self::updateOption($date);
 
         // get the values from the options file and save them to an array
-		$path = "/usr/local/webs/remodel.anesthesiology/htdocs/downloads/assignment".$date.".csv";
+		$path = "/usr/local/webs/remodel.anesthesiology_dev/htdocs/downloads/assignment".$date.".csv";
         $file = fopen($path, 'r');
         $csv = array();
         while (($line = fgetcsv($file)) !== FALSE) {

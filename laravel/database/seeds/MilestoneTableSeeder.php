@@ -54,7 +54,7 @@ class MilestoneTableSeeder extends Seeder
         ]);
 
         DB::table('milestone')->insert([
-            'category' => 'PC8',
+            'category' => 'PC88',
             'title' => 'Patient Care',
             'detail' => 'Technical skills: Airway management'
         ]);

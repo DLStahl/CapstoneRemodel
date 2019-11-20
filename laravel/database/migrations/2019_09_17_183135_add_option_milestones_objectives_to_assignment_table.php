@@ -16,7 +16,7 @@ class AddOptionMilestonesObjectivesToAssignmentTable extends Migration
         Schema::table('assignment', function($table) {
             $table->unsignedInteger('preference');
             $table->longText('milestones')->nullable();
-            $table->longText('objectives')->nullable();
+            $table->longText('objectives')->nullable(); 
         });
 
     }
