@@ -280,13 +280,13 @@ class AdminController extends Controller
             if (strlen($abbr_name) > 0 && strlen($full_name) > 0 && strlen($detail) > 0){
                 if(Milestone::where('category', $abbr_name)->where('exists', 1)->doesntExist()){
                     // insert new milestone
-                    Milestone::where('category', $abbr_name)->insert(
+                    Milestone::insert(
                         ['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]
                     ); 
                 } else {
                     // mark previous on as not exist and insert a new one
                     Milestone::where('category', $abbr_name)->where('exists', 1)->update(['exists'=>0]);
-                    Milestone::where('category', $abbr_name)->insert(
+                    Milestone::insert(
                         ['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]
                     );  
                 }
@@ -357,7 +357,8 @@ class AdminController extends Controller
         else if (strcmp($op, "add") == 0){
             Milestone::insert(['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]);
         } else if (strcmp($op, "update") == 0){
-            Milestone::where('id', $id)->update(['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]);
+            Milestone::where('id', $id)->update(['exists'=>0]);
+            Milestone::insert(['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]);
         }
 
         return view('schedules.admin.milestones_update');
