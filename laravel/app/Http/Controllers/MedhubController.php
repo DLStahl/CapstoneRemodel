@@ -77,196 +77,6 @@ class MedhubController extends Controller
         ]);
     }
 
-	// // only meant to be used when resident table UserID and Medhub UserID are inconsistent
-	// public function UpdateResidentTable($usersArr)
-	// {
-		// // loop through all returned activeResidents and if they are in our resident table, update the UserID, ResidentType, and Level
-		// foreach ($usersArr as $user){
-			// $userID = $user['userID'];
-			// $first = $user['name_first'];
-			// $last = $user['name_last'];
-			// $name = $first.' '.$last;
-			// $email = $user['email'];
-			// $username = $user['username'];
-			// $typeID = $user['typeID'];
-			// $level = $user['level'];
-
-			// Resident::where('name', $name)->update(
-			// [	'medhubId' => $userID
-			// ]);
-
-			 // if(Resident::where('name', $name)->doesntExist()){
-				// Resident::insert(['name'=>$name, 'email'=>$email, 'exists'=>1, 'medhubId'=>$userID]);
-			 // }
-		// }
-	// }
-
-	// // only meant to be run once because different tables used different format for name, this function makes it so all names in resident table use "First (space) Last" format
-	// public function UpdateResidentName()
-	// {
-		// // loop through all returned activeResidents and if they are in our resident table, update the UserID, ResidentType, and Level
-		// $residentNames = DB::table('resident')->pluck('name');
-
-		// for($i = 0; $i<count($residentNames); $i++)
-		// {
-			// $name = $residentNames[$i];
-			// $oldName = $residentNames[$i];
-			// $pieces = explode(" ", $name);
-
-			// if(count($pieces) == 3 && $pieces[1] != "Del")
-			// {
-				// $first = $pieces[0];
-				// $last = $pieces[2];
-				// $name = $first.' '.$last;
-			// }
-			// elseif(count($pieces) == 4)
-			// {
-				// $first = $pieces[0];
-				// $last = $pieces[2].' '.$pieces[3];
-				// $name = $first.' '.$last;
-			// }
-			// elseif(count($pieces) == 5)
-			// {
-				// $first = $pieces[0];
-				// $last = $pieces[2].' '.$pieces[3].' '.$pieces[4];
-				// $name = $first.' '.$last;
-			// }
-
-			// $id = Resident::where('name', $oldName)->value('id');
-
-			// DB::table('resident')
-            // ->where('id', $id)
-            // ->update(['name' => $name]);
-		// }
-	// }
-
-	// // initiate evaluation for attending to eval resident
-    // // returns responseID - unique evaluation identifier (value is 0 if initiation failed)
-    // public function initAttendingEvalResidentPOST($evaluatorID, $evaluateeID, $evalID)
-    // {
-        // $callPath = 'evals/initiate';
-        // $evalType = 5;
-        // $programID = 73;
-        // $notify = true;
-        // $request = json_encode(array('evaluationID' => $evalID,'evaluation_type' => $evalType, 'evaluator_userID' => $evaluatorID, 'programID' => $programID, 'evaluatee_userID' => $evaluateeID));
-
-        // return self::medhubPOST($callPath, $request);
-    // }
-
-	// // initiate evaluation for resident to eval attending
-	// // returns responseID - unique evaluation identifier (value is 0 if initiation failed)
-    // public function initResidentEvalAttendingPOST($evaluatorID, $evaluateeID)
-    // {
-        // $callPath = 'evals/initiate';
-        // $evalID = 1353; // 'Resident Evaluation of Faculty' (v.2)
-        // $evalType = 2;
-        // $programID = 73;
-        // $notify = true;
-        // $request = json_encode(array('evaluationID' => $evalID,'evaluation_type' => array($evalType), 'evaluator_userID' => $evaluatorID, 'programID' => $programID, 'evaluatee_userID' => $evaluateeID));
-		// return self::medhubPOST($callPath, $request);
-    // }
-
-	// public function initiateEvaluations()
-	// {
-		// $date = date('Y-m-d');
-		// $newdate = strtotime ( '-1 day' , strtotime ( $date ) ) ;
-		// $newdate = date ( 'Y-m-d' , $newdate );
-
-		// $residentID = DB::table('evaluation_data')->where('date', $newdate)->pluck('resident');
-		// $attendingName = DB::table('evaluation_data')->where('date', $newdate)->pluck('attending');
-
-		// for($i = 0; $i<count($residentID); $i++)
-		// {
-			// $evaluateeName = $residentID[$i];
-
-			// $rName = $evaluateeName;
-			// $pieces = explode(" ", $rName);
-			// if(count($pieces) == 3 && $pieces[1] != "Arce" && $pieces[1] != "Puertas" && $pieces[1] != "Zuleta")
-			// {
-				// $first = $pieces[0];
-				// $last = $pieces[2];
-				// $rName = $first.' '.$last;
-			// }
-			// elseif(count($pieces) == 4)
-			// {
-				// $first = $pieces[0];
-				// $last = $pieces[2].' '.$pieces[3];
-				// $rName = $first.' '.$last;
-			// }
-			// elseif(count($pieces) == 5)
-			// {
-				// $first = $pieces[0];
-				// $last = $pieces[2].' '.$pieces[3].' '.$pieces[4];
-				// $rName = $first.' '.$last;
-			// }
-
-			// $evaluateeID = Resident::where('name', $rName)->value('medhubId');
-
-			// // grab all of the start and end dates for the resident
-			// $evaluateeRotationsStart = Rotations::where('Name', $evaluateeName)->pluck('Start');
-			// $evaluateeRotationsEnd = Rotations::where('Name', $evaluateeName)->pluck('End');
-
-			// // save todays date
-			// $date = date('Y-m-d');
-			// $date=date('Y-m-d', strtotime($date));
-			// // temporary service variable
-			// $evaluateeService = 0;
-			// // loop through all the residents start/end dates
-			// for ($j = 0; $j < count($evaluateeRotationsStart); $j++) {
-				// $startDate = date('Y-m-d', strtotime($evaluateeRotationsStart[$j])); //get the  start date
-				// $endDate = date('Y-m-d', strtotime($evaluateeRotationsEnd[$j])); //get the  end date
-
-				// if (($date> $startDate) && ($date<$endDate)){ // find the date range that fits today
-					// $evaluateeService = Rotations::where('Name', $evaluateeName)->where('Start', $evaluateeRotationsStart[$j])->value('Service');
-					// break; // break so we can save the evaluateeService
-				// }
-			// }
-
-			// //check if we even need to send an eval ( 0 for the service means we dont send it)
-			// if($evaluateeService == 0)
-			// {
-				// // do nothing
-			// }
-			// else
-			// {
-				// // grab the attending id
-				// $aName = $attendingName[$i];
-				// $pieces = explode(" ", $aName);
-
-				// if(count($pieces) == 3 && $pieces[1] != "Del")
-				// {
-					// $first = $pieces[0];
-					// $last = $pieces[2];
-					// $aName = $first.' '.$last;
-				// }
-				// elseif(count($pieces) == 4)
-				// {
-					// $first = $pieces[0];
-					// $last = $pieces[2].' '.$pieces[3];
-					// $aName = $first.' '.$last;
-				// }
-				// elseif(count($pieces) == 5)
-				// {
-					// $first = $pieces[0];
-					// $last = $pieces[2].' '.$pieces[3].' '.$pieces[4];
-					// $aName = $first.' '.$last;
-				// }
-
-				// $evaluatorID = Attending::where('name', $aName)->value('id');
-				// if($evaluateeID != null )
-				// {
-
-					// echo $evaluatorID.' '.$evaluateeID.' '.$evaluateeService;
-					// break;
-
-					// //self::initAttendingEvalResidentPOST($evaluatorID, $evaluateeID, $evaluateeService);
-					// //self::initResidentEvalAttendingPOST($evaluateeID, $evaluatorID);
-				// }
-
-			// }
-
-		// }
-	// }
 	public function notifyAddUser($userType, $toName, $toEmail, $userName, $body='The resident could not be found and must be added manually.', $subject = 'REMODEL: Resident/Attending Needs to be Added')
     {
 		//REMODEL Alert: Resident Needs to be Added
@@ -316,16 +126,16 @@ class MedhubController extends Controller
 			} else {
 				//not an an Anesthesiology resident
 				$emailMessage = $emailMessage.$userType.' '.$name.' was found by OSU Find People but is not an Anesthesiology '.$userType.'. Please check the information and add user to database manually.';
-	            // self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
+	            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
 			}
 		} elseif (sizeof($osuMatches)==0) {
 			echo '0 residents found in FindPeopleOSU'."\n";
         	$emailMessage = $emailMessage.'No matches for '.$userType.' '.$name.' were found by OSU Find People. The '.$userType.' may be using a preffered name at OSU. Please check the information and add user to database manually.';
-            // self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
+            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
     	} else {
     		echo 'More than 1 residents found in FindPeopleOSU'."\n";
     		$emailMessage = $emailMessage.'Multiple matches for '.$userType.' '.$name.' were found by OSU Find People. Please check the information and add user to database manually. ';
-            // self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
+            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
     	}
 		echo var_dump($osuMatches);
     	return $added;
@@ -354,7 +164,7 @@ class MedhubController extends Controller
       		echo '0 '.$userType.'s found in MedHub'."\n";
         	$emailMessage = 'No matches for '.$userType." ".$name.' were found on MedHub. ';
         	if(strcmp($userType, 'Attending') == 0){
-	            // self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
+	            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
         	} else {
 	        	$userAdded = self::addUserFromFindPeopleOSU($userType, $emailMessage, $name);
         	}
@@ -362,7 +172,7 @@ class MedhubController extends Controller
 			echo 'More than one residents found in Medhub'."\n";
 			$emailMessage = 'Multiple matches for '.$userType." ".$name.' were found on MedHub. ';
 			if(strcmp($userType, 'Attending') == 0){
-	            // self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
+	            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
         	} else {
 	        	$userAdded = self::addUserFromFindPeopleOSU($userType, $emailMessage, $name);
         	}

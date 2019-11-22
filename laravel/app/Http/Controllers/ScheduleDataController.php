@@ -215,9 +215,6 @@ class ScheduleDataController extends Controller
      */
     public function getFirstDay($room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time=null)
     {
-        // // Test
-        // $parser = new ScheduleParser("20180614");
-        // $parser->processScheduleData();
         date_default_timezone_set('America/New_York');
         $year = date("o", strtotime('+1 day'));
         $mon = date('m',strtotime('+1 day'));
@@ -399,8 +396,6 @@ class ScheduleDataController extends Controller
             $previous[2] = NULL;
         }
 
-
-        // return view('schedules.resident.schedule_confirm', compact('id', 'schedule_data1', 'schedule_data2', 'schedule_data3','input'));
         return view('schedules.resident.schedule_confirm', compact('id', 'input', 'previous'));
     }
 
@@ -697,7 +692,6 @@ class ScheduleDataController extends Controller
                         ->where('resident', $resident)
                         ->where('option',$choice)
                         ->delete();
-                        // ->update(['isValid'=>0]);
             }
         } else {
             $overwrittenChoices[1] = 0;

@@ -77,7 +77,6 @@ class EvaluationParser extends Model
 
             $namefl = $name_first." ".$name_last;
 
-//            echo "doc".substr($line, 0, $ep)."\n";
             $ep = stripos(substr($line, 0), "\n");
             $line=substr($line,$ep+1);
 
@@ -94,29 +93,11 @@ class EvaluationParser extends Model
                 $endTime=self::getTime($match[1],$this->date);
                 $diff = strtotime($endTime) - strtotime($startTime);
                 $diff = $diff/60;
-//            echo "time".substr($line, 0, $ep)."\n";
 
                 $obj=new user($namefl,$occupation,$startTime,$endTime,$diff);
                 array_push($participants,$obj);
                 $line=substr($line,$ep+1);
             }
-            //$ep = stripos(substr($line, 0), "\n");
-
-            //$tmp=trim(substr($line, 0, $ep)," +");
-            //$occupation=self::getOccupation(substr($tmp,0,stripos($tmp," ")));
-
-
-            //preg_match("/from (.*) to/s",$tmp,$match);
-            //$startTime=self::getTime($match[1], $this->date);
-            //preg_match("/to (.*)/s",$tmp,$match);
-            //$endTime=self::getTime($match[1],$this->date);
-            //$diff = strtotime($endTime) - strtotime($startTime);
-            //$diff = $diff/60;
-//            echo "time".substr($line, 0, $ep)."\n";
-
-            // $obj=new user($namefl,$occupation,$startTime,$endTime,$diff);
-            // array_push($participants,$obj);
-            // $line=substr($line, $ep+1);
         }
         return $participants;
     }
@@ -145,19 +126,10 @@ class EvaluationParser extends Model
         if(strlen($line)>4){
             $date=self::getDate(substr($line,0,stripos($line," ")));
             $line=substr($line,stripos($line," ")+1);
-            //$hourInt = intval(substr($line, 0, 2));
-            //$minuteInt = intval(substr($line, 2));
-
-
         }else{
             date_default_timezone_set('America/New_York');
             $date=date('y-m-d',strtotime("-1 day"));
-            //$hourInt = intval(substr($line, 0, 2));
-            //$minuteInt = intval(substr($line, 2));
-           //return $date." ".$hourInt.":".$minuteInt;
         }
-        // $hourInt = intval(substr($line, 0, 2));
-        // $minuteInt = intval(substr($line, 2));
         $hourInt = substr($line, 0, 2);
         $minuteInt = substr($line, 2);
 

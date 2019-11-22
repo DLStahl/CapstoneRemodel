@@ -69,7 +69,6 @@ class AutoAssignment extends Model
         /**
          * Assign OR based on the original probability
          */
-//        $remainder = array();
         foreach ($candidates as $candidate)
         {
             $competitors = Option::where('date', $date)->where('schedule', $candidate)->where('option', "1")->where('isValid',"1")->get();
