@@ -7,9 +7,9 @@
         <h2>{{ $data['role'] }}, {{ $data['name'] }} with Email address: {{ $data['email'] }} will be added.</h2>
     @endif
 
-    <input align="left" type="button" value="Confirm" id="{{ $data['email'] }}_{{ $data['role'] }}/{{ $data['name'] }}[{{ $data['op'] }}" class='btn btn-md btn-success' onclick="confirmUpdate(this.id);">		
+    <input align="left" type="button" value="Confirm" id="{{ $data['email'] }}_{{ $data['role'] }}/{{ $data['name'] }}[{{ $data['op'] }}" class='btn btn-md btn-success' onclick="confirmUpdate(this.id);">
 
-    <script type="text/javascript">                
+    <script type="text/javascript">
         function confirmUpdate(id)
         {
             var email = id.substring(0, id.indexOf('_'));
@@ -20,7 +20,7 @@
             // Update url to the confirmation page
             var current_url = window.location.href;
             var url = "";
-            if (current_url.includes('deleteUser')) {
+            if (current_url.indexOf('deleteUser') != -1) {
                 url = current_url.substring(0, current_url.indexOf('/deleteUser/'));
             } else {
                 url = current_url.substring(0, current_url.indexOf('/addUser/'));

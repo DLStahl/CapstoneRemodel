@@ -15,18 +15,20 @@ use App\EvaluateData;
 use App\Resident;
 use App\Option;
 use App\Assignment;
+use App\Http\Controllers\MedhubController;
 
 class user{
     //array 0:LastName, 1:MiddleName, 2:FirstName
-    public $namefml;
+    public $namefl;
 
     //resident:0, attending:1
     public $occupation;
     public $startTime;
     public $endTime;
     public $diff;
-    public function __construct($namefml,$occupation,$startTime,$endTime,$diff){
-        $this->namefml=$namefml;
+    public function __construct($namefl,$occupation,$startTime,$endTime,$diff){
+
+        $this->namefl=$namefl;
         $this->occupation=$occupation;
         $this->startTime=$startTime;
         $this->endTime=$endTime;
@@ -45,7 +47,7 @@ class EvaluationParser extends Model
     {
 
         $month = intval(substr($line, 0, 2));
-        $day = intval(substr($line, 3, 5));
+        $day = intval(substr($line, 3, 2));
         $year = intval(substr($line, 6));
 
         return ($year."-".$month."-".$day);
@@ -63,8 +65,18 @@ class EvaluationParser extends Model
             $name = array_reverse($name);
             $namefml = implode(" ", $name);
             $namefml = preg_replace( "/\s(?=\s)/","\\1", $namefml);
+            echo 'name fml:'.$namefml."\n";
 
-//            echo "doc".substr($line, 0, $ep)."\n";
+            $namefl = explode(" ", $namefml);
+            $name_first = $namefl[0];
+            if (sizeof($namefl) <= 3) {
+                $name_last = end($namefl);
+            } else {
+                $name_last = $namefl[2];
+            }
+
+            $namefl = $name_first." ".$name_last;
+
             $ep = stripos(substr($line, 0), "\n");
             $line=substr($line,$ep+1);
 
@@ -81,29 +93,11 @@ class EvaluationParser extends Model
                 $endTime=self::getTime($match[1],$this->date);
                 $diff = strtotime($endTime) - strtotime($startTime);
                 $diff = $diff/60;
-//            echo "time".substr($line, 0, $ep)."\n";
 
-                $obj=new user($namefml,$occupation,$startTime,$endTime,$diff);
+                $obj=new user($namefl,$occupation,$startTime,$endTime,$diff);
                 array_push($participants,$obj);
                 $line=substr($line,$ep+1);
             }
-            //$ep = stripos(substr($line, 0), "\n");
-
-            //$tmp=trim(substr($line, 0, $ep)," +");
-            //$occupation=self::getOccupation(substr($tmp,0,stripos($tmp," ")));
-
-
-            //preg_match("/from (.*) to/s",$tmp,$match);
-            //$startTime=self::getTime($match[1], $this->date);
-            //preg_match("/to (.*)/s",$tmp,$match);
-            //$endTime=self::getTime($match[1],$this->date);
-            //$diff = strtotime($endTime) - strtotime($startTime);
-            //$diff = $diff/60;
-//            echo "time".substr($line, 0, $ep)."\n";
-
-            // $obj=new user($namefml,$occupation,$startTime,$endTime,$diff);
-            // array_push($participants,$obj);
-            // $line=substr($line, $ep+1);
         }
         return $participants;
     }
@@ -132,19 +126,10 @@ class EvaluationParser extends Model
         if(strlen($line)>4){
             $date=self::getDate(substr($line,0,stripos($line," ")));
             $line=substr($line,stripos($line," ")+1);
-            //$hourInt = intval(substr($line, 0, 2));
-            //$minuteInt = intval(substr($line, 2));
-
-
         }else{
             date_default_timezone_set('America/New_York');
             $date=date('y-m-d',strtotime("-1 day"));
-            //$hourInt = intval(substr($line, 0, 2));
-            //$minuteInt = intval(substr($line, 2));
-           //return $date." ".$hourInt.":".$minuteInt;
         }
-        // $hourInt = intval(substr($line, 0, 2));
-        // $minuteInt = intval(substr($line, 2));
         $hourInt = substr($line, 0, 2);
         $minuteInt = substr($line, 2);
 
@@ -161,11 +146,11 @@ class EvaluationParser extends Model
          * Assign value to date
          */
         $year = intval(substr($datefile, 0, 4));
-        $month = intval(substr($datefile, 4, 6));
+        $month = intval(substr($datefile, 4, 2));
         $day = intval(substr($datefile, 6));
         $this->date = $year."-".$month."-".$day;
 
-        if (!$this->insertEvaluateData())
+        if (!$this->insertEvaluateData($datefile))
         {
             $this->fileExists=false;
         }
@@ -178,18 +163,21 @@ class EvaluationParser extends Model
         return $this->fileExists;
     }
 
-    private function insertEvaluateData(){
+    private function insertEvaluateData($datefile){
         if (!file_exists($this->filepath)) {
             Log::info("no evaluate file");
             return false;
         }
+        Log::info("parse evaluation data");
         $fp = fopen($this->filepath, 'r');
+
+        $failedAddingUsers = array();
 
         fgetcsv($fp);
         while(($line = fgetcsv($fp)) !== false){
             $participants=self::getParticipants($line[7]);
             var_dump($participants);
-            
+
             foreach ($participants as $resident) {
             	if($resident->occupation == 0 and $resident->diff >= 15){
             		foreach ($participants as $attending) {
@@ -201,37 +189,68 @@ class EvaluationParser extends Model
                                 $procedure=$line[2];
                                 $location=$line[3];
                                 $asa=$line[4];
-                                if(Resident::where('name', $resident->namefml)->doesntExist()){
-                                    $rid = null;
+
+                                // Add new resident to database if doesn't exist
+                                $rId = null;
+                                if(Resident::where('name', $resident->namefl)->doesntExist()){
+                                    if (!in_array($resident->namefl, $failedAddingUsers)){
+                                        echo 'Resident '.$resident->namefl.' doesnt exist'."\n";
+                                        $MHC = new MedhubController();
+                                        $residentAdded = $MHC->addUserFromMedhub('Resident', $resident->namefl);
+                                        echo 'Resident added: '.$residentAdded."\n";
+                                        if ($residentAdded){
+                                            echo 'Resident '.$resident->namefl.' added'."\n";
+                                            $rId = Resident::where('name', $resident->namefl)->value('id');
+                                        } else {
+                                            array_push($failedAddingUsers, $resident->namefl);
+                                        }
+                                    }
+                                } else {
+                                    echo 'Resident '.$resident->namefl.' exists'."\n";
+                                    $rId = Resident::where('name', $resident->namefl)->value('id');
                                 }
-                                $rId = Resident::where('name', $resident->namefml)->value('id');
+
+                                // Add new attending to database if doesn't exist
                                 $aId = null;
+                                if(Attending::where('name', $attending->namefl)->doesntExist()){
+                                    if (!in_array($attending->namefl, $failedAddingUsers)){
+                                        echo 'Attending '.$attending->namefl.' doesnt exist'."\n";
+                                        $MHC = new MedhubController();
+                                        $attendingAdded = $MHC->addUserFromMedhub('Attending', $attending->namefl);
+                                        echo 'resident added: '.$attendingAdded."\n";
+                                        if ($attendingAdded){
+                                            echo 'Attending '.$attending->namefl.' added'."\n";
+                                            $aId = Attending::where('name', $attending->namefl)->value('id');
+                                        } else {
+                                            array_push($failedAddingUsers, $attending->namefl);
+                                        }
+                                    }
+                                    
+                                } else {
+                                    echo 'Attending '.$attending->namefl.' exists'."\n";
+                                    $aId = Attending::where('name', $attending->namefl)->value('id');
+                                }
+
                                 $schedule = Assignment::where(['resident'=>$rId, 'date'=>$date])->value('schedule');
                                 $milestone = Option::where(['resident'=>$rId, 'schedule'=>$schedule])->value('milestones');
                                 $objective = Option::where(['resident'=>$rId, 'schedule'=>$schedule])->value('objectives');
                                 echo $rId."\n"."Diff mins is: ".$resident->diff."\n";
-                                echo "Resident ".$resident->namefml."\n";
-                                echo " work with Attending ".$attending->namefml."<br>";
+                                echo "Resident ".$resident->namefl."\n";
+                                echo " work with Attending ".$attending->namefl."<br>";
                                 echo "see aId "."\n"."milestones ".$schedule."\n".$milestone;
-                                if(EvaluateData::where(['date'=>$date, 'location'=>$location, 'resident'=>$resident->namefml, 'attending'=>$attending->namefml])->doesntExist()){
+                                if(EvaluateData::where(['date'=>$date, 'location'=>$location, 'resident'=>$resident->namefl, 'attending'=>$attending->namefl])->doesntExist()){
                                     EvaluateData::insert(
-             ['date' => $date, 'location' => $location, 'diagnosis' => $diagnosis, 'procedure' => $procedure, 
-             'asa' => $asa, 'rId' => $rId, 'resident' => $resident->namefml, 'aId' => $aId, 'attending' => $attending->namefml, 'diff' =>$resident->diff ]
-            );
+                                        ['date' => $date, 'location' => $location, 'diagnosis' => $diagnosis, 'procedure' => $procedure,'asa' => $asa, 'rId' => $rId, 'resident' => $resident->namefl, 'aId' => $aId, 'attending' => $attending->namefl, 'diff' =>$resident->diff ]
+                                    );
                                 }
-
-            //                     EvaluateData::insert(
-            //  ['date' => $date, 'location' => $location, 'diagnosis' => $diagnosis, 'procedure' => $procedure, 
-            //  'asa' => $asa, 'rId' => $rId, 'resident' => $resident->namefml, 'aId' => $aId, 'attending' => $attending->namefml, 'diff' =>$resident->diff ]
-            // );
                             }
             			}
             		}
             	}
-            	
+
             }
         }
- 
+
         fclose($fp);
         return true;
     }

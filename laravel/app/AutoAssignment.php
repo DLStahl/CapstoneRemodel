@@ -9,12 +9,14 @@ use App\Assignment;
 use App\Resident;
 use App\Probability;
 use App\ScheduleData;
+use Illuminate\Support\Facades\Log;
 
 class AutoAssignment extends Model
 {
     public static function assignment($date)
     {
-        if (Option::where('date', $date)->doesntExist())
+        Log::info("auto assignment");
+        if (Option::where('date', $date)->where('isValid', "1")->doesntExist())
         {
             return;
         }
@@ -39,18 +41,18 @@ class AutoAssignment extends Model
                 ]);
             }
 
-            
 
-            if (Option::where('date', $date)->where('resident', $resident['id'])->count() >= 1)
+
+            if (Option::where('date', $date)->where('resident', $resident['id'])->where('isValid',"1")->count() >= 1)
             {
 
-                $firstPreference = Option::where('date', $date)->where('resident', $resident['id'])->where('option', "1")->value('schedule');
+                $firstPreference = Option::where('date', $date)->where('resident', $resident['id'])->where('option', "1")->where('isValid',"1")->value('schedule');
                 if(is_null($firstPreference))
                 {
                     array_push($remainder, $resident['id']);
                     continue;
                 }
-                if (Option::where('date', $date)->where('schedule', $firstPreference)->where('option', "1")->count() == 1)
+                if (Option::where('date', $date)->where('schedule', $firstPreference)->where('option', "1")->where('isValid',"1")->count() == 1)
                 {
                     /**
                      * Add unique first preferences into database
@@ -67,10 +69,9 @@ class AutoAssignment extends Model
         /**
          * Assign OR based on the original probability
          */
-//        $remainder = array();
         foreach ($candidates as $candidate)
         {
-            $competitors = Option::where('date', $date)->where('schedule', $candidate)->where('option', "1")->get();
+            $competitors = Option::where('date', $date)->where('schedule', $candidate)->where('option', "1")->where('isValid',"1")->get();
             $maxScore=-1;
             $toPush = null;
             foreach ($competitors as $competitor)
@@ -226,14 +227,15 @@ class AutoAssignment extends Model
         Option::where('schedule', $schedule)->update([
             'isValid'=>'0'
         ]);
-
         $attending = ScheduleData::where('id', $schedule)->value('lead_surgeon');
         $pos = strpos($attending, '[');
         $pos_end = strpos($attending, "]");
         $attending = substr($attending, $pos+1, $pos_end-$pos-1);
 
+        $option = Option::where('resident', $resident)->where('date', $date)->where('schedule', $schedule)->value('id');
+
         Assignment::insert([
-            'date'=>$date, 'resident'=>$resident, 'attending'=>$attending, 'schedule'=>$schedule
+            'date'=>$date, 'resident'=>$resident, 'attending'=>$attending, 'schedule'=>$schedule, 'option'=>$option
         ]);
     }
 

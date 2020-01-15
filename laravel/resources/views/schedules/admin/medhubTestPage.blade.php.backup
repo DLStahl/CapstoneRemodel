@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <title>REMODEL</title>
+        <?php
+            $url = "/laravel/public/admin/";              
+        ?>
+        
+    </head>
+    <body>
+        <h4>{{ $message }}</h4>
+        <p>
+            Please click <a href="{{ $url }}">here</a> to return.
+        </p>
+    </body>
+</html>

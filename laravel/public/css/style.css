@@ -8,6 +8,12 @@ th{
 	text-align: center;
 }
 
+#page_footer{
+    /*position: absolute;
+    bottom: 0;
+    width: 100%;*/
+}
+
 #header{
     padding-top: 15px;
     padding-left: 15px;
@@ -25,35 +31,31 @@ th{
 
 .osu-red {background-color:#bb0000;}
 
-.btn-primary,
-.btn-primary:hover,
-.btn-primary:active,
-.btn-primary:visited,
-.btn-primary:focus {
+.btn,
+.btn:active,
+.btn:enabled,
+.btn:visited,
+.btn:focus{
+    color: #fff;
     background-color: #26686d;
     border-color: #666666;
 }
-
-.btn-success,
-.btn-success:hover,
-.btn-success:active,
-.btn-success:visited,
-.btn-success:focus {
-    background-color: #26686d;
-    border-color: #666666;
+.btn:not(:disabled):hover{
+    background-color: #bb0000;
 }
 
 td.inTable{
     padding: 0px;
 }
     
+.table{
+    margin-bottom: 0px;
+}
 
 #footer-wrap{
     min-height: 50px;
     background-color: #666666; 
     color: #FFF;
-    
-    
 }
 
 #footer{
@@ -83,3 +85,37 @@ td.inTable{
     margin: auto;
     padding-top: 20px;
 }
+
+#schedule_footer{
+    position: fixed;
+    bottom: 35px;
+    z-index: 5;
+    background-color: white;
+}
+
+div#preferences {
+    border: 1px solid;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+div#preferences div.preferences {
+    background-color: #F0F0F0;
+    border: 1px solid;
+    /*padding: 10px;*/
+}
+
+.btn-group-vertical > button{
+    margin-top:0.25rem;
+    margin-bottom:0.25rem;
+    border-radius:0.25rem !important;
+}
+
+#sched_table_container {
+    overflow: auto;
+    padding: 0px;
+    min-height: 400px;
+    border: 1px solid;
+}
+
+

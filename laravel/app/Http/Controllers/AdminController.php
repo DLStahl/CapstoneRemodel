@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Http\Requests;
 use App\Admin;
 use App\Attending;
 use App\Resident;
@@ -13,15 +12,19 @@ use App\Option;
 use App\Assignment;
 use App\AdminDownload;
 use App\ScheduleData;
-use App\EvaluateData;
 use App\Probability;
+use App\EvaluateData;
+use App\Rotations;
+use App\Milestone;
+use App\Http\Requests;
 use Session;
+use \Datetime;
 
 class AdminController extends Controller
-{   
+{
     public function getIndex()
-    {         
-        return view('schedules.admin.admin');        
+    {
+        return view('schedules.admin.admin');
     }
 
     /**
@@ -33,7 +36,7 @@ class AdminController extends Controller
         $admin = Admin::where('exists', '1')->orderBy('email', 'asc')->get();
         $attending = Attending::where('exists', '1')->orderBy('email', 'asc')->get();
         $roles = array();
-        
+
         for ($i=0; $i<count($admin); $i++) {
             $role = array(
                 'name'=>$admin[$i]['name'],
@@ -42,7 +45,7 @@ class AdminController extends Controller
             );
             array_push($roles, $role);
         }
-        
+
         for ($i=0; $i<count($attending); $i++) {
             $role = array(
                 'name'=>$attending[$i]['name'],
@@ -51,7 +54,7 @@ class AdminController extends Controller
             );
             array_push($roles, $role);
         }
-        
+
         for ($i=0; $i<count($resident); $i++) {
             $role = array(
                 'name'=>$resident[$i]['name'],
@@ -72,9 +75,9 @@ class AdminController extends Controller
         if ($name == null) {
             $name = "null";
         }
-        
+
         str_replace("%20", " ", $name);
-        
+
         $data = array(
             'op'=>$op,
             'role'=>$role,
@@ -82,14 +85,14 @@ class AdminController extends Controller
             'flag'=>$flag,
             'name'=>$name
         );
-        
+
         /**
          * If the data input has not been confirmed, route user to a confirmation page.
          */
         if (strcmp($flag, "false") == 0) {
             return view('schedules.admin.users_confirm', compact('data'));
-        } 
-        
+        }
+
         /**
          * Update admin
          */
@@ -100,14 +103,14 @@ class AdminController extends Controller
             if (strcmp($op, "deleteUser") == 0) {
                 Admin::where('email', $email)->update(['exists'=> '0']);
             }
-            
+
             /**
              * Add a new admin
              */
             else if (strcmp($op, "addUser") == 0 && Admin::where('email', $email)->doesntExist()) {
                 Admin::insert(['name'=>$name, 'email'=>$email]);
-            } 
-            
+            }
+
             /**
              * Add an old admin, switch 'exists' to true
              */
@@ -115,7 +118,7 @@ class AdminController extends Controller
                 Admin::where('email', $email)->update(['exists'=> '1']);
             }
         }
-        
+
         /**
          * Update attending
          */
@@ -125,7 +128,7 @@ class AdminController extends Controller
              */
             if (strcmp($op, "deleteUser") == 0) {
                 Attending::where('email', $email)->update(['exists'=> '0']);
-            } 
+            }
 
             /**
              * Add a new attending
@@ -135,14 +138,14 @@ class AdminController extends Controller
                 $name_ = substr($name, 0, strpos($name, "<"));
                 Attending::insert(['name'=>$name_, 'email'=>$email, 'id'=>$id]);
             }
-            
+
             /**
              * Add an old attending, switch 'exists' to true
              */
             else if (strcmp($op, "addUser") == 0 && Attending::where('email', $email)->exists()) {
                 Attending::where('email', $email)->update(['exists'=> '1']);
             }
-        } 
+        }
 
         /**
          * Update resident
@@ -150,18 +153,24 @@ class AdminController extends Controller
         else if (strcmp($role, "Resident") == 0) {
             /**
              * Delete resident, switch 'exists' to false
-             */            
+             */
             if (strcmp($op, "deleteUser") == 0) {
                 Resident::where('email', $email)->update(['exists'=> '0']);
-            }             
-            
+            }
+
             /**
              * Add a new resident
              */
             else if (strcmp($op, "addUser") == 0 && Resident::where('email', $email)->doesntExist()) {
-                Resident::insert(['name'=>$name, 'email'=>$email]);
-            } 
-           
+                if (strpos($name, "<") === false){
+                  Resident::insert(['name'=>$name, 'email'=>$email, 'exists'=>1]);
+                } else {
+                  $id = substr($name, strpos($name, "<")+1, strpos($name, ">")-strpos($name, "<")-1);
+                  $name_ = substr($name, 0, strpos($name, "<"));
+                  Resident::insert(['name'=>$name_, 'email'=>$email,'exists'=>1, 'medhubId'=>$id]);
+                }
+            }
+
             /**
              * Add an old admin, switch 'exists' to true
              */
@@ -169,7 +178,7 @@ class AdminController extends Controller
                 Resident::where('email', $email)->update(['exists'=> '1']);
             }
         }
-        
+
         return view('schedules.admin.users_update');
     }
 
@@ -179,6 +188,180 @@ class AdminController extends Controller
     public function getSchedules()
     {
         return view('schedules.admin.schedules');
+    }
+
+    /**
+     * Route to update milestone page
+     */
+    public function getMilestones()
+    {
+        $milestone = Milestone::where('exists', 1)->orderBy('category', 'asc')->get();
+        return view('schedules.admin.milestones', compact('milestone'));
+    }
+
+    /**
+     * Route to update milestone with csv file confirmation page
+     */
+    public function getUploadedMilestones(Request $request){
+        $filename = "Milestones".date("Ymd G:i")."csv";
+        $request->fileUpload->storeAs('UpdateMilestones', $filename);
+
+        $filepath = __DIR__."/../../../storage/app/UpdateMilestones/".$filename;
+        $fp = fopen($filepath, 'r');
+        // Read the first row
+        $line = fgetcsv($fp);
+        // The first line should be headers "abbr code / full name category / detail"
+        if($line == false){
+            $data = array();
+            // csv file is invalid
+            $valid = 0;
+        } else {
+            // count number of columns
+            $numcols = count($line);
+            // the file must have 3 columns
+            if ($numcols < 3){
+                $data = array();
+                // csv file is invalid
+                $valid = 0;
+            } else {
+                // csv file is valid
+                $valid = 1;
+
+                // store all milestones together
+                $data = array('new'=>array(), 'update'=>array(), 'invalid'=>array());
+                // Read rows until null
+                while (($line = fgetcsv($fp)) !== false)
+                {
+                    $abbr_name = $line[0];
+                    $full_name = $line[1];
+                    $detail = $line[2];
+                    // Valid milestones info
+                    if (strlen($abbr_name) > 0 && strlen($full_name) > 0 && strlen($detail) > 0){
+                        if(Milestone::where('category', $abbr_name)->where('exists', 1)->doesntExist()){
+                            array_push($data['new'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]);
+                        } else {
+                            array_push($data['update'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]); 
+                        }
+                    } else {
+                        // ignore empty rows
+                        // Invalid milestone info
+                        // must have data in all three columns
+                        if(strlen($abbr_name) > 0 || strlen($full_name) > 0 || strlen($detail) > 0){
+                            array_push($data['invalid'], ['abbr_name' => $abbr_name, 'full_name' => $full_name, 'detail' => $detail]); 
+                        }
+                    }
+                }
+            }
+        }
+
+        // Close file
+        fclose($fp);
+
+        return view('schedules.admin.milestones_upload_confirm', compact('data', 'filepath', 'valid'));
+    }
+
+    /**
+     * Route to update milestone with csv file
+     */
+    public function uploadMilestones(){
+        // get the filepath
+        $filepath = $_REQUEST['filepath'];
+
+        $fp = fopen($filepath, 'r');
+        // Read the first row
+        fgetcsv($fp);
+
+        // Read rows until null
+        while (($line = fgetcsv($fp)) !== false)
+        {
+            $abbr_name = $line[0];
+            $full_name = $line[1];
+            $detail = $line[2];
+            if (strlen($abbr_name) > 0 && strlen($full_name) > 0 && strlen($detail) > 0){
+                if(Milestone::where('category', $abbr_name)->where('exists', 1)->doesntExist()){
+                    // insert new milestone
+                    Milestone::insert(
+                        ['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]
+                    ); 
+                } else {
+                    // mark previous on as not exist and insert a new one
+                    Milestone::where('category', $abbr_name)->where('exists', 1)->update(['exists'=>0]);
+                    Milestone::insert(
+                        ['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]
+                    );  
+                }
+            }
+        }
+        // Close file
+        fclose($fp);
+        return view('schedules.admin.milestones_update', compact('data'));
+    }
+
+    /**
+     * Route to update user page
+     */
+    public function getUpdateMilestone($op, $flag, $id=null, $abbr_name=null, $full_name=null, $detail=null)
+    {
+        $old_abbr_name = null;
+        $old_full_name = null;
+        $old_detail = null;
+
+        if (strcmp($op, "add") == 0 && strcmp($flag, "false") == 0) {
+        // get user input of new milestone info
+            $abbr_name = $_REQUEST['newCode'];
+            $full_name = $_REQUEST['newCategory'];
+            $detail = $_REQUEST['newDetail'];
+        } else if(strcmp($op, "delete") == 0 ){
+            // get milestone info that will be deleted
+            $milestone = Milestone::where('id', $id);
+            $old_abbr_name = $milestone->value('category');
+            $old_full_name = $milestone->value('title');
+            $old_detail = $milestone->value('detail');
+        } else if(strcmp($op, "update") == 0 ){
+            // get previous and current milestone info that will be updated
+            $milestone = Milestone::where('id', $id);
+            $old_abbr_name = $milestone->value('category');
+            $old_full_name = $milestone->value('title');
+            $old_detail = $milestone->value('detail');
+        }
+
+        str_replace("%20", " ", $abbr_name);
+        str_replace("%20", " ", $full_name);
+        str_replace("%20", " ", $detail);
+
+        $data = array(
+            'op'=>$op,
+            'flag'=>$flag,
+            'id'=>$id,
+            'abbr_name'=>$abbr_name,
+            'full_name'=>$full_name,
+            'detail'=>$detail,
+            'old_abbr_name'=>$old_abbr_name,
+            'old_full_name'=>$old_full_name,
+            'old_detail'=>$old_detail
+        );
+
+        /**
+         * If the data input has not been confirmed, route user to a confirmation page.
+         */
+        if (strcmp($flag, "false") == 0) {
+            return view('schedules.admin.milestones_confirm', compact('data'));
+        }
+
+        // Delete a milestone
+        if (strcmp($op, "delete") == 0) {
+            Milestone::where('id', $id)->update(['exists' => 0]);
+        }
+
+        // Add a new milestone
+        else if (strcmp($op, "add") == 0){
+            Milestone::insert(['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]);
+        } else if (strcmp($op, "update") == 0){
+            Milestone::where('id', $id)->update(['exists'=>0]);
+            Milestone::insert(['category' => $abbr_name, 'title' => $full_name, 'detail' => $detail]);
+        }
+
+        return view('schedules.admin.milestones_update');
     }
 
 
@@ -191,7 +374,7 @@ class AdminController extends Controller
         {
             $date = $_POST['date'];
             return view('schedules.admin.addDB', compact('date'));
-        } 
+        }
         else if (strcmp($_POST['op'], "delete") == 0)
         {
             /**
@@ -199,7 +382,7 @@ class AdminController extends Controller
              */
             AdminDownload::updateAccess();
             $urls = AdminDownload::updateURL($_POST['date']);
-            
+
             if ($urls !== null)
             {
 
@@ -214,12 +397,12 @@ class AdminController extends Controller
             }
 
             echo "Error in deleting data sets!";
-        } 
+        }
         else if (strcmp($_POST['op'], "edit") == 0)
         {
             $datasets = self::retrieveData($_POST['date']);
             $residents = Resident::orderBy('email', 'asc')->get();
-            return view('schedules.admin.editDB', compact('datasets', 'residents'));            
+            return view('schedules.admin.editDB', compact('datasets', 'residents'));
         }
 
     }
@@ -235,7 +418,7 @@ class AdminController extends Controller
             $location = is_null($schedule['location']) ? "" : $schedule['location'];
             $room = is_null($schedule['room']) ? "" : $schedule['room'];
             $case_procedure = is_null($schedule['case_procedure']) ? "" : $schedule['case_procedure'];
-            
+
             $lead_surgeon = "";
             $lead_surgeon_code = "";
             if (!is_null($schedule['lead_surgeon']))
@@ -249,7 +432,7 @@ class AdminController extends Controller
             $patient_class = is_null($schedule['patient_class']) ? "" : $schedule['patient_class'];
             $start_time = is_null($schedule['start_time']) ? "" : $schedule['start_time'];
             $end_time = is_null($schedule['end_time']) ? "" : $schedule['end_time'];
-            
+
             $assignment = "";
             $email = "";
             if (Assignment::where('schedule', $id)->exists())
@@ -280,7 +463,7 @@ class AdminController extends Controller
             } else {
                 $case_procedure.=$_POST['case_procedure_2']." [".$_POST['case_procedure_2_code']."]";
             }
-            
+
             if (strlen($_POST['case_procedure_3'])>0)
             {
                 $case_procedure.=", ".$_POST['case_procedure_3']." [".$_POST['case_procedure_3_code']."]";
@@ -290,11 +473,11 @@ class AdminController extends Controller
                     if (strlen($_POST['case_procedure_5'])>0)
                     {
                         $case_procedure.=", ".$_POST['case_procedure_5']." [".$_POST['case_procedure_5_code']."]";
-                        
+
                     }
                 }
             }
-            
+
         }
 
         return $case_procedure;
@@ -320,11 +503,11 @@ class AdminController extends Controller
             $end_time = $_POST['end_time'].":00";
             if (strcmp($start_time, $end_time) < 0) {
                 ScheduleData::insert([
-                    'date' => $date, 'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure, 
-                    'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class, 'start_time' => $start_time, 
+                    'date' => $date, 'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure,
+                    'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class, 'start_time' => $start_time,
                     'end_time' => $end_time
                 ]);
-    
+
                 $message = "Successfully add schedule data!";
             }
 
@@ -346,10 +529,10 @@ class AdminController extends Controller
             $case_procedure = self::processCaseProcedure($_POST['case_procedure_1']);
             $lead_surgeon = $_POST['lead_surgeon']." [".$_POST['lead_surgeon_code']."]";
             $patient_class = $_POST['patient_class'];
-            
+
             ScheduleData::where('id', $id)->update([
-                'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure, 
-                'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class, 
+                'location' => $location, 'room' => $room, 'case_procedure' => $case_procedure,
+                'lead_surgeon' => $lead_surgeon, 'patient_class' => $patient_class,
                 'start_time' => $start_time, 'end_time' => $end_time
             ]);
 
@@ -365,9 +548,9 @@ class AdminController extends Controller
                 $assignment = Resident::where('email', $_POST['assignment'])->value('id');
                 $date = $_POST['date'];
                 Assignment::insert([
-                    'date'=>$date, 'resident'=>$assignment, 
+                    'date'=>$date, 'resident'=>$assignment,
                     'attending'=>$_POST['lead_surgeon_code'],
-                    'schedule'=>$id, 
+                    'schedule'=>$id,
                 ]);
             }
 
@@ -375,11 +558,11 @@ class AdminController extends Controller
             $message = "Successfully edit schedule data!";
         }
 
- 
+
 
         return view('schedules.admin.addDB_OK', compact('message'));
     }
-    
+
 
 
     /**
@@ -404,10 +587,10 @@ class AdminController extends Controller
     {
         return view('schedules.admin.resetTickets');
     }
- 
+
     public function postUpdateTickets()
     {
-        
+
         // Probability::where('resident', 1)->update([
         //     'total'=>"0"
         // ]);
@@ -416,17 +599,22 @@ class AdminController extends Controller
         return view('schedules.admin.resetTickets');
     }
 
-    public function getEvaluation()
+    public function getEvaluation($date = null)
     {
+
         date_default_timezone_set('America/New_York');
-        $year = date("o", strtotime('-1 day'));
-        $mon = date('m',strtotime('-1 day'));
-        $day = date('j',strtotime('-1 day'));
-        $date =  $year.'-'.$mon.'-'.$day;
+        if($date == null)
+        {
+            $year = date("o", strtotime('-1 day'));
+            $mon = date('m',strtotime('-1 day'));
+            $day = date('j',strtotime('-1 day'));
+            $date =  $year.'-'.$mon.'-'.$day;
+        }
+
 
         $evaluate = null;
         $evaluate = EvaluateData::whereDate('date', $date)->get();
-        
+
         $evaluate_data = array();
         foreach ($evaluate as $data)
         {
@@ -443,7 +631,101 @@ class AdminController extends Controller
             ));
         }
 
-        return view('schedules.admin.evaluation', compact('evaluate_data'));
+        return view('schedules.admin.evaluation', compact('evaluate_data', 'date'));
     }
 
+	public function uploadForm(){
+		return view('schedules.admin.uploadForm');
+	}
+
+	// only meant to be used when the medhub report form is uploaded
+	public function UpdateRotationsTable()
+	{
+
+		// delete all the previous entries
+		Rotations::truncate();
+
+		$file = fopen("/usr/local/webs/remodel.anesthesiology/htdocs/laravel/storage/app/ResidentRotationSchedule/medhub-report.txt","r");
+		$i = 0;
+		while($line = fgets($file)){
+			if($i < 5)
+			{
+		           // This is here in order to skip over the beginning generated info that isn't important to the rotations.
+			  // Once i reaches 5 and above, the remaining information is parsed and stored properly
+			}
+			else
+			{
+				$split = explode(',', $line);
+				$department = $split[0];
+				$name = $split[2].' '.$split[1];
+				$level = $split[4];
+				$service = $split[6];
+				$site = $split[7];
+				$startDate = $split[8];
+				$endDate = $split[9];
+
+				$startDate = DateTime::createFromFormat('m/d/Y', $startDate);
+				$startDate = $startDate->format('Y-m-d');
+
+				$endDate = DateTime::createFromFormat('m/d/Y', $endDate);
+				$endDate = $endDate->format('Y-m-d');
+
+				// pediatric, preop anesth.,
+
+				$serviceToEvalID = array(
+					"Acute Pain Service" => 0,
+					"Acute Pain Service " => 0,
+					"Advanced Clinical Track" => 92,
+					"Advanced Clinical Track - Vascular" => 580,
+					"Advanced Clinical Track- Liver" => 1725,
+					"Advanced Clinical Track- Thoracic" => 581,
+					"Ambulatory Anesthesiology" => 575,
+					"Basic Anesthesiology" => 4,
+					"Cardiac Anesthesiology" => 574,
+					"Cardiovascular Anesthesiology" => 574,
+					"Cardiovascular TEE" => 0,
+					"CBY - Emergency Medicine" =>0,
+					"CBY Anesthesiology ENT" =>0,
+					"CBY Surgery" =>0,
+					"CBY- Blood Bank/ Ultrasound" =>0,
+					"CBY- Pulmonary Consults" =>0,
+					"Chronic Pain"=>0,
+					"Chronic Pain "=>0,
+					"CBY Hearts" => 0,
+					"Neuroanesthesiology" =>116,
+					"Obstetrical Anesthesiology" =>0,
+					"Out of Operating Room Anesthesiology" => 579,
+					"Pain- Regional" => 0,
+					"Pediatric Anesthesiology" =>0,
+					"Post Anesthesia Care Unit" => 541,
+					"Preop Anesthesiology" =>0,
+					"Preoperative Assessment Clinic" =>0,
+					"Regional Anesthesiology and Pain Medicine Main" => 571,
+					"Regional Anesthesiology at East" =>0,
+					"Research - Rhodes/Doan" =>0,
+					"Ross Intensive Care Unit / CV ICU" =>0,
+					"Surgical Intensive Care Unit" => 0,
+				);
+
+
+				$serviceInt = $serviceToEvalID[$service];
+
+
+				Rotations::insert(['Name'=>$name, 'Level'=>$level, 'Service'=>$serviceInt, 'Site'=>$site, 'Start'=>$startDate, 'End'=>$endDate]);
+
+			}
+			$i++;
+		}
+	}
+
+	public function uploadFormPost(Request $request){
+
+		$fileName = 'medhub-report.txt';
+
+		$request->fileUpload->storeAs('ResidentRotationSchedule', $fileName);
+
+		self::UpdateRotationsTable();
+
+		return view('schedules.admin.uploadSuccess');
+	}
 }

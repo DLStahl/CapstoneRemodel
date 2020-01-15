@@ -10,13 +10,12 @@
                     {{ session('success') }}
                 </div>
             @endif
-            <h1>
+            <h5>
             <hr>
-            
             <form action="contact" method ="POST">
                 {{ csrf_field() }}
                 <div class="form-group">
-                    <label name="email">Email:</label>
+                    <label name="email">Email where you would like to receive a reply:</label>
                     <input id="email" name="email" class="form-control">
                 </div>
                 <div class="form-group">
@@ -30,7 +29,7 @@
 
                 <input type="submit" value="Send Message" class="btn btn-success">
             </form>
-            </h1>
+            </h5>
         </div>
     </div>
 @endsection
