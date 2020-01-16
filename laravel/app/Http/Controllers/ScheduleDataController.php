@@ -13,6 +13,7 @@ use App\ScheduleParser;
 use App\Resident;
 use App\Option;
 use App\Admin;
+use App\FilterRotation;
 use App\Assignment;
 use App\Milestone;
 use Mail;
@@ -238,7 +239,8 @@ class ScheduleDataController extends Controller
         $schedule_data = $TimeRange_ScheduleData['schedule'];
         $flag = 1;
         $filter_options = self::getFilterOptions($date);
-        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
+		$rotation_options = FilterRotation::select('rotation')->distinct()->get();
+        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag', 'rotation_options'));
 
     }
 
@@ -267,7 +269,8 @@ class ScheduleDataController extends Controller
         $schedule_data = $TimeRange_ScheduleData['schedule'];
         $flag = 2;
         $filter_options = self::getFilterOptions($date);
-        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
+		$rotation_options = FilterRotation::select('rotation')->distinct()->get();
+        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag', 'rotation_options'));
     }
 
     public function getThirdDay($room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time=null)
@@ -296,7 +299,8 @@ class ScheduleDataController extends Controller
         $flag = 2;
 
         $filter_options = self::getFilterOptions($date);
-        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
+		$rotation_options = FilterRotation::select('rotation')->distinct()->get();
+        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag', 'rotation_options'));
 
     }
 
