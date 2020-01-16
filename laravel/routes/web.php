@@ -35,13 +35,10 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
     Route::get('acknowledgements', 'PagesController@getAcknowledgements');
 
     Route::get('schedule', 'ResidentController@getSchedule');
-    Route::get('schedule/firstday', 'ScheduleDataController@getFirstDay');
-    Route::get('schedule/secondday','ScheduleDataController@getSecondDay');
-    Route::get('schedule/thirdday','ScheduleDataController@getThirdDay');
 
-    Route::get('schedule/firstday/filter/{room}/{leadSurgeon}/{rotation}/{starttime_endtime}', 'ScheduleDataController@getFirstDay');
-    Route::get('schedule/secondday/filter/{room}/{leadSurgeon}/{rotation}/{starttime_endtime}','ScheduleDataController@getSecondDay');
-    Route::get('schedule/thirdday/filter/{room}/{leadSurgeon}/{rotation}/{starttime_endtime}','ScheduleDataController@getThirdDay');
+    Route::get('schedule/{day}', 'ScheduleDataController@getDay');
+
+    Route::get('schedule/{day}/filter/{room}/{leadSurgeon}/{rotation}/{starttime_endtime}', 'ScheduleDataController@getDay');
 
     Route::post('schedule/confirm', 'ScheduleDataController@getChoice');
     Route::get('schedule/milestones/{id}', 'ScheduleDataController@selectMilestones');
