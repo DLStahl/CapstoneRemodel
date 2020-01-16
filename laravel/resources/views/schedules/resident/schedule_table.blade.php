@@ -5,8 +5,6 @@
     <?php
         $url = $_SERVER['REQUEST_URI'];
 
-        //echo $url;
-
         $urlSplit = explode("/", $url);
 
         if( sizeof($urlSplit) == 6){
@@ -27,7 +25,8 @@
             $start_after = $timeSplit[0];
             $end_before = $timeSplit[1];
         }
-    ?><div id="filter">
+    ?>
+	<div id="filter">
 
         <!--room filter-->
         <select id="room" onchange="filterUpdate()">
@@ -48,12 +47,9 @@
         <!-- rotation filter -->
         <select id="rotation"  onchange="filterUpdate()">
             <option value="null" selected> - Rotation - </option>
-            <option value="Basic"> Basic </option>
-            <option value="Liver"> Liver </option>
-            <option value="Neuro"> Neuro </option>
-            <option value="Thoracic"> Thoracic </option>
-            <option value="Cardiac"> Cardiac </option>
-            <option value="Vascular"> Vascular </option>
+			@foreach ($rotation_options as $rotation)
+				<option value="{{$rotation['rotation']}}"> {{$rotation['rotation']}} </option>
+			@endforeach
         </select>
 
         <!--start after filter-->

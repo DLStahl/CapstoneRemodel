@@ -49,6 +49,15 @@
 						<li>Megan Clippinger</li>
 					</ul>
 				</li>
+				<p></p>
+				<li> Spring 2020
+					<ul>
+						<li>Nick Thompson</li>
+						<li>Dan Greer</li>
+						<li>Mikayla Richter</li>
+						<li>Travis Lee</li>
+					</ul>
+				</li>
 			</ul>
 			<p><a href="https://remodel-anesthesiology.osu.edu/">REMODEL</a> is hosted on the Ohio State University <a href="https://ocio.osu.edu/">OCIO </a> server with funding from the Ohio State University <a href="https://wexnermedical.osu.edu/departments/anesthesiology">Department of Anesthesiology</a>. Permissions for University colors and imaging were obtained from the Director of Digital Services at Wexner Medical Center Marketing & Strategic Communications. The initial concept of residents selecting their operating room cases was described and <a href="https://www.ncbi.nlm.nih.gov/pubmed/23749442">implemented</a> by <a href="https://ww2.mc.vanderbilt.edu/physcifaculty/40838">Jonathan Wanderer, MD</a>. Finally numerous <a href="https://wexnermedical.osu.edu/departments/anesthesiology/education/anesthesiology-residency">anesthesiology residents</a> have provided invaluable assistance in the concept development and feedback of <a href="https://remodel-anesthesiology.osu.edu/">REMODEL</a>. 
 </p>  

@@ -13,6 +13,7 @@ use App\ScheduleParser;
 use App\Resident;
 use App\Option;
 use App\Admin;
+use App\FilterRotation;
 use App\Assignment;
 use App\Milestone;
 use Mail;
@@ -213,91 +214,37 @@ class ScheduleDataController extends Controller
     /**
      * Public functions
      */
-    public function getFirstDay($room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time=null)
-    {
+
+    public function getNDaysAhead($numberOfDaysAhead) {
         date_default_timezone_set('America/New_York');
-        $year = date("o", strtotime('+1 day'));
-        $mon = date('m',strtotime('+1 day'));
-        $day = date('j',strtotime('+1 day'));
-        if (date("l", strtotime('today'))=='Friday') {
-            $year = date("o", strtotime('+3 day'));
-            $mon = date('m',strtotime('+3 day'));
-            $day = date('j',strtotime('+3 day'));
-        } else if (date("l", strtotime('today'))=='Saturday') {
-            $year = date("o", strtotime('+2 day'));
-            $mon = date('m',strtotime('+2 day'));
-            $day = date('j',strtotime('+2 day'));
-        }
 
-        $date =  $year.'-'.$mon.'-'.$day;
-
-        $this->processInput($room, $leadSurgeon, $rotation, $start_time_end_time);
-        $TimeRange_ScheduleData = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
-        $minTime = $TimeRange_ScheduleData['minTime'];
-        $maxTime = $TimeRange_ScheduleData['maxTime'];
-        $schedule_data = $TimeRange_ScheduleData['schedule'];
-        $flag = 1;
-        $filter_options = self::getFilterOptions($date);
-        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
 
     }
 
-    public function getSecondDay($room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time=null)
-    {
+    public function getDay($day = null, $room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time=null) {
         date_default_timezone_set('America/New_York');
-        $year = date("o", strtotime('+2 day'));
-        $mon = date('m',strtotime('+2 day'));
-        $day = date('j',strtotime('+2 day'));
-        if (date("l", strtotime('today'))=='Thursday' || date("l", strtotime('today'))=='Friday') {
-            $year = date("o", strtotime('+4 day'));
-            $mon = date('m',strtotime('+4 day'));
-            $day = date('j',strtotime('+4 day'));
-        } else if (date("l", strtotime('today'))=='Saturday') {
-            $year = date("o", strtotime('+3 day'));
-            $mon = date('m',strtotime('+3 day'));
-            $day = date('j',strtotime('+3 day'));
+
+        $day_translation_array = array(
+            "firstday" => 1,
+            "secondday" => 2,
+            "thirdday" => 3
+        );
+
+        // TODO: refactor all the firstday secondday thirdday stuff out
+        if(!array_key_exists($day, $day_translation_array)) {
+            abort(404);
         }
 
-        $date =  $year.'-'.$mon.'-'.$day;
+        $date = date("Y-m-d", strtotime("+".$day_translation_array[$day]." Weekday"));
 
         $this->processInput($room, $leadSurgeon, $rotation, $start_time_end_time);
         $TimeRange_ScheduleData = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
         $minTime = $TimeRange_ScheduleData['minTime'];
         $maxTime = $TimeRange_ScheduleData['maxTime'];
         $schedule_data = $TimeRange_ScheduleData['schedule'];
-        $flag = 2;
         $filter_options = self::getFilterOptions($date);
-        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
-    }
-
-    public function getThirdDay($room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time=null)
-    {
-        date_default_timezone_set('America/New_York');
-        $year = date("o", strtotime('+3 day'));
-        $mon = date('m',strtotime('+3 day'));
-        $day = date('j',strtotime('+3 day'));
-        if (date("l", strtotime('today'))=='Wednesday' || date("l", strtotime('today'))=='Thursday' || date("l", strtotime('today'))=='Friday') {
-            $year = date("o", strtotime('+5 day'));
-            $mon = date('m',strtotime('+5 day'));
-            $day = date('j',strtotime('+5 day'));
-        } else if (date("l", strtotime('today'))=='Saturday') {
-            $year = date("o", strtotime('+4 day'));
-            $mon = date('m',strtotime('+4 day'));
-            $day = date('j',strtotime('+4 day'));
-        }
-
-        $date =  $year.'-'.$mon.'-'.$day;
-
-        $this->processInput($room, $leadSurgeon, $rotation, $start_time_end_time);
-        $TimeRange_ScheduleData = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
-        $minTime = $TimeRange_ScheduleData['minTime'];
-        $maxTime = $TimeRange_ScheduleData['maxTime'];
-        $schedule_data = $TimeRange_ScheduleData['schedule'];
-        $flag = 2;
-
-        $filter_options = self::getFilterOptions($date);
-        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'year', 'mon', 'day', 'flag'));
-
+        $rotation_options = FilterRotation::select('rotation')->distinct()->get();
+        return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'rotation_options'));
     }
 
     public function getChoice()
