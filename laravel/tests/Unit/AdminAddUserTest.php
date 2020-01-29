@@ -6,13 +6,16 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use App\ScheduleParser;
-use App\EvaluationParser;
 use App\Http\Controllers\MedhubController;
 use App\Http\Controllers\AdminController;
 use App\Resident;
 
 class AdminAddUserTest extends TestCase {
+    /**
+     * A test of add user on admin adds a user to the resident table
+     *
+     * @return void
+     */
     public function testAddUserResidentTableHasData() {
         $AC = new AdminController();
         $AC->getUpdateUsers('addUser', 'Admin', 'fake@fak.com', 'true', 'FakeName');
@@ -21,10 +24,15 @@ class AdminAddUserTest extends TestCase {
 		$fakeData->delete();
     }
 
-	public function testAddUserMedHubAPIConnection() {
-		$MHC = new MedhubController();
-		$testPOST = json_decode($MHC->testPOST()->getBody(), true);
-		$response = $testPOST['response'];
-		$this->assertTrue($response == 'success');
+    /**
+     * A test of the medhub api connection.
+     *
+     * @return void
+     */
+    public function testAddUserMedHubAPIConnection() {
+        $MHC = new MedhubController();
+        $testPOST = json_decode($MHC->testPOST()->getBody(), true);
+        $response = $testPOST['response'];
+        $this->assertTrue($response == 'success');
     }
 }
