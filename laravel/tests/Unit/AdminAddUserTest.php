@@ -18,10 +18,10 @@ class AdminAddUserTest extends TestCase {
      */
     public function testAddUserResidentTableHasData() {
         $AC = new AdminController();
-        $AC->getUpdateUsers('addUser', 'Admin', 'fake@fak.com', 'true', 'FakeName');
-        $this->assertDatabaseHas('resident',['email' => 'fake@fak.com']);
-        $fakeData = Resident::where('email', 'fake@fak.com')->first();
-		$fakeData->delete();
+        $AC->getUpdateUsers('addUser', 'Resident', 'fakeRes@fak.com', 'true', 'FakeName');
+        $this->assertDatabaseHas('resident',['email' => 'fakeRes@fak.com']);
+        $fakeData = Resident::where('email', 'fakeRes@fak.com')->first();
+        $fakeData->delete();
     }
 
     /**
