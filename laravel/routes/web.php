@@ -15,7 +15,9 @@
  * Home page
  */
 Route::prefix('/')->group(function () {
-    Route::get('', 'PagesController@getIndex');
+    Route::get('', function () {
+	return redirect('/resident/schedule/secondday');
+    });
     Route::get('about', 'PagesController@getAbout');
     Route::get('contact','PagesController@getContact');
     Route::post('contact', 'PagesController@postContact');
@@ -74,6 +76,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::post('milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}', 'AdminController@getUpdateMilestone');
     Route::get('milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}', 'AdminController@getUpdateMilestone');
 
+    Route::get('db/{table}', 'admin\DBEditorController@viewPage');
 
     Route::get('schedules', 'AdminController@getSchedules');
     Route::post('updateDB', 'AdminController@postUpdateDB');
@@ -86,6 +89,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('evaluation', 'AdminController@getEvaluation');
     Route::get('uploadForm', 'AdminController@uploadForm');
     Route::post('upload', 'AdminController@uploadFormPost');
+	
+    // webssh went down, needed to update schedule
+    Route::get('update_schedule_data', 'AdminController@updateScheduleData');
 
 
     /**

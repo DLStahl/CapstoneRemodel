@@ -39,7 +39,7 @@
 		function resident(access)
         {
             if(access){
-                window.location.href = "resident";
+                window.location.href = "resident/schedule/secondday";
 
             } else alert('You must be a resident registered with this site to access this feature, please use the contact us link if you believe you should have access');
 

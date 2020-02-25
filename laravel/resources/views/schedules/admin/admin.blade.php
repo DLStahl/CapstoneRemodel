@@ -10,4 +10,5 @@
     <a class="btn btn-primary" href="admin/evaluation">View Resident/Attending Pairings</a>
 	<a class="btn btn-primary" href="admin/uploadForm">Upload Schedule</a>
     <a class="btn btn-primary" href="admin/medhubtest">MedHub Test</a>
+    <a class="btn btn-primary" href="admin/filterrotation">Filter Rotations</a>
 @endsection

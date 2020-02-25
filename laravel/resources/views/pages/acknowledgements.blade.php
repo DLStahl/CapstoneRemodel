@@ -5,8 +5,8 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-		
-            <p><a href="https://remodel-anesthesiology.osu.edu/">REMODEL (REsident MilestOne-baseD Educational Learning)</a> would simply not exist without the hard work of the following students who contributed to the project as part of their <a href="https://cse.osu.edu/courses/capstone-design-software-applications-5911">Capstone course</a> (part of their undergraduate degree in the <a href="https://cse.osu.edu/">Department of Computer Science and Engineering</a>). Special thanks to Professor Al Cline and <a href="https://cse.osu.edu/people/shafer.1"> Professor Keith Shafer </a>for his guidance and collaboration.</p>
+	    <p><a href="https://remodel-anesthesiology.osu.edu/">REMODEL (REsident MilestOne-baseD Educational Learning)</a> is a system designed by David Stahl, MD (Associate Residency Program Director) in collaboration with the CAPSTONE Teams from The Ohio State University <a href="https://cse.osu.edu/">Department of Computer Science and Engineering</a>, and in conjunction with leadership from OSU Department Anesthesiology for the benefit of our anesthesiology residents.</p>
+            <p>REMODEL would simply not exist without the hard work of the following students who contributed to the project as part of their <a href="https://cse.osu.edu/courses/capstone-design-software-applications-5911">Capstone course</a> (part of their undergraduate degree in the Department of Computer Science and Engineering). Special thanks to Professor Al Cline and <a href="https://cse.osu.edu/people/shafer.1"> Professor Keith Shafer </a>for his guidance and collaboration.</p>
 			<ul>
 				<li> Spring 2018
 					<ul>

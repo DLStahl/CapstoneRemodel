@@ -395,7 +395,11 @@ SkedTape.prototype = {
 			? this.canAddIntoLocation(location, this.dummyEvent)
 			: undefined;
 		this.postRenderLocation($text, location, canAdd);
-		return $location;
+		
+		var collapseableParent = $('<div class="collapse show sked-tape__collapse '+location.id+'" />');
+		$location.appendTo(collapseableParent);
+		
+		return collapseableParent;
 	},
 	renderLocations: function() {
 		var $frag = $(document.createDocumentFragment());
@@ -519,9 +523,11 @@ SkedTape.prototype = {
 		}, this));
 		this.timeIndicators = {};
 		$.each(this.getLocations(), $.proxy(function(i, location, event) {
+			// COLLAPSEABLE TIMEROW
+			var collapseableParent = $('<div class="collapse show sked-tape__collapse '+location.id+'" />').appendTo(this.$timeline);
 			var $li = $('<div class="sked-tape__event-row '+location.id+'"/>')
 				.data('locationId', location.id)
-				.appendTo(this.$timeline);
+				.appendTo(collapseableParent);
 			// Render time indicator
 			// var $timeIndicator = $('<div class="sked-tape__indicator"/>').hide();
 			// if (this.timeIndicatorSerifs)
@@ -870,10 +876,14 @@ SkedTape.prototype = {
 				var right = left + parseFloat($entry[0].style.width);
 				var TOLERANCE = 0.01;
 				var overflows = left < -TOLERANCE || right > 100 + TOLERANCE;
+				var content = $entry.html();
+				if(content === undefined) {
+					content = "Failed to create popover";
+				}
 				if ($.fn.popover && (tooSmall || overflows)) {
 					$entry.popover({
 						trigger: 'hover',
-						content: $entry.find('.sked-tape__center').html(),
+						content: content,
 						html: true,
 						template: template,
 						placement: left < 50 ? 'right' : 'left'

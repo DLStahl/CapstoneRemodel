@@ -16,3 +16,29 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+
+/**
+ * Public api
+ */
+Route::prefix('/')->group(function () {
+});
+
+/**
+ * Resident's api
+ */
+Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
+	
+});
+
+/**
+ * Admin's api
+ */
+Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {	
+	Route::delete('db/delete', 'admin\DBEditorController@api_delete');
+	
+	Route::put('/db/update', 'admin\DBEditorController@api_update');
+	
+	Route::post('/db/add', 'admin\DBEditorController@api_add');
+});

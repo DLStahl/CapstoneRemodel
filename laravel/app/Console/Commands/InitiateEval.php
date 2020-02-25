@@ -20,6 +20,7 @@ use App\Resident;
 use App\EvaluateData;
 use App\Rotations; 
 use App\Attending;
+use App\EvaluationForms;
 use Mail;
 use \Datetime;
 
@@ -95,7 +96,7 @@ class InitiateEval extends Command
     public function initResidentEvalAttendingPOST($evaluatorID, $evaluateeID)
     {
         $callPath = 'evals/initiate';
-        $evalID = 1353; // 'Resident Evaluation of Faculty' (v.2)
+	$evalID = EvaluationForms::where('form_type', 'resident evaluation of faculty')->value('medhub_form_id');
         $evalType = 2;
         $programID = 73;
         $notify = true;
@@ -107,48 +108,22 @@ class InitiateEval extends Command
 	{
         Log::info("initiate evaluations");
 		$date = date('Y-m-d');
-		$newdate = strtotime ( '-1 day' , strtotime ( $date ) ) ;
-		$newdate = date ( 'Y-m-d' , $newdate );
+		$yesterday = strtotime ( '-1 day' , strtotime ( $date ) ) ;
+		$yesterday = date ( 'Y-m-d' , $yesterday );
 		
-		$residentName = DB::table('evaluation_data')->where('date', $newdate)->pluck('resident');
-		$attendingName = DB::table('evaluation_data')->where('date', $newdate)->pluck('attending');	
-		$evalID = DB::table('evaluation_data')->where('date', $newdate)->pluck('id');			
+		$residentId = DB::table('evaluation_data')->where('date', $yesterday)->pluck('rId');
+		$attendingId = DB::table('evaluation_data')->where('date', $yesterday)->pluck('aId');	
+		$evalID = DB::table('evaluation_data')->where('date', $yesterday)->pluck('id');			
 		
-        Log::info(sizeof($residentName).' residents: '.$residentName);
-        Log::info(sizeof($attendingName).' attendings: '.$attendingName);
+        Log::info(sizeof($residentId).' residents: '.$residentId);
+        Log::info(sizeof($attendingId).' attendings: '.$attendingId);
         Log::info(sizeof($evalID).' evaluation data: '.$evalID);
 		$evalSent = 0; 
-		for($i = 0; $i<count($residentName); $i++)
+		for($i = 0; $i<count($residentId); $i++)
 		{	
-			
-			
-			$evaluateeName = $residentName[$i];
-			
-			Log::info($evaluateeName.', '.$attendingName[$i]);
-			
-			// piece together the name to match the way they are stored in the medhub system
-			$rName = $evaluateeName; // firstName lastName
-			$pieces = explode(" ", $rName);
-			if(count($pieces) == 3 && $pieces[1] != "Arce" && $pieces[1] != "Puertas" && $pieces[1] != "Zuleta")
-			{
-				$first = $pieces[0];
-				$last = $pieces[2];
-				$rName = $first.' '.$last;
-			}
-			elseif(count($pieces) == 4) 
-			{
-				$first = $pieces[0];
-				$last = $pieces[2].' '.$pieces[3];
-				$rName = $first.' '.$last;
-			}
-			elseif(count($pieces) == 5) 
-			{
-				$first = $pieces[0];
-				$last = $pieces[2].' '.$pieces[3].' '.$pieces[4];
-				$rName = $first.' '.$last;
-			}
-			
-			$evaluateeID = Resident::where('name', $rName)->value('medhubId');
+			$singleResidentID = $residentId[$i];
+			$evaluateeID = Resident::where('id', $singleResidentID)->value('medhubId');
+			$evaluateeName = Resident::where('id', $singleResidentID)->value('name');
 			Log::info("resident medhub ID: ".$evaluateeID);
 
 			// grab all of the start and end dates for the resident
@@ -162,8 +137,9 @@ class InitiateEval extends Command
 				$startDate = date('Y-m-d', strtotime($evaluateeRotationsStart[$j])); //get the  start date 
 				$endDate = date('Y-m-d', strtotime($evaluateeRotationsEnd[$j])); //get the  end date 
 				
-				if (($newdate>= $startDate) && ($newdate<=$endDate)){ // find the date range that fits today
-					$evaluateeService = Rotations::where('Name', $evaluateeName)->where('Start', $evaluateeRotationsStart[$j])->value('Service');
+				if (($yesterday>= $startDate) && ($yesterday<=$endDate)){ // find the date range that fits today
+					$evaluationFormsId = Rotations::where('Name', $evaluateeName)->where('Start', $evaluateeRotationsStart[$j])->value('Service');
+					$evaluateeService = EvaluationForms::where('id', $evaluationFormsId)->value('medhub_form_id');
 					break; // break so we can save the evaluateeService
 				}
 			}
@@ -179,50 +155,44 @@ class InitiateEval extends Command
 			else
 			{
 				// grab the attending id
-				$aName = $attendingName[$i];
-				$pieces = explode(" ", $aName);
-				
-				if(count($pieces) == 3 && $pieces[1] != "Del")
-				{
-					$first = $pieces[0];
-					$last = $pieces[2];
-					$aName = $first.' '.$last;
-				}
-				elseif(count($pieces) == 4) 
-				{
-					$first = $pieces[0];
-					$last = $pieces[2].' '.$pieces[3];
-					$aName = $first.' '.$last;
-				}
-				elseif(count($pieces) == 5) 
-				{
-					$first = $pieces[0];
-					$last = $pieces[2].' '.$pieces[3].' '.$pieces[4];
-					$aName = $first.' '.$last;
-				}
-				$evaluatorID = Attending::where('name', $aName)->value('id');
+				$evaluatorID = attendingId[$i];
 				Log::info("attending medhub ID: ".$evaluatorID);
 				
 				// both the resident and attending are valid
 				if($evaluateeID != null && $evaluatorID != null)
 				{
-					$evalSent+=2;
+					$evalSent = 0;
 					try {
 						self::initAttendingEvalResidentPOST($evaluatorID, $evaluateeID, $evaluateeService);
+						$evalSent++;
 					}
 					catch (\Exception $e){
-						$evalSent--;
-						Log::debug('Error on Attending Eval Resident. Eval ID'.$evalID[$i].' Resident Name: '.$evaluateeName.' Resident ID '.$evaluateeID.',  Attending Name '.$aName.' Attending ID '.$evaluatorID.' Service ID'.$evaluateeService);
+						Log::debug('Error on Attending Eval Resident. Eval ID'.$evalID[$i].' Resident Name: '.$evaluateeName.' Resident ID '.$evaluateeID.' Attending ID '.$evaluatorID.' Service ID'.$evaluateeService);
 					}
 					try {
 						self::initResidentEvalAttendingPOST($evaluateeID, $evaluatorID);
+						$evalSent++;
 					}
 					catch (\Exception $e){
-						$evalSent--;
-						Log::debug('Error on Resident Eval Attending. Eval ID'.$evalID[$i].' Attending Name '.$aName.' Attending ID: '.$evaluatorID.'  Resident Name '.$evaluateeName.' Resident ID '.$evaluateeID);
+						Log::debug('Error on Resident Eval Attending. Eval ID'.$evalID[$i].' Attending ID: '.$evaluatorID.'  Resident Name '.$evaluateeName.' Resident ID '.$evaluateeID);
 					}
+					
+					// if used REMODEL, fire off additional evaluation
+					$hasOptions = DB::table('option')::where('resident', $evaluateeID)->where('date', $yesterday)->value('date');
+					if ($hasOptions != null) {
+						try {
+							$additionalFormType = 'REMODEL feedback';
+							$additionalService = EvaluationForms::where('form_type', $additionalFormType)->value('medhub_form_id'); 
+							self::initAttendingEvalResidentPOST($evaluatorID, $evaluateeID, $additionalService);
+							$evalSent++;
+						}
+						catch (\Exception $e){
+							Log::debug('Error on Attending Eval Resident. Eval ID'.$evalID[$i].' Resident Name: '.$evaluateeName.' Resident ID '.$evaluateeID.' Attending ID '.$evaluatorID.' Service ID'.$evaluateeService);
+						}
+					}
+					
 				}else {
-					Log::info('Cannot initiate evaluations because no resident ID or no attending ID can be found. Eval ID'.$evalID[$i].' Resident Name: '.$evaluateeName.' Resident ID '.$evaluateeID.',  Attending Name '.$aName.' Attending ID '.$evaluatorID.' Service ID '.$evaluateeService);
+					Log::info('Cannot initiate evaluations because no resident ID or no attending ID can be found. Eval ID'.$evalID[$i].' Resident Name: '.$evaluateeName.' Resident ID '.$evaluateeID.' Attending ID '.$evaluatorID.' Service ID '.$evaluateeService);
 				}
 			}	
 			// either the resident of the attending werent valid, mark it down -- used for testing only
