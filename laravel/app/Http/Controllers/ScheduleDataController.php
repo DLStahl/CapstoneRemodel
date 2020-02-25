@@ -98,7 +98,6 @@ class ScheduleDataController extends Controller
         $maxTime = $schedule_data->max('end_time');
         $schedule_data = $schedule_data->orderBy('room', 'asc')->get();
 
-
         $schedule = array();
         foreach ($schedule_data as $data)
         {
@@ -121,12 +120,18 @@ class ScheduleDataController extends Controller
                 'end_time'=>$data['end_time']
             ));
         }
+
+		#echo gettype($schedule);
+		#echo $schedule[0]['room'];
+		#$element = array_pop($schedule);
+		#array_unshift($schedule, $element);
+		#echo $schedule[0]['room'];
+		
         $result = array(
             "minTime" => $minTime,
             "maxTime" => $maxTime,
             "schedule" => $schedule
         );
-        // return $schedule;
         return $result;
     }
 
@@ -214,12 +219,6 @@ class ScheduleDataController extends Controller
     /**
      * Public functions
      */
-
-    public function getNDaysAhead($numberOfDaysAhead) {
-        date_default_timezone_set('America/New_York');
-
-
-    }
 
     public function getDay($day = null, $room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time=null) {
         date_default_timezone_set('America/New_York');

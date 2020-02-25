@@ -47,8 +47,8 @@
         <!-- rotation filter -->
         <select id="rotation"  onchange="filterUpdate()">
             <option value="null" selected> - Rotation - </option>
-			@foreach ($rotation_options as $rotation)
-				<option value="{{$rotation['rotation']}}"> {{$rotation['rotation']}} </option>
+			@foreach ($rotation_options as $rotation_option)
+				<option value="{{$rotation_option['rotation']}}"> {{$rotation_option['rotation']}} </option>
 			@endforeach
         </select>
 
@@ -104,47 +104,19 @@
             $('#end_before').val(end_before);
 
         });
-        
-        // Update filter
-        function filterUpdate()
-        {
-            var room = document.getElementById("room");
-            var leadSurgeon = document.getElementById("leadSurgeon");
-            var rotation = document.getElementById("rotation");
-            var start_after = document.getElementById("start_after");
-            var end_before = document.getElementById("end_before");
-
-            var room_selected = room.options[room.selectedIndex].value;
-            var leadSurgeon_selected = leadSurgeon.options[leadSurgeon.selectedIndex].value;
-            var rotation_selected = rotation.options[rotation.selectedIndex].value;
-            var start_after_selected = start_after.options[start_after.selectedIndex].value;
-            var end_before_selected = end_before.options[end_before.selectedIndex].value;
-
-            if (start_after_selected.localeCompare(end_before_selected) >= 0 &&
-                start_after_selected.localeCompare("null") != 0 &&
-                end_before_selected.localeCompare("null") != 0)
-            {
-                alert("Invalid selection!");
-                return;
-            }
-
-            /**
-             * Update url.
-             */
-            var current_url = window.location.href;
-            var url = current_url.search('/filter/') > -1 ? current_url.substr(0, current_url.search('/filter/')) : current_url;
-            url = url + "/filter/" + room_selected + "/" + leadSurgeon_selected + "/" + rotation_selected + "/" + start_after_selected + "_" + end_before_selected;
-            window.location.href = url;
-        }
 
         function clearFilter()
         {
             $('#filter select').val('null');
-            var current_url = window.location.href;
-            if(window.location.href.indexOf("filter") > -1){
-                var url = current_url.search('/filter/') > -1 ? current_url.substr(0, current_url.search('/filter/')) : current_url;
-                window.location.href = url;
-            }
+			filterUpdate();
+			
+			// old server-filter refresh below
+			
+            //var current_url = window.location.href;
+            //if(window.location.href.indexOf("filter") > -1){
+            //    var url = current_url.search('/filter/') > -1 ? current_url.substr(0, current_url.search('/filter/')) : current_url;
+            //    window.location.href = url;
+            //}
 
         }
 
@@ -360,8 +332,9 @@
 
         </script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
     <script src="{{ asset('js/jquery.skedTape.js?v=1.2') }}"></script>
+
     <script type="text/javascript">
         // --------------------------- Data --------------------------------
         var locations = [];
@@ -508,6 +481,36 @@
         var maxTime = "<?php echo $maxTime ?>";
         console.log(maxTime);
         var endTime = createTime(maxTime);
+		
+		// Sort rooms by UH, CCCT, RHH, Cath, EP, IPR, all the rest
+		var sortingGuide = ['UH', 'CCCT', 'RHH', 'CATH', 'EP', 'IPR'];
+		function roomOrder(location) {
+			for(var i = 0; i < sortingGuide.length; i ++) {
+				if(location.includes(sortingGuide[i])) {
+					return i;
+				}
+			}
+			return sortingGuide.length + 1;
+		}
+		function roomOrderComparator(firstItem, secondItem) {
+			var firstIndex = roomOrder(firstItem);
+			var secondIndex = roomOrder(secondItem);
+			
+			var diff = firstIndex - secondIndex;
+			
+			if(diff == 0) {
+				return firstItem.localeCompare(secondItem);
+			} else {
+				return diff;
+			}
+		}
+		locations.sort(
+			function(firstLocation, secondLocation) {
+				return roomOrderComparator(firstLocation.name.toUpperCase(), secondLocation.name.toUpperCase()); 
+			}
+		);
+		// end room sorting
+		
         // Set configuration of Sked Tape Timeline
         var sked2Config = {
             caption: 'Rooms',
@@ -519,14 +522,96 @@
             locations: locations,
             events: events.slice(),
             tzOffset: 0,
-            sorting: true,
-            orderBy: 'name',
+//            sorting: false,
+//            orderBy: 'name',
         };
         var $sked2 = $.skedTape(sked2Config);
         $sked2.appendTo('#schedule_table').skedTape('render');
         $sked2.skedTape(sked2Config);
+		
+		// Client-side filtering
+		// The collapse divs are added inside of the sked-tape.js file, along with some other application-specific stuff
+		
+		var room = document.getElementById("room");
+		var leadSurgeon = document.getElementById("leadSurgeon");
+		var rotation = document.getElementById("rotation");
+		var start_after = document.getElementById("start_after");
+		var end_before = document.getElementById("end_before");
+		
+		// repeat safety is used to prevent it from calling filterUpdate for every collapse
+		// so if 30 things get collapsed at once, it will only call filterUpdate again once within 200ms
+		var repeatSafety = false;
+		// refresh the collapse state once the animation finishes, it could have changed during the animation
+		$('.sked-tape__collapse').on('hidden.bs.collapse', function (e) {
+			if(repeatSafety) return;
+			repeatSafety = true;
+			setTimeout(function() {
+				repeatSafety = false;
+				filterUpdate();
+			}, 200);
+		});
+		
+		// filter the room dropdown by the same order as the rooms
+		var options = $('#room option');
+		var arr = options.map(function(_, o) { return { t: $(o).text(), v: o.value }; }).get();
+		arr.sort(
+			function(firstOption, secondOption) {
+				if(firstOption.v === "null") return -1;
+				if(secondOption.v === "null") return 1;
+				return roomOrderComparator(firstOption.v, secondOption.v);
+			}
+		);
+		options.each(function(i, o) {
+		  o.value = arr[i].v;
+		  $(o).text(arr[i].t);
+		});
+		
+        function filterUpdate()
+        {
+            var room_selected = room.options[room.selectedIndex].value;
+            var leadSurgeon_selected = leadSurgeon.options[leadSurgeon.selectedIndex].value;
+            var rotation_selected = rotation.options[rotation.selectedIndex].value;
+            var start_after_selected = start_after.options[start_after.selectedIndex].value;
+            var end_before_selected = end_before.options[end_before.selectedIndex].value;
+
+            if (start_after_selected.localeCompare(end_before_selected) >= 0 &&
+                start_after_selected.localeCompare("null") != 0 &&
+                end_before_selected.localeCompare("null") != 0)
+            {
+                alert("Invalid selection!");
+                return;
+            }
+			
+			// go through each schedule item, if it should be shown with the current filter options then show it, otherwise hide
+			schedule_data.forEach(function(schedule){
+				var selector = "." + schedule['id'] + "_.sked-tape__collapse";
+				var show = false;
+				
+				if((schedule['room'].includes(room_selected) || room.selectedIndex == 0)
+						&& (schedule['lead_surgeon'].includes(leadSurgeon_selected) || leadSurgeon.selectedIndex == 0)
+						&& (schedule['rotation'].includes(rotation_selected) || rotation.selectedIndex == 0)
+						&& (schedule['start_time'] >= start_after_selected || start_after.selectedIndex == 0)
+						&& (schedule['end_time'] <= end_before_selected || end_before.selectedIndex == 0)) {
+					show = true;
+				}
+				
+				$(selector).collapse(show ? "show" : "hide");
+			});
+
+            /**
+             * Update url. - OLD method of doing filtering server side. That's fixed now.
+             */
+            //var current_url = window.location.href;
+            //var url = current_url.search('/filter/') > -1 ? current_url.substr(0, current_url.search('/filter/')) : current_url;
+            //url = url + "/filter/" + room_selected + "/" + leadSurgeon_selected + "/" + rotation_selected + "/" + start_after_selected + "_" + end_before_selected;
+            //window.location.href = url;
+        }
+		// end client-side filtering
+		
+		
+		
     </script>
-    @else
+	@else
         <h2>No schedule found.</h2>
     @endif
 @endsection('content')

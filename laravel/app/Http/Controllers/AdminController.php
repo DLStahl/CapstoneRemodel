@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Console\Commands\UpdateScheduleData;
 use App\Admin;
 use App\Attending;
 use App\Resident;
@@ -17,8 +18,10 @@ use App\EvaluateData;
 use App\Rotations;
 use App\Milestone;
 use App\Http\Requests;
+use App\EvaluationForms;
 use Session;
 use \Datetime;
+use Artisan;
 
 class AdminController extends Controller
 {
@@ -645,7 +648,8 @@ class AdminController extends Controller
 		// delete all the previous entries
 		Rotations::truncate();
 
-		$file = fopen("/usr/local/webs/remodel.anesthesiology/htdocs/laravel/storage/app/ResidentRotationSchedule/medhub-report.txt","r");
+		//$file = fopen("/usr/local/webs/remodel.anesthesiology/htdocs/laravel/storage/app/ResidentRotationSchedule/medhub-report.txt","r");
+		$file = fopen("../storage/app/ResidentRotationSchedule/medhub-report.txt","r");
 		$i = 0;
 		while($line = fgets($file)){
 			if($i < 5)
@@ -670,48 +674,8 @@ class AdminController extends Controller
 				$endDate = DateTime::createFromFormat('m/d/Y', $endDate);
 				$endDate = $endDate->format('Y-m-d');
 
-				// pediatric, preop anesth.,
-
-				$serviceToEvalID = array(
-					"Acute Pain Service" => 0,
-					"Acute Pain Service " => 0,
-					"Advanced Clinical Track" => 92,
-					"Advanced Clinical Track - Vascular" => 580,
-					"Advanced Clinical Track- Liver" => 1725,
-					"Advanced Clinical Track- Thoracic" => 581,
-					"Ambulatory Anesthesiology" => 575,
-					"Basic Anesthesiology" => 4,
-					"Cardiac Anesthesiology" => 574,
-					"Cardiovascular Anesthesiology" => 574,
-					"Cardiovascular TEE" => 0,
-					"CBY - Emergency Medicine" =>0,
-					"CBY Anesthesiology ENT" =>0,
-					"CBY Surgery" =>0,
-					"CBY- Blood Bank/ Ultrasound" =>0,
-					"CBY- Pulmonary Consults" =>0,
-					"Chronic Pain"=>0,
-					"Chronic Pain "=>0,
-					"CBY Hearts" => 0,
-					"Neuroanesthesiology" =>116,
-					"Obstetrical Anesthesiology" =>0,
-					"Out of Operating Room Anesthesiology" => 579,
-					"Pain- Regional" => 0,
-					"Pediatric Anesthesiology" =>0,
-					"Post Anesthesia Care Unit" => 541,
-					"Preop Anesthesiology" =>0,
-					"Preoperative Assessment Clinic" =>0,
-					"Regional Anesthesiology and Pain Medicine Main" => 571,
-					"Regional Anesthesiology at East" =>0,
-					"Research - Rhodes/Doan" =>0,
-					"Ross Intensive Care Unit / CV ICU" =>0,
-					"Surgical Intensive Care Unit" => 0,
-				);
-
-
-				$serviceInt = $serviceToEvalID[$service];
-
-
-				Rotations::insert(['Name'=>$name, 'Level'=>$level, 'Service'=>$serviceInt, 'Site'=>$site, 'Start'=>$startDate, 'End'=>$endDate]);
+				$formTableID = EvaluationForms::where('medhub_form_name', $service)->value('id');
+				Rotations::insert(['Name'=>$name, 'Level'=>$level, 'Service'=>$formTableID, 'Site'=>$site, 'Start'=>$startDate, 'End'=>$endDate]);
 
 			}
 			$i++;
@@ -727,5 +691,9 @@ class AdminController extends Controller
 		self::UpdateRotationsTable();
 
 		return view('schedules.admin.uploadSuccess');
+	}
+	
+	public function updateScheduleData() {
+		Artisan::call('update:schedule_data');
 	}
 }

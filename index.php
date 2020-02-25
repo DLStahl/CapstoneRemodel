@@ -39,7 +39,15 @@
         <br>
 
         <div class="container">
-                <a class="btn btn-primary" href="/laravel/public">Sign In</a>
+		<h6>The REMODEL (REsident MilestOne-baseD Educational Learning) system is designed to allow residents to identify preferences for scheduled surgical cases in which to participate.</h6>
+		<ul>
+ 			<li>Select your first, second, and third choice by operating room for the day after tomorrow and submit your choices</li>
+  			<li>For each choice (first, second, and third), create an educational objective for yourself and select a milestone from the drop-down menu which best corresponds with that educational objective</li>
+  			<li>Submit and await your OR assignment!</li>
+  			<li>Discuss the educational objective with your attending the night before in order create a plan for the day</li>
+		</ul>
+
+                <a class="btn btn-primary" href="/laravel/public/resident/schedule/secondday">Sign In</a>
         </div>
 
         <hr>

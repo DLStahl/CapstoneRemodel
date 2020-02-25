@@ -2,7 +2,7 @@
     <head>
         <title>REMODEL</title>
         <?php
-            $url = "/laravel/public/admin/";
+            $url = "/laravel/public/resident/schedule/secondday";
             
         ?>
         <meta http-equiv="refresh" content="0; URL={{ $url }}">
