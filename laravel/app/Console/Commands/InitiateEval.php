@@ -155,7 +155,7 @@ class InitiateEval extends Command
 			else
 			{
 				// grab the attending id
-				$evaluatorID = attendingId[$i];
+				$evaluatorID = $attendingId[$i];
 				Log::info("attending medhub ID: ".$evaluatorID);
 				
 				// both the resident and attending are valid
@@ -178,7 +178,7 @@ class InitiateEval extends Command
 					}
 					
 					// if used REMODEL, fire off additional evaluation
-					$hasOptions = DB::table('option')::where('resident', $evaluateeID)->where('date', $yesterday)->value('date');
+					$hasOptions = DB::table('option')->where('resident', $evaluateeID)->where('date', $yesterday)->value('date');
 					if ($hasOptions != null) {
 						try {
 							$additionalFormType = 'REMODEL feedback';
@@ -189,7 +189,7 @@ class InitiateEval extends Command
 						catch (\Exception $e){
 							Log::debug('Error on Attending Eval Resident. Eval ID'.$evalID[$i].' Resident Name: '.$evaluateeName.' Resident ID '.$evaluateeID.' Attending ID '.$evaluatorID.' Service ID'.$evaluateeService);
 						}
-					}
+				}
 					
 				}else {
 					Log::info('Cannot initiate evaluations because no resident ID or no attending ID can be found. Eval ID'.$evalID[$i].' Resident Name: '.$evaluateeName.' Resident ID '.$evaluateeID.' Attending ID '.$evaluatorID.' Service ID '.$evaluateeService);
