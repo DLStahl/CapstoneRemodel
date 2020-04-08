@@ -42,17 +42,21 @@ public class SeleniumTest {
 
         signIn();
         System.out.println("Sign in for me as admin, I'm not smart enough");
-        Scanner scanner = new Scanner(System.in);
-        scanner.next();
-
+        //Scanner scanner = new Scanner(System.in);
+        //scanner.next();
+        Thread.sleep(21000);
+        System.out.println("Awake");
         confirmLandingPage();
         driver.get("https://remodel.anesthesiology-dev.org.ohio-state.edu/laravel/public/resident/schedule/firstday");
         topRoomIsUH();
         staticOptionsExist();
         allRotationFiltersExist();
         confirmFilterWorks();
-
         confirmAdminDashboardWorks();
+        confirmResidentTable();
+        confirmDbEditorFeatures();
+        confirmFormsTable();
+        confirmDbEditorFeatures();
 
         driver.close();
 
@@ -60,14 +64,20 @@ public class SeleniumTest {
     }
 
     private static void confirmFilterWorks() {
-        WebElement clearFilterElement = driver.findElement(By.cssSelector("#filter > div > button"));
+        WebElement clearFilterElement = driver.findElement(By.cssSelector("#filter > div.float-right > button"));
         assertTrue(clearFilterElement.getText().equals("Clear Filter"), "Clear filter button exists");
+
+        WebElement roomFilterElement = driver.findElement(By.cssSelector("#filter > div.dropdown.keep-inside-clicks-open > button"));
+        assertTrue(roomFilterElement.getText().equals("Room Filter"), "Clear filter button exists");
+        roomFilterElement.click();
 
         List<WebElement> topShowingRooms = driver.findElements(By.cssSelector("#schedule_table > div > div.sked-tape__aside > div.sked-tape__locations > div.collapse.show.sked-tape__collapse > div"));
         int initialRoomCount = topShowingRooms.size();
 
         // confirm room filter works
-        WebElement uh01Filter = driver.findElement(By.cssSelector("#room > option:nth-child(2)"));
+        WebElement allFilter = driver.findElement(By.cssSelector("#allRoomFilter > label"));
+        allFilter.click();
+        WebElement uh01Filter = driver.findElement(By.cssSelector("#UH-01_dropdownFilterDiv"));
         uh01Filter.click();
 
         try {
@@ -80,6 +90,34 @@ public class SeleniumTest {
 
         assertTrue(topShowingRoomTitle.contains("UH"), "top room is UH");
         assertTrue(topShowingRooms.size() == 1, "only one room is showing when filtered on it");
+
+        //UH rooms filter
+        WebElement uhFilter = driver.findElement(By.cssSelector("#UH_dropdownFilterDiv > label"));
+        uhFilter.click();
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) { /* ignored */}
+
+        // confirm only UH rooms showing
+        topShowingRooms = driver.findElements(By.cssSelector("#schedule_table > div > div.sked-tape__aside > div.sked-tape__locations > div.collapse.show.sked-tape__collapse > div"));
+        topShowingRoomTitle = topShowingRooms.get(0).getAttribute("title");
+
+        assertTrue(topShowingRoomTitle.contains("UH"), "top room is UH");
+        assertTrue(topShowingRooms.size() == 13, "all UH rooms are showing");
+
+        uhFilter.click();
+        WebElement ectFilter = driver.findElement(By.cssSelector("#ECT_dropdownFilterDiv > label"));
+        ectFilter.click();
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) { /* ignored */}
+
+        // confirm only ECT showing
+        topShowingRooms = driver.findElements(By.cssSelector("#schedule_table > div > div.sked-tape__aside > div.sked-tape__locations > div.collapse.show.sked-tape__collapse > div"));
+        topShowingRoomTitle = topShowingRooms.get(0).getAttribute("title");
+
+        assertTrue(topShowingRoomTitle.contains("ECT"), "top room is ECT");
+        assertTrue(topShowingRooms.size() == 1, "only one ECT room is showing when filtered");
 
         // test clear filter, just see if the new number it shows is the same as the old one
         clearFilterElement.click();
@@ -111,8 +149,8 @@ public class SeleniumTest {
     }
 
     private static void confirmAdminDashboardWorks() {
-        String[] expectedLinks = { "Edit Users", "Edit Schedules", "Edit Milestones", "Post Messages", "Download Data Sheets", "Reset Tickets", "View Resident/Attending Pairings", "Upload Schedule", "MedHub Test", "Filter Rotations"};
-        String[] expectedLocation = {"users","schedules","milestones","postmessage","download","resetTickets","evaluation","uploadForm","medhubtest","filterrotation"};
+        String[] expectedLinks = { "Edit Residents", "Edit Attendings", "Edit Surgeons/Rotations", "Edit Admins", "Edit Evaluation Forms", "Edit Static Schedule Data", "Edit Schedules", "Edit Milestones", "Post Messages", "Download Data Sheets", "Reset Tickets", "View Resident/Attending Pairings", "Upload Schedule", "MedHub Test"};
+        String[] expectedLocation = {"resident","attending","rotation","admin","evaluation_forms","schedule_data_static","schedules","milestones","postmessage","download","resetTickets","evaluation","uploadForm","medhubtest"};
 
         // confirm the link is there
         WebElement adminDashboard = driver.findElement(By.id("dashboard"));
@@ -219,12 +257,81 @@ public class SeleniumTest {
     }
 
     private static void topRoomIsUH() {
-        WebElement topRoomFilter = driver.findElement(By.cssSelector("#room > option:nth-child(2)"));
-        assertTrue(topRoomFilter.getAttribute("value").contains("UH"), "Top room filter is UH");
+        //WebElement topRoomFilter = driver.findElement(By.cssSelector("#UH_dropdownFilterDiv > label"));
+        //assertTrue(topRoomFilter.getAttribute("value").contains("UH"), "Top room filter is UH");
 
         WebElement topRoomNameElement = driver.findElement(By.className("sked-tape__location-text"));
         String topRoomName = topRoomNameElement.getText();
         assertTrue(topRoomName.contains("UH"), "Top room name is UH");
+    }
+
+    private static void confirmResidentTable() {
+    	driver.get("https://remodel.anesthesiology-dev.org.ohio-state.edu/laravel/public/admin/db/resident");
+
+    	WebElement residentTableName = driver.findElement(By.cssSelector("#table > thead > tr > th:nth-child(2)"));
+    	assertTrue(residentTableName.getText().equals("name"), "Resident Table has name field");
+
+    	WebElement residentTableEmail = driver.findElement(By.cssSelector("#table > thead > tr > th:nth-child(3)"));
+    	assertTrue(residentTableEmail.getText().equals("email"), "Resident Table has email field");
+
+    	WebElement residentTableMedhubId = driver.findElement(By.cssSelector("#table > thead > tr > th:nth-child(5)"));
+    	assertTrue(residentTableMedhubId.getText().equals("medhubId"), "Resident Table has medhubId field");
+
+    	WebElement residentTableEntry = driver.findElement(By.cssSelector("#\\31  > td:nth-child(3)"));
+    	assertTrue(residentTableEntry.getText().contains("@osu.edu"), "Resident Table has entry in table with email");
+
+    }
+
+    private static void confirmFormsTable() {
+    	driver.get("https://remodel.anesthesiology-dev.org.ohio-state.edu/laravel/public/admin/db/evaluation_forms");
+
+    	WebElement formsTableType = driver.findElement(By.cssSelector("#table > thead > tr > th:nth-child(2)"));
+    	assertTrue(formsTableType.getText().equals("form_type"), "Forms Table has form_type");
+
+    	WebElement formsTableName = driver.findElement(By.cssSelector("#table > thead > tr > th:nth-child(3)"));
+    	assertTrue(formsTableName.getText().equals("medhub_form_name"), "Forms Table has medhub_form_name");
+
+    	WebElement formsTableId = driver.findElement(By.cssSelector("#table > thead > tr > th:nth-child(4)"));
+    	assertTrue(formsTableId.getText().equals("medhub_form_id"), "Forms Table has medhub_form_id");
+
+    	WebElement residentTableEntry = driver.findElement(By.cssSelector("#\\31  > td:nth-child(3)"));
+    	assertTrue(residentTableEntry.getText().equals("Acute Pain Service"), "Acute Pain Service exists in table");
+
+    }
+
+    private static void confirmDbEditorFeatures() {
+    	WebElement addButton = driver.findElement(By.cssSelector("body > div.container > button"));
+    	assertTrue(addButton.getText().contains("Add"), "Add button exists");
+    	addButton.click();
+    	try {
+            Thread.sleep(1000);
+        } catch (Exception e) { /* ignored */}
+    	WebElement addModal = driver.findElement(By.cssSelector("#addModal > div"));
+        assertTrue(addModal.getCssValue("display").equals("flex"), "Add popup appears when clicked");
+        WebElement closeAdd = driver.findElement(By.cssSelector("#addModal > div > div > div.modal-header > button > span"));
+        closeAdd.click();
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) { /* ignored */}
+        WebElement addCheck = driver.findElement(By.cssSelector("#addModal"));
+        assertTrue(addCheck.getCssValue("display").equals("none"), "Add popup closes when x is clicked");
+
+    	WebElement editButton = driver.findElement(By.cssSelector("#\\31  > td.b1.operation > button"));
+    	assertTrue(editButton.getText().contains("Edit"), "Edit button exists");
+        editButton.click();
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) { /* ignored */}
+        WebElement editModal = driver.findElement(By.cssSelector("#editModal > div"));
+        assertTrue(editModal.getCssValue("display").equals("flex"), "Edit popup appears when clicked");
+        WebElement closeEdit = driver.findElement(By.cssSelector("#editModal > div > div > div.modal-header > button > span"));
+        closeEdit.click();
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) { /* ignored */}
+
+        WebElement closeCheck = driver.findElement(By.cssSelector("#editModal"));
+        assertTrue(closeCheck.getCssValue("display").equals("none"), "Edit popup closes when x is clicked");
     }
 
     private static void confirmSignInMessage() {
@@ -237,6 +344,7 @@ public class SeleniumTest {
 
     public static void confirmLandingPage() {
         String currentURL = driver.getCurrentUrl();
+        System.out.println(currentURL);
         assertTrue(currentURL.endsWith("secondday"), "Landing page is secondday");
     }
 
