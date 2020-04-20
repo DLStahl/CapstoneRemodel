@@ -149,8 +149,8 @@ public class SeleniumTest {
     }
 
     private static void confirmAdminDashboardWorks() {
-        String[] expectedLinks = { "Edit Residents", "Edit Attendings", "Edit Surgeons/Rotations", "Edit Admins", "Edit Evaluation Forms", "Edit Static Schedule Data", "Edit Schedules", "Edit Milestones", "Post Messages", "Download Data Sheets", "Reset Tickets", "View Resident/Attending Pairings", "Upload Schedule", "MedHub Test"};
-        String[] expectedLocation = {"resident","attending","rotation","admin","evaluation_forms","schedule_data_static","schedules","milestones","postmessage","download","resetTickets","evaluation","uploadForm","medhubtest"};
+        String[] expectedLinks = { "Edit Residents", "Edit Attendings", "Edit Surgeons/Rotations", "Edit Admins", "Edit Evaluation Forms", "Edit Static Schedule Data", "Edit Variables", "Edit Schedules", "Edit Milestones", "Post Messages", "Download Data Sheets", "Reset Tickets", "View Resident/Attending Pairings", "Upload Schedule", "MedHub Test"};
+        String[] expectedLocation = {"resident","attending","rotation","admin","evaluation_forms","schedule_data_static","variables","schedules","milestones","postmessage","download","resetTickets","evaluation","uploadForm","medhubtest"};
 
         // confirm the link is there
         WebElement adminDashboard = driver.findElement(By.id("dashboard"));
