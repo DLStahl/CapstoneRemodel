@@ -51,6 +51,10 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
     Route::post('schedule/submit', 'ScheduleDataController@postSubmit');
 
     Route::get('instructions','ResidentController@getInstructions');
+	
+	Route::get('postmessage', 'ResidentController@getMessages');
+	Route::post('announcement', 'PagesController@postAnnouncement');
+	Route::post('deleteannouncement', 'PagesController@deleteAnnouncement');
 });
 
 
@@ -84,7 +88,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::post('editDB', 'AdminController@postEditDB');
     Route::get('resetTickets', 'AdminController@resetTickets');
     Route::post('updateTickets', 'AdminController@postUpdateTickets');
-    Route::get('postmessage', 'AdminController@getMessages');
     Route::get('download', 'AdminController@getDownload');
     Route::get('evaluation', 'AdminController@getEvaluation');
     Route::get('uploadForm', 'AdminController@uploadForm');

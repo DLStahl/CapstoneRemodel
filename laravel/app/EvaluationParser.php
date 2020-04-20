@@ -10,6 +10,7 @@ namespace App;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use App\Constant;
 use App\EvaluateData;
 use App\Resident;
@@ -172,6 +173,9 @@ class EvaluationParser extends Model
         $fp = fopen($this->filepath, 'r');
 
         $failedAddingUsers = array();
+				
+				$time_difference = DB::table('variables')->where('name', 'time_before_attending_evaluates_resident')->value('value');
+				$time_difference = (int)$time_difference;
 
         fgetcsv($fp);
         while(($line = fgetcsv($fp)) !== false){
@@ -179,11 +183,11 @@ class EvaluationParser extends Model
             var_dump($participants);
 
             foreach ($participants as $resident) {
-            	if($resident->occupation == 0 and $resident->diff >= 15){
+            	if($resident->occupation == 0 and $resident->diff >= $time_difference){
             		foreach ($participants as $attending) {
-            			if($attending->occupation == 1 and $attending->diff >= 15){
+            			if($attending->occupation == 1 and $attending->diff >= $time_difference){
             				$resident->diff = (min(strtotime($resident->endTime), strtotime($attending->endTime)) - max(strtotime($resident->startTime), strtotime($attending->startTime)))/60;
-                            if($resident->diff >= 15){
+                            if($resident->diff >= $time_difference){
                                 $date=self::getDate($line[0]);
                                 $diagnosis=$line[1];
                                 $procedure=$line[2];
