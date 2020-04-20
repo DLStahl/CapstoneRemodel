@@ -9,6 +9,17 @@ use DB;
 class DBEditorController extends Controller
 {
 	
+	public static $customView = [
+		'variables' => [
+			'hide' => [ ],
+			'uneditable' => [ 'name', 'description' ],
+		],
+		'evaluation_forms' => [
+			'hide' => [ ],
+			'uneditable' => [ 'form_type' ],
+		],
+	];
+	
 	// WARNING: no security, but it's admin only and david said that's OK
 	
 	public function viewPage($table) {
@@ -17,6 +28,21 @@ class DBEditorController extends Controller
 		
 		// remove 'id', 'created_at', and 'updated_at' from the columns, user should not worry about these
 		$invisibleColumns = array('id', 'created_at', 'updated_at');
+		// list of column names that should be left uneditable by user - currently only disabled client side, API doesn't reject them being updated
+		$uneditable = [];
+		
+		if(array_key_exists($table, self::$customView)) {
+			$this_tables_config = self::$customView[$table];
+			$hidden = $this_tables_config['hide'];
+			$disallow_edits = $this_tables_config['uneditable'];
+			foreach($hidden as $column_to_hide) {
+				array_push($invisibleColumns, $column_to_hide);
+			}
+			foreach($disallow_edits as $column_to_disallow_edits) {
+				array_push($uneditable, $column_to_disallow_edits);
+			}
+		}
+		
 		foreach($invisibleColumns as $invisibleColumn) {
 			$indexInColumns = array_search($invisibleColumn, $columns);
 			if($indexInColumns !== false) {
@@ -31,7 +57,7 @@ class DBEditorController extends Controller
 		// technically exposing file structure with this, but it's semi-necessary and not dangerous if we sanitize
 		$fullyQualifiedName = $table;
 		
-		return view("crud.databasetable", compact('columns', 'data', 'primaryKeyField', 'fullyQualifiedName'));
+		return view("crud.databasetable", compact('columns', 'data', 'primaryKeyField', 'fullyQualifiedName', 'uneditable'));
 	}
 	
 	public function api_delete(Request $request) {

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Model;
 
 use App\Admin;
+use App\Announcements;
 use App\Resident;
 use App\Attending;
 use App\Option;
@@ -19,6 +21,7 @@ use App\Http\Requests;
 use App\Post;
 use Mail;
 use Session;
+use Carbon\Carbon;
 
 class PagesController extends Controller
 {
@@ -182,6 +185,35 @@ class PagesController extends Controller
 
         return view('pages.about', compact('data'));
     }
+	
+	public function postAnnouncement(Request $request){
+		$message = $request->message;
+		if(strlen($message) > 0) {
+			if (Admin::where('email', $_SERVER['HTTP_EMAIL'])->where('exists','1')->exists()) {
+				$user_type = 1;
+				$user_id = Admin::where('email', $_SERVER['HTTP_EMAIL'])->value('id');
+			} else if (Attending::where('email', $_SERVER['HTTP_EMAIL'])->where('exists','1')->exists()) {
+				$user_type = 2;
+				$user_id = Attending::where('email', $_SERVER['HTTP_EMAIL'])->value('id');
+			} else if (Resident::where('email', $_SERVER['HTTP_EMAIL'])->where('exists','1')->exists()) {
+				$user_type = 3;
+				$user_id = Resident::where('email', $_SERVER['HTTP_EMAIL'])->value('id');
+			}
+			
+			Announcements::insert(['message'=>$message, 'user_type'=>$user_type, 
+			'user_id'=>$user_id, 'parent_message_id'=>$request->parent_message_id, 'created_at'=>Carbon::now()]);
+		}
+        
+		return back();
+		//return view('schedules.resident.messages');
+    }
+	
+	public function deleteAnnouncement(Request $request) {
+		Announcements::where('id', $request->message_id)->delete();
+		
+		return back();
+		//return view('schedules.resident.messages');
+	}
 
     public function getContact()
         {

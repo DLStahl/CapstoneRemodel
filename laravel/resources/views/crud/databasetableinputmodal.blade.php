@@ -24,7 +24,11 @@
 			@foreach($columns as $column)
 				<div class="form-group">
 					<label for="{{$column}}" class="col-form-label">{{$column}}</label>
-					<input type="text" class="form-control actionEdit" id="{{$column}}-{{$input_id_suffix}}">
+					<input type="text" class="form-control actionEdit" id="{{$column}}-{{$input_id_suffix}}" 
+						@if(in_array($column, $uneditable))
+							disabled="true"
+						@endif
+					>
 				</div>
 			@endforeach
 			</div>

@@ -123,4 +123,16 @@ div#preferences div.preferences {
     border: 1px solid;
 }
 
-
+.dropdown-menu > .l1 {
+	margin-left: 15px;
+}
+.dropdown-menu > .l2 {
+	margin-left: 25px;
+}
+.scrollable-menu {
+    padding-right: 15px;
+    height: auto;
+    width: max-content;
+    max-height: 500px;
+    overflow-x: hidden;
+}

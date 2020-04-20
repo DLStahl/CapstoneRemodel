@@ -24,5 +24,13 @@ class ResidentController extends Controller
 	{		
 		return view('schedules.resident.schedule');
     }
+	
+	/**
+     * Route to post messages page
+     */
+    public function getMessages()
+    {
+        return view('schedules.resident.messages');
+    }
     
 }

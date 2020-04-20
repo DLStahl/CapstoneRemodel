@@ -16,7 +16,7 @@
 ?>
 <nav class="navbar navbar-expand-lg" style="background-color: #bb0000;">
     <div class="container">
-        <a class="navbar-brand2" href="/laravel/public/resident/schedule/secondday">REMODEL: REsident MilestOne-baseD Educational Learning</a>
+        <a class="navbar-brand2" href="/laravel/public/resident/schedule/secondday">REMODEL</a>
         <button class="navbar-toggler ml-auto custom-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <font color="white">≡</font>
         </button>
@@ -44,6 +44,9 @@
                 </li>
 				@endif
                 <li class="nav-item">
+					<a class="nav-link" href="/laravel/public/resident/postmessage" id="announcement">Announcements</a>
+				</li>
+				<li class="nav-item">
                     <a class="nav-link" href="/laravel/public/resident/about" id="about">My Selections</a>
                 </li>
                 <li class="nav-item">
@@ -78,21 +81,21 @@
 @if($super_access)
 <!--admin dashboard-->
 <div id="adminsidenav" class="sidenav">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <a href="/laravel/public/admin/db/resident">Edit Residents</a>
-    <a href="/laravel/public/admin/db/attending">Edit Attendings</a>
-    <a href="/laravel/public/admin/db/filter_rotation">Edit Surgeons/Rotations</a>
-    <a href="/laravel/public/admin/db/admin">Edit Admins</a>
-    <a href="/laravel/public/admin/db/evaluation_forms">Edit Evaluation Forms</a>
-    <a href="/laravel/public/admin/db/schedule_data_static">Edit Static Schedule Data</a>
-    <a href="/laravel/public/admin/schedules">Edit Schedules</a>
-    <a href="/laravel/public/admin/milestones">Edit Milestones</a>
-    <a href="/laravel/public/admin/postmessage">Post Messages</a>
-    <a href="/laravel/public/admin/download">Download Data Sheets</a>
-    <a href="/laravel/public/admin/resetTickets">Reset Tickets</a>
-    <a href="/laravel/public/admin/evaluation">View Resident/Attending Pairings</a>
-    <a href="/laravel/public/admin/uploadForm">Upload Schedule</a>
-    <a href="/laravel/public/admin/medhubtest">MedHub Test</a>
+	<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+	<a href="/laravel/public/admin/db/resident"><img src="/laravel/resources/views/partials/icons/icons8-person-at-home-50.png"/>Edit Residents</a>
+	<a href="/laravel/public/admin/db/attending"><img src="/laravel/resources/views/partials/icons/icons8-doctors-bag-50.png"/>Edit Attendings</a>
+	<a href="/laravel/public/admin/db/filter_rotation"><img src="/laravel/resources/views/partials/icons/icons8-medical-doctor-50.png"/>Edit Surgeons/Rotations</a>
+	<a href="/laravel/public/admin/db/admin"><img src="/laravel/resources/views/partials/icons/icons8-administrative-tools-50.png"/>Edit Admins</a>
+	<a href="/laravel/public/admin/db/evaluation_forms"><img src="/laravel/resources/views/partials/icons/icons8-google-forms-50.png"/>Edit Evaluation Forms</a>
+	<a href="/laravel/public/admin/db/schedule_data_static"><img src="/laravel/resources/views/partials/icons/icons8-edit-calendar-50.png"/>Edit Static Schedule Data</a>
+	<a href="/laravel/public/admin/db/variables"><img src="/laravel/resources/views/partials/icons/icons8-variable-50.png"/>Edit Variables</a>
+	<a href="/laravel/public/admin/schedules"><img src="/laravel/resources/views/partials/icons/icons8-view-schedule-50.png"/>Edit Schedules</a>
+	<a href="/laravel/public/admin/milestones"><img src="/laravel/resources/views/partials/icons/icons8-milestone-50.png"/>Edit Milestones</a>
+	<a href="/laravel/public/admin/download"><img src="/laravel/resources/views/partials/icons/icons8-sheet-50.png"/>Download Data Sheets</a>
+	<a href="/laravel/public/admin/resetTickets"><img src="/laravel/resources/views/partials/icons/icons8-delete-ticket-50.png"/>Reset Tickets</a>
+	<a href="/laravel/public/admin/evaluation"><img src="/laravel/resources/views/partials/icons/icons8-geta-50.png"/>View Resident/Attending Pairings</a>
+	<a href="/laravel/public/admin/uploadForm"><img src="/laravel/resources/views/partials/icons/icons8-schedule-50.png"/>Upload Schedule</a>
+	<a href="/laravel/public/admin/medhubtest"><img src="/laravel/resources/views/partials/icons/icons8-test-tube-50.png"/>MedHub Test</a>
 </div>
 @endif
 <script>

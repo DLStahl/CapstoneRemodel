@@ -2,19 +2,20 @@
 
 @section('content')
 
-<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+<script src = "https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
 <!-- <meta name="viewport" content="initial-scale=0.35"> -->
     <h5>Date: <input id="datepicker" autocomplete="off" class="" style="width: 300px;" type="text" value= "{{ $date }}" /></h5>
     <script type="text/javascript">  
-        $('#datepicker').datepicker({ 
-            beforeShowDay: $.datepicker.noWeekends,
-            dateFormat: 'yy-mm-dd',
-            onSelect: function(date) {
-                window.location.replace("/laravel/public/admin/evaluation/"+date)
-            }            
-         }); 
+            $('#datepicker').datepicker({ 
+                 beforeShowDay: $.datepicker.noWeekends,
+                dateFormat: 'yy-mm-dd',
+                onSelect: function(date) {
+                    window.location.replace("/laravel/public/admin/evaluation/"+date)
+                }            
+            });
     </script>  
 
     <table id="sched_table">
@@ -119,6 +120,13 @@
       border: 1px solid #dee2e6; 
       text-align: left; 
       /*hyphens: auto;*/
+    }
+    div.ui-datepicker-header.ui-widget-header.ui-helper-clearfix.ui-corner-all {
+	background: gray;
+	border: 1px solid gray;
+    }
+    .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+	color: black;
     }
 </style>
 

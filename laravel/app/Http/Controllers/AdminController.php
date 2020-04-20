@@ -566,16 +566,6 @@ class AdminController extends Controller
         return view('schedules.admin.addDB_OK', compact('message'));
     }
 
-
-
-    /**
-     * Route to post messages page
-     */
-    public function getMessages()
-    {
-        return view('schedules.admin.messages');
-    }
-
     /**
      * Route to download data sheets page
      */
@@ -625,7 +615,8 @@ class AdminController extends Controller
             $milestone = null;
             $objective = null;
 
-            $milestone = Option::where(['resident'=>$data['rId'], 'schedule'=>$schedule])->value('milestones');
+            $milestoneId = Option::where(['resident'=>$data['rId'], 'schedule'=>$schedule])->value('milestones');
+	    $milestone = Milestone::where('id', $milestoneId)->value('category');
             $objective = Option::where(['resident'=>$data['rId'], 'schedule'=>$schedule])->value('objectives');
 
             array_push($evaluate_data, array(

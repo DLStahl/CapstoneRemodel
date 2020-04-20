@@ -17,6 +17,7 @@
 
 @component('crud.databasetableinputmodal', [
 	'columns' => $columns,
+	'uneditable' => $uneditable,
 	'id' => 'editModal',
 	'title' => 'Edit',
 	'z_index' => 1400,
@@ -30,6 +31,7 @@
 
 @component('crud.databasetableinputmodal', [
 	'columns' => $columns,
+	'uneditable' => [],
 	'id' => 'addModal',
 	'title' => 'Add New',
 	'z_index' => 1200,
@@ -252,7 +254,7 @@
 
 <button type="button" align="center" class="btn btn-md btn-success" data-toggle="modal" data-target="#addModal">Add</button>
 
-<h3>Database Table Editor</h3>
+<h3>{{$fullyQualifiedName}}</h3>
 <table id="table">
     <thead>
         <tr>

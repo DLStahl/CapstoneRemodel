@@ -29,12 +29,20 @@
 	<div id="filter">
 
         <!--room filter-->
-        <select id="room" onchange="filterUpdate()">
-            <option value="null" selected  > - Room - </option>
-            @foreach ($filter_options['rooms'] as $roomOption)
-                <option value="{{$roomOption}}" > {{$roomOption}}</option>
-            @endforeach
-        </select>
+		<div class="dropdown keep-inside-clicks-open" style="display: inline-block">
+			<button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown" style="border:1px; border-style:solid; border-color:#CCC">
+				Room Filter
+				<span class="caret"></span>
+			</button>
+			<div id="roomFilterDiv">
+				<ul id="roomFilterDropdown" class="dropdown-menu scrollable-menu">
+					<div id="allRoomFilter" class="custom-control custom-checkbox l1">
+						<input type="checkbox" class="custom-control-input" id="*_dropdownFilter">
+						<label class="custom-control-label" for="*_dropdownFilter">All</label>
+					</div>
+				</ul>
+			</div>
+		</div>
 
         <!--lead surgeon filter-->
         <select id="leadSurgeon"  onchange="filterUpdate()">
@@ -79,7 +87,12 @@
         </div>
 
     </div>
-
+	<script>
+		// stop the dropdown menus from disappearing when a checkbox is clicked
+		$(document).on('click.bs.dropdown.data-api', '.dropdown.keep-inside-clicks-open', function (e) {
+			e.stopPropagation();
+		});
+	</script>
     <br>
     <script type="text/javascript">
         $(document).ready(function() {
@@ -108,6 +121,7 @@
         function clearFilter()
         {
             $('#filter select').val('null');
+			clearRoomFilter();
 			filterUpdate();
 			
 			// old server-filter refresh below
@@ -124,7 +138,7 @@
 
     @if(sizeof($schedule_data)>0)
         <div id="schedule_table"></div>
-    <br><br>
+		<br><br>
         <!-- A block fixed at the bottom of the page. Display information for selected preferences. -->
         <div id="schedule_footer" style="display:none">
             <div id="preferences" class="row">
@@ -486,7 +500,7 @@
 		var sortingGuide = ['UH', 'CCCT', 'RHH', 'CATH', 'EP', 'IPR'];
 		function roomOrder(location) {
 			for(var i = 0; i < sortingGuide.length; i ++) {
-				if(location.includes(sortingGuide[i])) {
+				if(location.indexOf(sortingGuide[i]) != -1) {
 					return i;
 				}
 			}
@@ -532,12 +546,6 @@
 		// Client-side filtering
 		// The collapse divs are added inside of the sked-tape.js file, along with some other application-specific stuff
 		
-		var room = document.getElementById("room");
-		var leadSurgeon = document.getElementById("leadSurgeon");
-		var rotation = document.getElementById("rotation");
-		var start_after = document.getElementById("start_after");
-		var end_before = document.getElementById("end_before");
-		
 		// repeat safety is used to prevent it from calling filterUpdate for every collapse
 		// so if 30 things get collapsed at once, it will only call filterUpdate again once within 200ms
 		var repeatSafety = false;
@@ -551,24 +559,81 @@
 			}, 200);
 		});
 		
-		// filter the room dropdown by the same order as the rooms
-		var options = $('#room option');
-		var arr = options.map(function(_, o) { return { t: $(o).text(), v: o.value }; }).get();
-		arr.sort(
-			function(firstOption, secondOption) {
-				if(firstOption.v === "null") return -1;
-				if(secondOption.v === "null") return 1;
-				return roomOrderComparator(firstOption.v, secondOption.v);
+		// populate the room filter with all the options, including the subsections
+		var dropdownEntry = '<div class="custom-control custom-checkbox {$level}" id="{$room}_dropdownFilterDiv"><input type="checkbox" class="custom-control-input" id="{$room}_dropdownFilter"><label class="custom-control-label" for="{$room}_dropdownFilter">{$room}</label></div>'
+		
+		var sections = []
+		var roomFilter = $("#allRoomFilter")
+		locations.forEach(function(location) {
+			var split = location.name.split(/\s|-/)
+			var section = split[0]
+			var shouldShowChild = true
+			if(sections.indexOf(section) == -1) {
+				sections.push(section)
+				roomFilter.append(dropdownEntry.replace(/{\$level}/g, "l1").replace(/{\$room}/g, section))
+				shouldShowChild = split.length > 1
 			}
-		);
-		options.each(function(i, o) {
-		  o.value = arr[i].v;
-		  $(o).text(arr[i].t);
+			
+			if(shouldShowChild)
+			{
+				roomFilter.find("#" + section + "_dropdownFilterDiv").append(dropdownEntry.replace(/{\$level}/g, "").replace(/{\$room}/g, location.name))
+			}
 		});
+		// end populate room filter
+		
+		// roomFilter Checkbox logic
+		var roomFilter = $("#roomFilterDiv");
+		roomFilter.find("input:checkbox").change(function() {
+			$(this).prop("indeterminate", false);
+			var newState = $(this).prop("checked");
+
+			// set the children checkboxes to the parents new state
+			$(this).parent().find("div").each(function() {
+				$(this).find("input").each(function() {
+					$(this).prop("checked", newState);
+					$(this).prop("indeterminate", false);
+				});
+			});
+
+			// set the parent checkbox to reflect the children
+			if(!$(this).parent().parent().is("ul")) {
+				var childrenChecked = 0;
+				var childrenUnchecked = 0;
+				$(this).parent().parent().find("div").each(function() {
+					var checkbox = $(this).find("input");
+					var checked = checkbox.prop("checked") || checkbox.prop("indeterminate");
+					if(checked) {
+						childrenChecked ++;
+					} else {
+						childrenUnchecked ++;
+					}
+				});
+				$(this).parent().parent().find("input").first().prop("checked", childrenChecked > 0 && childrenUnchecked == 0);
+				$(this).parent().parent().find("input").first().prop("indeterminate", childrenChecked > 0 && childrenUnchecked > 0);
+				$(this).parent().parent().change();
+			}
+			
+			filterUpdate();
+		});
+		
+		function clearRoomFilter() {
+			// check everything
+			roomFilter.find("input:checkbox").each(function() {
+				$(this).prop("checked", true);
+			});
+		}
+		clearRoomFilter();
+		
+		// end roomFitler checkbox logic
+		
+		var room = document.getElementById("room");
+		var leadSurgeon = document.getElementById("leadSurgeon");
+		var rotation = document.getElementById("rotation");
+		var start_after = document.getElementById("start_after");
+		var end_before = document.getElementById("end_before");
 		
         function filterUpdate()
         {
-            var room_selected = room.options[room.selectedIndex].value;
             var leadSurgeon_selected = leadSurgeon.options[leadSurgeon.selectedIndex].value;
             var rotation_selected = rotation.options[rotation.selectedIndex].value;
             var start_after_selected = start_after.options[start_after.selectedIndex].value;
@@ -587,9 +652,11 @@
 				var selector = "." + schedule['id'] + "_.sked-tape__collapse";
 				var show = false;
 				
-				if((schedule['room'].includes(room_selected) || room.selectedIndex == 0)
-						&& (schedule['lead_surgeon'].includes(leadSurgeon_selected) || leadSurgeon.selectedIndex == 0)
-						&& (schedule['rotation'].includes(rotation_selected) || rotation.selectedIndex == 0)
+				var room_selected = $("[id='" + schedule['room'] + "_dropdownFilter']").first().prop("checked")
+				
+				if((room_selected)
+						&& (schedule['lead_surgeon'].indexOf(leadSurgeon_selected) != -1 || leadSurgeon.selectedIndex == 0)
+						&& (schedule['rotation'].indexOf(rotation_selected) != -1 || rotation.selectedIndex == 0)
 						&& (schedule['start_time'] >= start_after_selected || start_after.selectedIndex == 0)
 						&& (schedule['end_time'] <= end_before_selected || end_before.selectedIndex == 0)) {
 					show = true;
