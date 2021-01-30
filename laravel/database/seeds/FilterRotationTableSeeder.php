@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class FilterRotationTableSeeder extends Seeder
 {
@@ -11,27 +12,30 @@ class FilterRotationTableSeeder extends Seeder
      */
     public function run()
     {
-        if (file_exists( __DIR__."/../../../resources/database/SurgeonRotations.csv")) {
-          /**
-           * Read data from the backup file and add into database
-           */
-          $fp = fopen(__DIR__."/../../../resources/database/SurgeonRotations.csv", 'r');
+        // Make sure the file containing FilterRotation data exists. If it does not, print a warning and return.
+        if (!file_exists(__DIR__ . "/../../../resources/database/SurgeonRotations.csv")) {
+            print("WARNING: resources/database/SurgeonRotations.csv not found. Can't seed Filter Rotation Table." . PHP_EOL);
+            return;
+        }
 
-          // Read the first row
-          fgetcsv($fp);
+        /**
+         * Read data from the backup file and add into database
+         */
+        $fp = fopen(__DIR__ . "/../../../resources/database/SurgeonRotations.csv", 'r');
 
-          // Read rows until null
-          while (($line = fgetcsv($fp)) !== false)
-          {
-              $surgeon = $line[0];
-              $rotation = $line[2];
-              DB::table('filter_rotation')->insert(
-                  ['surgeon' => $surgeon, 'rotation' => $rotation]
-              );
-          }
+        // Read the first row
+        fgetcsv($fp);
 
-          // Close file
-          fclose($fp);
-      }
+        // Read rows until null
+        while (($line = fgetcsv($fp)) !== false) {
+            $surgeon = $line[0];
+            $rotation = $line[2];
+            DB::table('filter_rotation')->insert(
+                ['surgeon' => $surgeon, 'rotation' => $rotation]
+            );
+        }
+
+        // Close file
+        fclose($fp);
     }
 }
