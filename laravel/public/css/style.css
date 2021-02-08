@@ -136,11 +136,3 @@ div#preferences div.preferences {
     max-height: 500px;
     overflow-x: hidden;
 }
-
-#anesthesiologist_preference {
-    display: flex;
-}
-
-#anesthesiologist_preference > * {
-    margin-right: 1rem;
-}

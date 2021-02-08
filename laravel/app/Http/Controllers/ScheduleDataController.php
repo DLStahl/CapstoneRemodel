@@ -401,11 +401,17 @@ class ScheduleDataController extends Controller
             // Store second choice data
             $data3['schedule'] = $schedule_data3[0];
             $data3['attending'] = $attending3;
-	    }
-
+        }
+        
         $milestones = Milestone::where('exists', 1)->get();
 
-        return view('schedules.resident.milestone', compact('id', 'milestones', 'data1', 'data2', 'data3'));
+        // TODO: retrieve this data rather than hardcoding
+        $anesthesiologists = [
+            ["name"=>"Dr. Bryan Hill","id"=> 1],
+            ["name"=>"Dr. David Stahl","id"=> 2],
+        ];
+
+        return view('schedules.resident.milestone', compact('id', 'milestones', 'data1', 'data2', 'data3', 'anesthesiologists'));
 	}
 
     public function updateMilestones($id){
@@ -504,7 +510,13 @@ class ScheduleDataController extends Controller
 
         $milestones = Milestone::all();
 
-        return view('schedules.resident.milestone_edit', compact('id', 'milestones', 'data1', 'data2', 'data3'));
+        // TODO: retrieve this data rather than hardcoding
+        $anesthesiologists = [
+            ["name"=>"Dr. Bryan Hill","id"=> 1],
+            ["name"=>"Dr. David Stahl","id"=> 2],
+        ];
+
+        return view('schedules.resident.milestone_edit', compact('id', 'milestones', 'data1', 'data2', 'data3', 'anesthesiologists'));
     }
 
 	public function notifyResidentOverwrittenPreferences($toName, $toEmail, $residentName, $date, $overwrittenChoices)

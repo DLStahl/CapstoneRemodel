@@ -6,6 +6,7 @@
         <h4>Resident Preferences</h4><br>
         <form method="POST" action="../confirm">
 		<div class="form-group">
+			<!-- TODO: Use a for loop -->
             <h5>Your 1st Preference: Room {{ $data1['schedule']['room'] }} with {{ $data1['attending'] }} </h5>
             <label>Select your Milestone:</label><br>
 
@@ -32,8 +33,19 @@
 
             <label>What is your educational objective for this OR today?</label><br>
 
-            <textarea rows="3" name="objectives1" id="objectives1" class="form-control" required>{{ $data1['objective'] }}</textarea><br>
-
+            <textarea rows="3" name="objectives1" id="objectives1" class="form-control" required>{{ $data1['objective'] }}</textarea>
+			
+			<div id="anesthesiologist_preference">
+				<label>Anesthesiologist Preference:</label>
+				<br>
+				<select class="PreferenceSelector">
+					<option selected="selected">No Preference</option>
+					@foreach($anesthesiologists as $a)
+						<option value="{{ $a['id'] }}">{{ $a['name'] }}</option>
+					@endforeach
+				</select>
+			</div>
+			<br>
 
 	        @if(is_null($data2['schedule']))
 				<h5>Your 2nd Preference: None</h5>
@@ -64,12 +76,24 @@
 
                 <label>What is your educational objective for this OR today?</label><br>
 
-                <textarea rows="3" name="objectives2" id="objectives2" class="form-control" required>{{ $data2['objective'] }}</textarea><br>
+                <textarea rows="3" name="objectives2" id="objectives2" class="form-control" required>{{ $data2['objective'] }}</textarea>
+
+				<div id="anesthesiologist_preference">
+					<label>Anesthesiologist Preference:</label>
+					<br>
+					<select class="PreferenceSelector">
+						<option selected="selected">No Preference</option>
+						@foreach($anesthesiologists as $a)
+							<option value="{{ $a['id'] }}">{{ $a['name'] }}</option>
+						@endforeach
+					</select>
+				</div>
+				<br>
 	        @endif
 
 
 	        @if(is_null($data3['schedule']))
-				<h5>Your 3nd Preference: None</h5>
+				<h5>Your 3rd Preference: None</h5>
 			@else
 				<h5>Your 3rd Preference: Room {{ $data3['schedule']['room'] }} with {{ $data3['attending'] }}</h5>
                 <label>Select your Milestone:</label><br>
@@ -97,9 +121,19 @@
 
                 <label>What is your educational objective for this OR today?</label><br>
 
-                <textarea rows="3" name="objectives3" id="objectives3" class="form-control" required>{{$data3['objective']}}</textarea><br>
+                <textarea rows="3" name="objectives3" id="objectives3" class="form-control" required>{{$data3['objective']}}</textarea>
 
-                <br>
+				<div id="anesthesiologist_preference">
+					<label>Anesthesiologist Preference:</label>
+					<br>
+					<select class="PreferenceSelector">
+						<option selected="selected">No Preference</option>
+						@foreach($anesthesiologists as $a)
+							<option value="{{ $a['id'] }}">{{ $a['name'] }}</option>
+						@endforeach
+					</select>
+				</div>
+				<br>
 	        @endif
 
             <input type="hidden" name="schedule_id" value="{{ $id }}">

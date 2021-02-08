@@ -138,21 +138,6 @@
 
     @if(sizeof($schedule_data)>0)
 
-        <div id="anesthesiologist_preference">
-            <div>Anesthesiologist Preference</div>
-            <select class="PreferenceSelector">
-                <option selected="selected">Anesthesiologist Preference</option>
-                <option value="1">Dr. Bryan Hill</option>
-                <option value="2">Dr. David Stahl</option>
-            </select>
-            <select class="PreferenceSelector">
-                <option selected="selected">Choose</option>
-                <option value="1">First</option>
-                <option value="2">Second</option>
-                <option value="3">Third</option>
-            </select>
-        </div>
-
         <div id="schedule_table"></div>
 		<br><br>
         <!-- A block fixed at the bottom of the page. Display information for selected preferences. -->
