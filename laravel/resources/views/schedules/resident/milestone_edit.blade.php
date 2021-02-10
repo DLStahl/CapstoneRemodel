@@ -41,7 +41,7 @@
 				<select class="PreferenceSelector">
 					<option selected="selected">No Preference</option>
 					@foreach($anesthesiologists as $a)
-						<option value="{{ $a['id'] }}">{{ $a['name'] }}</option>
+						<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
 					@endforeach
 				</select>
 			</div>
@@ -84,7 +84,7 @@
 					<select class="PreferenceSelector">
 						<option selected="selected">No Preference</option>
 						@foreach($anesthesiologists as $a)
-							<option value="{{ $a['id'] }}">{{ $a['name'] }}</option>
+							<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
 						@endforeach
 					</select>
 				</div>
@@ -129,7 +129,7 @@
 					<select class="PreferenceSelector">
 						<option selected="selected">No Preference</option>
 						@foreach($anesthesiologists as $a)
-							<option value="{{ $a['id'] }}">{{ $a['name'] }}</option>
+							<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
 						@endforeach
 					</select>
 				</div>

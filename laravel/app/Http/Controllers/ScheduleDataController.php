@@ -13,11 +13,14 @@ use App\ScheduleParser;
 use App\Resident;
 use App\Option;
 use App\Admin;
+use App\Anesthesiologist;
 use App\FilterRotation;
 use App\Assignment;
 use App\Milestone;
+use Carbon\Carbon;
 use Mail;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Mail as FacadesMail;
 
 class ScheduleDataController extends Controller
 {
@@ -405,11 +408,9 @@ class ScheduleDataController extends Controller
         
         $milestones = Milestone::where('exists', 1)->get();
 
-        // TODO: retrieve this data rather than hardcoding
-        $anesthesiologists = [
-            ["name"=>"Dr. Bryan Hill","id"=> 1],
-            ["name"=>"Dr. David Stahl","id"=> 2],
-        ];
+        $anesthesiologists = Anesthesiologist::where('updated_at', '>', Carbon::yesterday())
+            ->orderBy('last_name')
+            ->get();
 
         return view('schedules.resident.milestone', compact('id', 'milestones', 'data1', 'data2', 'data3', 'anesthesiologists'));
 	}
@@ -510,11 +511,9 @@ class ScheduleDataController extends Controller
 
         $milestones = Milestone::all();
 
-        // TODO: retrieve this data rather than hardcoding
-        $anesthesiologists = [
-            ["name"=>"Dr. Bryan Hill","id"=> 1],
-            ["name"=>"Dr. David Stahl","id"=> 2],
-        ];
+        $anesthesiologists = Anesthesiologist::where('updated_at', '>', Carbon::yesterday())
+            ->orderBy('last_name')
+            ->get();
 
         return view('schedules.resident.milestone_edit', compact('id', 'milestones', 'data1', 'data2', 'data3', 'anesthesiologists'));
     }
