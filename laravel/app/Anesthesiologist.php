@@ -11,5 +11,5 @@ class Anesthesiologist extends Model
      *
      * @var array
      */
-    protected $fillable = ['first_name', 'last_name'];
+    protected $fillable = ['first_name', 'last_name', 'staff_key'];
 }
