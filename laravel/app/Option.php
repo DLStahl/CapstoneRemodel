@@ -19,4 +19,13 @@ class Option extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    /**
+     * https://laravel.com/docs/8.x/eloquent-relationships#one-to-many-inverse
+     * get the anesthesiologist that the resident chose
+     */
+    public function anesthesiologist()
+    {
+        return $this->belongsTo(Anesthesiologist::class);
+    }
 }
