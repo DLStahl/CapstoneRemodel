@@ -43,107 +43,99 @@ class UpdateAnesthesiologistsData extends Command
         $json = file_get_contents("QgendaSchedule-edited.json");
         $json_data = json_decode($json, true);
 
-        foreach ($json_data as $oStaffMember) {
-            $color = strtolower($oStaffMember["BgColor"]);
-            $sRet = "";
-            switch ($color) {
-                case "000000":
-                    $sRet = "Spacer";
-                    break;
-                case "660033":
-                    $sRet = "Attending"; //ICU
-                    break;
-                case "66cc99":
-                    $sRet = "Attending"; //Neuro
-                    break;
-                case "66cccc":
-                    $sRet = "Attending"; //OOD
-                    break;
-                case "66ccff":
-                    $sRet = "Attending"; //Pain
-                    break;
-                case "66ffff":
-                    $sRet = "Attending"; //C$harge
-                    break;
-                case "99cccc":
-                    $sRet = "Attending";
-                    break;
-                case "99ccff":
-                    $sRet = "CRNA"; //General
-                    break;
-                case "9966cc":
-                    $sRet = "CA-1";
-                    break;
-                case "cc99cc":
-                    $sRet = "CA-1";
-                    break;
-                case "ccccff":
-                    $sRet = "Attending"; //PartTime
-                    break;
-                case "ccffff":
-                    $sRet = "CRNA"; //PartTime
-                    break;
-                case "f5faf5":
-                    if (strpos($oStaffMember["Abbrev"], "SRNA") !== false) {
-                        $sRet = "SRNA";
-                    } else {
-                        $sRet = "Attending"; //General
-                    }
-                    break;
-                case "ff0000":
-                    $sRet = "CRNA"; //Cardiac
-                    break;
-                case "ff99cc":
-                    $sRet = "CA-2";
-                case "ff9999":
-                    if ($oStaffMember["ExtCallSysId"] == "PGY") {
-                        $sRet = "CA-2";
-                    } else {
-                        $sRet = "Attending"; //Cardiac
-                    }
-                    break;
-                case "ffcc99":
-                    if (strpos($oStaffMember["Abbrev"], "Med Student") !== false) {
-                        $sRet = "Student";
-                    } else if (strpos($oStaffMember["Abbrev"], "Outside") !== false) {
-                        $sRet = "Student";
-                    } else {
-                        $sRet = "CA-3";
-                    }
-                    break;
-                case "ffcccc":
-                    $sRet = "CA-1";
-                    break;
-                case "ffccff":
-                    $sRet = "Fellow";
-                    break;
-                case "ffff99":
-                    $sRet = "Attending"; //East
-                    break;
-                case "ffffff":
-                    $sRet = "Attending";
-                    break;
-                default:
-                    $sRet = "";
-                    break;
-            }
-
-            if ($sRet == "Attending") {
-                $first_name = strval($oStaffMember["FirstName"]);
-                $last_name = strval($oStaffMember["LastName"]);
-
-                $anest = Anesthesiologist::where('first_name', $first_name)
-                    ->where('last_name', $last_name)
-                    ->first();
-
-                if (is_null($anest)) {
-                    Anesthesiologist::create(compact('first_name', 'last_name'));
-                } else {
-                    $anest->touch();
+        //get scheduling date in format: "yyyy-mm-ddT00:00:00"
+        $date = substr(date("c", strtotime('+2 day')), 0, -14) . "00:00:00";
+        if(date("l", strtotime('today')) == 'Thursday' || date("l", strtotime('today')) == 'Friday'){
+            $date = substr(date("c", strtotime('+4 day')), 0, -14) . "00:00:00";
+        } elseif (date("l", strtotime('today'))=='Saturday') {
+            $date = substr(date("c", strtotime('+3 day')), 0, -14) . "00:00:00";
+        }
+        // filter for available attending for scheduling day
+        foreach ($json_data as $staffMember) {
+            if(strval($staffMember["Date"]) == $date){
+                $taskAbbrev = strval($staffMember["TaskAbbrev"]);
+                $label = "";
+                switch($taskAbbrev){
+                    case "Endo 1":
+                        $label = "Attending";
+                        break;
+                    case "Endo 2":
+                        $label = "Attending"; 
+                        break;
+                    case "Endo 3":
+                        $label = "Attending"; 
+                        break;
+                    case "Late 1":
+                        $label = "Attending";
+                        break;
+                    case "Late 2":
+                        $label = "Attending"; 
+                        break;
+                    case "Late 3":
+                        $label = "Attending"; 
+                        break;
+                    case "Late 4":
+                        $label = "Attending"; 
+                        break;
+                    case "Late 5":
+                        $label = "Attending"; 
+                        break;
+                    case "Neuro1":
+                        $label = "Attending"; 
+                        break;
+                    case "Neuro2":
+                        $label = "Attending";
+                        break;
+                    case "Offsite1":
+                        $label = "Attending"; 
+                        break;
+                    case "OR":
+                        $label = "Attending"; 
+                        break;
+                    case "Ortho 1":
+                        $label = "Attending";
+                        break;
+                    case "Pulmonary":
+                        $label = "Attending"; 
+                        break;
+                    case "SDS-1":
+                        $label = "Attending"; 
+                        break;
+                    case "SDS-2":
+                        $label = "Attending"; 
+                        break;
+                    case "SDS-3":
+                        $label = "Attending"; 
+                        break;
+                    case "T1":
+                        $label = "Attending"; 
+                        break;
+                    case "T2":
+                        $label = "Attending"; 
+                        break;
+                    default:
+                        $label = "";
+                        break;
                 }
 
+                if ($label == "Attending") {
+                    $first_name = strval($staffMember["StaffFName"]);
+                    $last_name = strval($staffMember["StaffLName"]);
+                    $staff_key = strval($staffMember["StaffKey"]);
+
+                    $anest = Anesthesiologist::where('first_name', $first_name)
+                        ->where('last_name', $last_name)
+                        ->where('staff_key', $staff_key)
+                        ->first();
+
+                    if (is_null($anest)) {
+                        Anesthesiologist::create(compact('first_name', 'last_name', 'staff_key'));
+                    } else {
+                        $anest->touch();
+                    }
+
+                }
             }
         }
-
     }
 }
