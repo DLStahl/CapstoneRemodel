@@ -39,8 +39,7 @@ class UpdateAnesthesiologistsData extends Command
      */
     public function handle()
     {
-        // TODO: change file location to url 
-        $json = file_get_contents("QgendaSchedule-edited.json");
+        $json = file_get_contents('https://remodel.osuanes.com/QgendaSchedule/');
         $json_data = json_decode($json, true);
 
         //get scheduling date in format: "yyyy-mm-ddT00:00:00"
