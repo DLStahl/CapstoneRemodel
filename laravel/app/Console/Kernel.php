@@ -17,7 +17,8 @@ class Kernel extends ConsoleKernel
         Commands\AutoAssign::class,
         Commands\PushSchedule::class,
 		Commands\UpdateEvaluateData::class,
-		Commands\InitiateEval::class
+		Commands\InitiateEval::class,
+        Commands\UpdateAnesthesiologistsData::class
     ];
 
     /**
@@ -29,6 +30,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('autoassign')->dailyAt('5:00');
+        $schedule->command('update:anesthesiologists_data')->dailyAt('5:05');
         $schedule->command('update:schedule_data')->dailyAt('5:15');
 		$schedule->command('update:evaluate_data')->dailyAt('5:30');
         $schedule->command('pushAPI')->dailyAt('5:45');
