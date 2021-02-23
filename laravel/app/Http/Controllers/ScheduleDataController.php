@@ -408,7 +408,7 @@ class ScheduleDataController extends Controller
         
         $milestones = Milestone::where('exists', 1)->get();
 
-        $anesthesiologists = Anesthesiologist::where('updated_at', '>', Carbon::yesterday())
+        $anesthesiologists = Anesthesiologist::where('updated_at', '>', Carbon::today())
             ->orderBy('last_name')
             ->get();
 
@@ -511,7 +511,7 @@ class ScheduleDataController extends Controller
 
         $milestones = Milestone::all();
 
-        $anesthesiologists = Anesthesiologist::where('updated_at', '>', Carbon::yesterday())
+        $anesthesiologists = Anesthesiologist::where('updated_at', '>', Carbon::today())
             ->orderBy('last_name')
             ->get();
 
