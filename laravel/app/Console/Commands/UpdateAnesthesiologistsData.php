@@ -49,75 +49,18 @@ class UpdateAnesthesiologistsData extends Command
         } elseif (date("l", strtotime('today'))=='Saturday') {
             $date = substr(date("c", strtotime('+3 day')), 0, -14) . "00:00:00";
         }
+        //task abbrevs for attending that are available 
+        $attendingTaskAbbrev = ["Endo 1", "Endo 2", "Endo 3", "Late 1", "Late 2", "Late 3", "Late 4","Late 5","Neuro1","Neuro2", "Offsite1", "OR","Ortho 1", "Pulmonary", "SDS-1",
+        "SDS-2","SDS-3", "T1", "T2"];
         // filter for available attending for scheduling day
         foreach ($json_data as $staffMember) {
             if(strval($staffMember["Date"]) == $date){
                 $taskAbbrev = strval($staffMember["TaskAbbrev"]);
-                $label = "";
-                switch($taskAbbrev){
-                    case "Endo 1":
-                        $label = "Attending";
-                        break;
-                    case "Endo 2":
-                        $label = "Attending"; 
-                        break;
-                    case "Endo 3":
-                        $label = "Attending"; 
-                        break;
-                    case "Late 1":
-                        $label = "Attending";
-                        break;
-                    case "Late 2":
-                        $label = "Attending"; 
-                        break;
-                    case "Late 3":
-                        $label = "Attending"; 
-                        break;
-                    case "Late 4":
-                        $label = "Attending"; 
-                        break;
-                    case "Late 5":
-                        $label = "Attending"; 
-                        break;
-                    case "Neuro1":
-                        $label = "Attending"; 
-                        break;
-                    case "Neuro2":
-                        $label = "Attending";
-                        break;
-                    case "Offsite1":
-                        $label = "Attending"; 
-                        break;
-                    case "OR":
-                        $label = "Attending"; 
-                        break;
-                    case "Ortho 1":
-                        $label = "Attending";
-                        break;
-                    case "Pulmonary":
-                        $label = "Attending"; 
-                        break;
-                    case "SDS-1":
-                        $label = "Attending"; 
-                        break;
-                    case "SDS-2":
-                        $label = "Attending"; 
-                        break;
-                    case "SDS-3":
-                        $label = "Attending"; 
-                        break;
-                    case "T1":
-                        $label = "Attending"; 
-                        break;
-                    case "T2":
-                        $label = "Attending"; 
-                        break;
-                    default:
-                        $label = "";
-                        break;
+                $isAvailableAttending = false;
+                if(in_array($taskAbbrev, $attendingTaskAbbrev)){
+                    $isAvailableAttending = true;
                 }
-
-                if ($label == "Attending") {
+                if ($isAvailableAttending) {
                     $first_name = strval($staffMember["StaffFName"]);
                     $last_name = strval($staffMember["StaffLName"]);
                     $staff_key = strval($staffMember["StaffKey"]);
@@ -132,7 +75,6 @@ class UpdateAnesthesiologistsData extends Command
                     } else {
                         $anest->touch();
                     }
-
                 }
             }
         }
