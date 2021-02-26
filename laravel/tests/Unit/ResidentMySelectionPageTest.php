@@ -14,15 +14,14 @@ class ResidentMySelectionPageTest extends TestCase
      * @return void
      */
 
-
-    // My selection consists of Milestones 
+    // My selection consists of Milestones
     public function testConsistsMilestones()
     {
         // Retrieve Milestone information
         // Check if there is Milestone information the same
         $this->assertTrue(true);
     }
-    // My selection consists of objective 
+    // My selection consists of objective
     public function testConsistsObjective()
     {
         // Retrieve Objective information
@@ -33,7 +32,7 @@ class ResidentMySelectionPageTest extends TestCase
     public function testConsistsEditLinkButton()
     {
         // Visit the myselection page
-        // Get the button information 
+        // Get the button information
         // Check if it link to the edit page
         $this->assertTrue(true);
     }

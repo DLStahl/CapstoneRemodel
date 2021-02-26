@@ -6,48 +6,65 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use App\ScheduleParser;
-use App\EvaluationParser;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MedhubController;
+use App\EvaluationParser;
+use App\Resident;
 
 class AdminAddUserTest extends TestCase
 {
     /**
-     * A basic test example.
+     * A test of add user on admin adds a user to the resident table
      *
      * @return void
      */
-
-	public function testAddUserResidentTableHasData()
+    public function testAddUserResidentTableHasData()
     {
-        $this->assertDatabaseHas('resident',['id' => '1']);
+        $AC = new AdminController();
+        $AC->getUpdateUsers(
+            "addUser",
+            "Resident",
+            "fakeRes@fak.com",
+            "true",
+            "FakeName"
+        );
+        $this->assertDatabaseHas("resident", ["email" => "fakeRes@fak.com"]);
+        $fakeData = Resident::where("email", "fakeRes@fak.com")->first();
+        $fakeData->delete();
     }
 
-	public function testAddUserResidentTableHasCorrectNameData()
+    public function testAddUserResidentTableHasCorrectNameData()
     {
-        $this->assertDatabaseHas('resident',['name' => 'Amy Baumann']);
+        $this->assertDatabaseHas("resident", ["name" => "Amy Baumann"]);
     }
 
-	public function testAddUserResidentTableHasCorrectIDData()
+    public function testAddUserResidentTableHasCorrectIDData()
     {
-        $this->assertDatabaseHas('resident',['medhubId' => '113643']);
+        $this->assertDatabaseHas("resident", ["medhubId" => "113643"]);
     }
 
-	public function testAddUserMedHubAPIConnection()
+    /**
+     * A test of the medhub api connection.
+     *
+     * @return void
+     */
+    public function testAddUserMedHubAPIConnection()
     {
-		$MHC = new MedhubController();
-		$testPOST = json_decode($MHC->testPOST()->getBody(), true);
-		$response = $testPOST['response'];
-		$this->assertTrue($response == 'success');
+        $MHC = new MedhubController();
+        $testPOST = json_decode($MHC->testPOST()->getBody(), true);
+        $response = $testPOST["response"];
+        $this->assertTrue($response == "success");
     }
 
-	// public function testAddUserFindPeople()
-  //   {
-	// 	$ep = new EvaluationParser(date("o", strtotime('today')).date("m", strtotime('today')).date("d", strtotime('today')), true);
-	// 	$result = $ep->findPeopleOSU("Michael", "Bragalone");
-	// 	$this->assertNotNull($result);
-  //   }
-
-
-
+    public function testAddUserFindPeople()
+    {
+        $ep = new EvaluationParser(
+            date("o", strtotime("today")) .
+                date("m", strtotime("today")) .
+                date("d", strtotime("today")),
+            true
+        );
+        $result = $ep->findPeopleOSU("Michael", "Bragalone");
+        $this->assertNotNull($result);
+    }
 }

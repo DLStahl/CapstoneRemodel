@@ -6,35 +6,96 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use App\ScheduleParser;
-use App\Option;
-use App\EvaluationParser;
-use App\Http\Controllers\MedhubController;
+use App\Http\Controllers\AdminController;
+use App\Milestone;
+use App\Announcements;
+use Carbon\Carbon;
 
 class AdminAddDataSetTest extends TestCase
 {
     /**
-     * A basic test example.
+     * A test of an admin controller method which adds a data set to a data table
+     * and checks to ensure the data is there. Data is then deleted after the check.
      *
      * @return void
      */
-	
-	public function testAdminAddDataSetDataTableHasData()
+    public function testAdminAddDataSetDataTableHasData()
     {
-        $this->assertDatabaseHas('attending',['id' => '105319']);
-		$this->assertDatabaseHas('option',['id' => '1']);
-		$this->assertDatabaseHas('schedule_data',['id' => '121']);
+        $AC = new AdminController();
+        $AC->getUpdateMilestone(
+            "add",
+            "true",
+            null,
+            "FakeAbbreviation",
+            "FakeFullName",
+            "FakeDetail"
+        );
+        $this->assertDatabaseHas("milestone", ["detail" => "FakeDetail"]);
+        $fakeData = Milestone::where("detail", "FakeDetail")->first();
+        $fakeData->delete();
     }
-	
-	// public function testAdminAddDataSetPost()
-    // {
-        // $ac = new AdminController(); 
-		// $response = $ac->postAddDB(); 
-		// $this->assertNotNull($response); 
-    // }
-	
-	
-	
-	
-	
+
+    public function testPostAnnouncement()
+    {
+        Announcements::insert([
+            "message" => "testcaseMessage",
+            "user_type" => 1,
+            "user_id" => 1,
+            "parent_message_id" => -1,
+            "created_at" => Carbon::now(),
+        ]);
+        $this->assertDatabaseHas("announcements", [
+            "message" => "testcaseMessage",
+        ]);
+        $fakeData = Announcements::where("message", "testcaseMessage")->first();
+        $fakeData->delete();
+    }
+
+    public function testDeleteAnnouncement()
+    {
+        Announcements::insert([
+            "message" => "testcaseMessage",
+            "user_type" => 1,
+            "user_id" => 1,
+            "parent_message_id" => -1,
+            "created_at" => Carbon::now(),
+        ]);
+        $this->assertDatabaseHas("announcements", [
+            "message" => "testcaseMessage",
+        ]);
+        $fakeData = Announcements::where("message", "testcaseMessage")->first();
+        $fakeData->delete();
+    }
+
+    public function testPostReply()
+    {
+        Announcements::insert([
+            "message" => "testcaseMessage",
+            "user_type" => 1,
+            "user_id" => 1,
+            "parent_message_id" => -1,
+            "created_at" => Carbon::now(),
+        ]);
+        $this->assertDatabaseHas("announcements", [
+            "message" => "testcaseMessage",
+        ]);
+        $fakeData = Announcements::where("message", "testcaseMessage")->first();
+        $fakeData->delete();
+    }
+
+    public function testDeleteReply()
+    {
+        Announcements::insert([
+            "message" => "testcaseMessage",
+            "user_type" => 1,
+            "user_id" => 1,
+            "parent_message_id" => -1,
+            "created_at" => Carbon::now(),
+        ]);
+        $this->assertDatabaseHas("announcements", [
+            "message" => "testcaseMessage",
+        ]);
+        $fakeData = Announcements::where("message", "testcaseMessage")->first();
+        $fakeData->delete();
+    }
 }

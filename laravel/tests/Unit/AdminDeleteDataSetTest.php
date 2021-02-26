@@ -6,31 +6,35 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use App\ScheduleParser;
-use App\EvaluationParser;
-use App\Http\Controllers\MedhubController;
+use App\Milestone;
+use App\Http\Controllers\AdminController;
 
 class AdminDeleteDataSetTest extends TestCase
 {
     /**
-     * A basic test example.
+     * A test of delete milestone using the button on admin page
      *
      * @return void
      */
-	
-	public function testAdminDeleteDataSetDataTableHasData()
+    public function testAdminDeleteDataSetDataTableHasData()
     {
-        $this->assertDatabaseHas('attending',['id' => '105319']);
-		$this->assertDatabaseHas('option',['id' => '1']);
-		$this->assertDatabaseHas('schedule_data',['id' => '121']);
+        $AC = new AdminController();
+        $AC->getUpdateMilestone(
+            "delete",
+            "true",
+            198,
+            "FakeAbbreviation",
+            "FakeFullName",
+            "FakeDetail"
+        );
+        $this->assertDatabaseHas("milestone", ["exists" => "0"]);
+        Milestone::where("id", 198)->update(["exists" => 1]);
     }
-	
-	// public function testAdminDeleteDataSetPost()
-    // {
-        // $ac = new AdminController(); 
-		// $response = $ac->postEditDB(); 
-		// $this->assertNotNull($response); 
-    // }
-	
-	
+
+    public function testAdminDeleteDataSetPost()
+    {
+        $ac = new AdminController();
+        $response = $ac->postEditDB();
+        $this->assertNotNull($response);
+    }
 }
