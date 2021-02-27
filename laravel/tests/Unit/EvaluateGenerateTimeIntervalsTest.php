@@ -25,9 +25,4 @@ class EvaluateGenerateTimeIntervals extends TestCase
     {
         $this->assertDatabaseHas("evaluation_data", ["id" => "71"]);
     }
-
-    public function testScheduleDataTableHasData()
-    {
-        $this->assertDatabaseHas("schedule_data", ["id" => "15"]);
-    }
 }

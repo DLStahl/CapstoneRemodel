@@ -58,13 +58,8 @@ class AdminAddUserTest extends TestCase
 
     public function testAddUserFindPeople()
     {
-        $ep = new EvaluationParser(
-            date("o", strtotime("today")) .
-                date("m", strtotime("today")) .
-                date("d", strtotime("today")),
-            true
-        );
-        $result = $ep->findPeopleOSU("Michael", "Bragalone");
+        $mhc = new MedhubController();
+        $result = $mhc->findPeopleOSU("Michael", "Bragalone");
         $this->assertNotNull($result);
     }
 }

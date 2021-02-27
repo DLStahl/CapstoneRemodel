@@ -22,7 +22,7 @@ class UpdateAnesthesiologistsDataTest extends TestCase
             ["updated_at", ">", Carbon::today()],
         ]);
         $this->assertDatabaseHas("anesthesiologists", [
-            "staff_key" => "d835e8f4-f262-4731-bb82-167c6009aa3e",
+            "staff_key" => "04f3e583-b2dc-43af-a6bc-695984106807",
         ]);
     }
 }

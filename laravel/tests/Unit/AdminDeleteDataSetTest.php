@@ -30,11 +30,4 @@ class AdminDeleteDataSetTest extends TestCase
         $this->assertDatabaseHas("milestone", ["exists" => "0"]);
         Milestone::where("id", 198)->update(["exists" => 1]);
     }
-
-    public function testAdminDeleteDataSetPost()
-    {
-        $ac = new AdminController();
-        $response = $ac->postEditDB();
-        $this->assertNotNull($response);
-    }
 }

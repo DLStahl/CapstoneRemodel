@@ -33,8 +33,9 @@ class ParseEpicCSVTest extends TestCase
 
     public function testEpicCSVReadSheet()
     {
+        $relative_path = "/../../../../evaluation/Resident_Evaluation_Report.20190228.csv";
         $file = fopen(
-            "/usr/local/webs/remodel.anesthesiology_dev/evaluation/Resident_Evaluation_Report.20190228.csv",
+            __DIR__ . $relative_path,
             "r"
         );
         $csv = [];

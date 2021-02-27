@@ -24,11 +24,11 @@ class UpdateResidentPageListingTest extends TestCase
 
     public function testListingResidentTableHasCorrectNameData()
     {
-        $this->assertDatabaseHas("resident", ["name" => "Amy Baumann"]);
+        $this->assertDatabaseHas("resident", ["name" => "Priscilla Agbenyefia"]);
     }
 
     public function testListingResidentTableHasCorrectIDData()
     {
-        $this->assertDatabaseHas("resident", ["UserID" => "114146"]);
+        $this->assertDatabaseHas("resident", ["medhubId" => "112342"]);
     }
 }
