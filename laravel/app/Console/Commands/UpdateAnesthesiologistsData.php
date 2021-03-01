@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Anesthesiologist;
+use App\TaskAbbreviation;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -43,23 +44,21 @@ class UpdateAnesthesiologistsData extends Command
         $json_data = json_decode($json, true);
 
         //get scheduling date in format: "yyyy-mm-ddT00:00:00"
+        $dayOfWeek = date("l", strtotime('today'));
         $date = substr(date("c", strtotime('+2 day')), 0, -14) . "00:00:00";
-        if(date("l", strtotime('today')) == 'Thursday' || date("l", strtotime('today')) == 'Friday'){
+        if ($dayOfWeek == 'Thursday' || $dayOfWeek == 'Friday') {
             $date = substr(date("c", strtotime('+4 day')), 0, -14) . "00:00:00";
-        } elseif (date("l", strtotime('today'))=='Saturday') {
+        } elseif ($dayOfWeek == 'Saturday') {
             $date = substr(date("c", strtotime('+3 day')), 0, -14) . "00:00:00";
         }
         //task abbrevs for attending that are available 
-        $attendingTaskAbbrev = ["Endo 1", "Endo 2", "Endo 3", "Late 1", "Late 2", "Late 3", "Late 4","Late 5","Neuro1","Neuro2", "Offsite1", "OR","Ortho 1", "Pulmonary", "SDS-1",
-        "SDS-2","SDS-3", "T1", "T2"];
         // filter for available attending for scheduling day
         foreach ($json_data as $staffMember) {
-            if(strval($staffMember["Date"]) == $date){
+            if (strval($staffMember["Date"]) == $date) {
                 $taskAbbrev = strval($staffMember["TaskAbbrev"]);
-                $isAvailableAttending = false;
-                if(in_array($taskAbbrev, $attendingTaskAbbrev)){
-                    $isAvailableAttending = true;
-                }
+
+                $isAvailableAttending = !is_null(TaskAbbreviation::where("abbreviation", $taskAbbrev)->first());
+
                 if ($isAvailableAttending) {
                     $first_name = strval($staffMember["StaffFName"]);
                     $last_name = strval($staffMember["StaffLName"]);
