@@ -62,7 +62,7 @@ class PushSchedule extends Command
 
        //MEGAN CHANGE
         fputcsv($fp, array('date', 'room', 'case procedure', 'start time', 'end time',
-                            'lead surgeon', 'resident', 'preference', 'milestones', 'objectives'));
+                            'lead surgeon', 'resident', 'preference', 'milestones', 'objectives')); //output staff key and anes name
         $options = null;
         if ($date == null) {
             $options = Assignment::orderBy('date', 'desc')->get();
@@ -91,10 +91,11 @@ class PushSchedule extends Command
             $preference = Option::where('id', $option_id)->value('option');
             $milestones = Milestone::where('id', $milestone_id)->value('category');
             $objectives = Option::where('id', $option_id)->value('objectives');
+            //@$prefAnest = Option::where('id', $option_id)->value('anesthesiologist_name');
 
             //MEGAN CHANGE
             fputcsv($fp, array($date, $room, $case_procedure, $start_time, $end_time,
-                            $lead_surgeon, $resident, $preference, $milestones, $objectives));
+        $lead_surgeon, $resident, $preference, $milestones, $objectives));
         }
         fclose($fp);
     }

@@ -238,6 +238,7 @@ class EvaluationParser extends Model
                                 $schedule = Assignment::where(['resident'=>$rId, 'date'=>$date])->value('schedule');
                                 $milestone = Option::where(['resident'=>$rId, 'schedule'=>$schedule])->value('milestones');
                                 $objective = Option::where(['resident'=>$rId, 'schedule'=>$schedule])->value('objectives');
+                                //$prefAnest = Option::where(['resident'=>$rId, 'schedule'=>$schedule])->value('anesthesiologist_id');
                                 echo $rId."\n"."Diff mins is: ".$resident->diff."\n";
                                 echo "Resident ".$resident->namefl."\n";
                                 echo " work with Attending ".$attending->namefl."<br>";
