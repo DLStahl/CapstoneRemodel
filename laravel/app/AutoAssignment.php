@@ -101,8 +101,7 @@ class AutoAssignment extends Model
         } 
         //determine who gets the schedule when multiple residents want the same one
         foreach($wantedSchedules as $wantedSchedule){
-            $schedRotation = ScheduleData::where('id', $wantedSchedule)
-                            ->value('rotation');
+            $schedRotation = ScheduleData::find($wantedSchedule)->value('rotation');
             // holds all valid options that want same schedule and have same preference rank                
             $competingOptions = Option::where('date', $date)
                             ->where('schedule', $wantedSchedule)
@@ -117,18 +116,15 @@ class AutoAssignment extends Model
             $notOnRotation = array(); 
             // identify which residents have/don't have same rotation as the schedule rotation 
             foreach($competingOptions as $competingOption){
-                $resName = Resident::where('id', $competingOption['resident'])
-                            ->value('name');
-                $resRotations = Rotations::where('name', $resName)
-                                ->get();
+                $resName = Resident::find($competingOption['resident'])->value('name');
+                $resRotations = Rotations::where('name', $resName)->get();
                 $serviceId ="";
                 foreach($resRotations as $resRotation){
-                    if($date >= $resRotation['Start'] && $date <= $resRotation['End']){
+                    if($resRotation['Start'] <= $date && $date <= $resRotation['End']){
                         $serviceId = $resRotation['Service'];
                     }
                 }
-                $resRotation = EvaluationForms::where('id', $serviceId)
-                                ->value('rotation');
+                $resRotation = EvaluationForms::where('id', $serviceId)->value('rotation');
                 $resRotation = strval($resRotation);
                 $schedRotation = strval($schedRotation);
                 // check which residents are on same rotation as schedule rotation
@@ -157,8 +153,9 @@ class AutoAssignment extends Model
                 // find which resident on rotation has the most tickets
                 foreach($onRotation as $onRotationOption){
                     // add losing residents to remainder array
-                    if($maxTickets < Probability::where('resident', $onRotationOption['resident'])->value('total')){
-                        $maxTickets = Probability::where('resident', $onRotationOption['resident'])->value('total');
+                    $residentTickets = Probability::where('resident', $onRotationOption['resident'])->value('total');
+                    if($maxTickets < $residentTickets){
+                        $maxTickets = $residentTickets;
                         if (!is_null($winnerResident)){
                             array_push($remainder, $winnerResident);
                         }
@@ -183,8 +180,9 @@ class AutoAssignment extends Model
                 // find which resident has the most tickets
                 foreach($competingOptions as $competingOption){
                     // add losing residents to remainder array
-                    if($maxTickets < Probability::where('resident', $competingOption['resident'])->value('total')){
-                        $maxTickets = Probability::where('resident', $competingOption['resident'])->value('total');
+                    $residentTickets = Probability::where('resident', $competingOption['resident'])->value('total');
+                    if($maxTickets < $residentTickets){
+                        $maxTickets = $residentTickets;
                         if (!is_null($winnerResident)){
                             array_push($remainder, $winnerResident);
                         }
@@ -217,9 +215,7 @@ class AutoAssignment extends Model
         // if resident has an anesthesiologist pref - check if anest can be assigned
         if(!is_null($anestPref)){
             // get room
-            $room = ScheduleData::where('date', $date)
-                        ->where('id', $schedule)
-                        ->value('room');
+            $room = ScheduleData::where('date', $date)->where('id', $schedule)->value('room');
             $room = strval($room);
             //if anest_id isn't a key in array -> anest hasn't been assigned yet
             if(!array_key_exists($anestPref, $anestsAssigned)){
@@ -265,7 +261,7 @@ class AutoAssignment extends Model
         Option::where('schedule', $schedule)->update([
             'isValid' => '0'
         ]);
-        $attending = ScheduleData::where('id', $schedule)->value('lead_surgeon');
+        $attending = ScheduleData::find($schedule)->value('lead_surgeon');
         $pos = strpos($attending, '[');
         $pos_end = strpos($attending, "]");
         $attending = substr($attending, $pos + 1, $pos_end - $pos - 1);
