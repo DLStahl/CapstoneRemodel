@@ -272,7 +272,7 @@ class ScheduleDataController extends Controller
             'schedule' => ScheduleData::where('id', $split[0])->get(),
             'choice'=>$choice,
             'milestones'=>Milestone::where('id', $_REQUEST['milestones1'])->get(),
-            'prefAnest'=>Anesthesiologist::where('id', $_REQUEST['prefAnest1'])->get(),
+            'pref_anest'=>Anesthesiologist::where('id', $_REQUEST['pref_anest1'])->get(),
             'objectives'=>$_REQUEST['objectives1']
         );
 
@@ -286,7 +286,7 @@ class ScheduleDataController extends Controller
                 'schedule'=>ScheduleData::where('id', $split[1])->get(),
                 'choice'=>$choice,
                 'milestones'=>Milestone::where('id', $_REQUEST['milestones2'])->get(),
-                'prefAnest'=>Anesthesiologist::where('id', $_REQUEST['prefAnest2'])->get(),
+                'pref_anest'=>Anesthesiologist::where('id', $_REQUEST['pref_anest2'])->get(),
                 'objectives'=>$_REQUEST['objectives2']
             );
         } else {
@@ -304,7 +304,7 @@ class ScheduleDataController extends Controller
                 'schedule'=>ScheduleData::where('id', $split[2])->get(),
                 'choice'=>$choice,
                 'milestones'=>Milestone::where('id', $_REQUEST['milestones3'])->get(),
-                'prefAnest'=>Anesthesiologist::where('id', $_REQUEST['prefAnest3'])->get(),
+                'pref_anest'=>Anesthesiologist::where('id', $_REQUEST['pref_anest3'])->get(),
                 'objectives'=>$_REQUEST['objectives3']
             );
         } else {
@@ -323,7 +323,7 @@ class ScheduleDataController extends Controller
                 'prevPref'=> $prevFirst,
                 'schedule'=> ScheduleData::where('id', $prevFirst[0]['schedule'])->get(),
                 'milestone'=> Milestone::where('id', $prevFirst[0]['milestones'])->get(),
-                'prefAnest'=> Anesthesiologist::where('id', $prevFirst[0]['anesthesiologist_id'])->get()
+                'pref_anest'=> Anesthesiologist::where('id', $prevFirst[0]['anesthesiologist_id'])->get()
             );
         } else {
             $previous[0] = NULL;
@@ -334,7 +334,7 @@ class ScheduleDataController extends Controller
                 'prevPref'=> $prevSecond,
                 'schedule'=> ScheduleData::where('id', $prevSecond[0]['schedule'])->get(),
                 'milestone'=> Milestone::where('id', $prevSecond[0]['milestones'])->get(),
-                'prefAnest'=> Anesthesiologist::where('id', $prevSecond[0]['anesthesiologist_id'])->get()
+                'pref_anest'=> Anesthesiologist::where('id', $prevSecond[0]['anesthesiologist_id'])->get()
             );
         } else {
             $previous[1] = NULL;
@@ -345,7 +345,7 @@ class ScheduleDataController extends Controller
                 'prevPref'=> $prevThird,
                 'schedule'=> ScheduleData::where('id', $prevThird[0]['schedule'])->get(),
                 'milestone'=> Milestone::where('id', $prevThird[0]['milestones'])->get(),
-                'prefAnest'=> Anesthesiologist::where('id', $prevThird[0]['anesthesiologist_id'])->get()
+                'pref_anest'=> Anesthesiologist::where('id', $prevThird[0]['anesthesiologist_id'])->get()
             );
         } else {
             $previous[2] = NULL;
@@ -556,9 +556,9 @@ class ScheduleDataController extends Controller
     // Update options when overwriting preferences.
     private function insertOption()
     {
-        $prefAnest1 = null; 
-        $prefAnest2 = null;
-        $prefAnest3 = null;
+        $pref_anest1 = null; 
+        $pref_anest2 = null;
+        $pref_anest3 = null;
 		// variables to track if the use has overwritten a preference
 		$notify = false;
 		$overwrittenChoices = array();
@@ -587,9 +587,9 @@ class ScheduleDataController extends Controller
         $attending = substr($attending_string, strpos($attending_string, "[")+1,
                             strpos($attending_string, "]")-(strpos($attending_string, "[")+1));
 
-        if (isset($_REQUEST['prefAnest1'])){ // if they chose an anesthesiologist, add their ID to the DB, if not, add NULL
-            if ($_REQUEST['prefAnest1'] != 0){
-                $prefAnest1 = $_REQUEST['prefAnest1'];
+        if (isset($_REQUEST['pref_anest1'])){ // if they chose an anesthesiologist, add their ID to the DB, if not, add NULL
+            if ($_REQUEST['pref_anest1'] != 0){
+                $pref_anest1 = $_REQUEST['pref_anest1'];
             }
         }
         
@@ -611,7 +611,7 @@ class ScheduleDataController extends Controller
                         'attending' => $attending,
                         'milestones'=>$_REQUEST['milestones1'],
                         'objectives'=>$_REQUEST['objectives1'],
-                        'anesthesiologist_id'=>$prefAnest1,
+                        'anesthesiologist_id'=>$pref_anest1,
                         'isValid'=>1
                     ]);
         } else {
@@ -620,7 +620,7 @@ class ScheduleDataController extends Controller
             Option::insert(
                 ['date' => $date, 'resident' => $resident, 'schedule' => $split[0],
                 'attending' => $attending, 'option' => $choice, 'milestones'=>$_REQUEST['milestones1'],
-                'objectives'=>$_REQUEST['objectives1'], 'anesthesiologist_id'=>$prefAnest1, 'isValid'=>1] 
+                'objectives'=>$_REQUEST['objectives1'], 'anesthesiologist_id'=>$pref_anest1, 'isValid'=>1] 
             );
         }
 
@@ -639,9 +639,9 @@ class ScheduleDataController extends Controller
                               strpos($attending_string, "]")-(strpos($attending_string, "[")+1));
         }
         
-        if (isset($_REQUEST['prefAnest2'])){
-            if ($_REQUEST['prefAnest2']!= 0){
-                $prefAnest2 = $_REQUEST['prefAnest2'];
+        if (isset($_REQUEST['pref_anest2'])){
+            if ($_REQUEST['pref_anest2']!= 0){
+                $pref_anest2 = $_REQUEST['pref_anest2'];
             }
         }
 
@@ -664,7 +664,7 @@ class ScheduleDataController extends Controller
                             'attending' => $attending,
                             'milestones'=>$_REQUEST['milestones2'],
                             'objectives'=>$_REQUEST['objectives2'],
-                            'anesthesiologist_id'=>$prefAnest2,
+                            'anesthesiologist_id'=>$pref_anest2,
                             'isValid'=>1
                         ]);
             } else {
@@ -685,7 +685,7 @@ class ScheduleDataController extends Controller
                     'option' => $choice,
                     'milestones'=>$_REQUEST['milestones2'],
                     'objectives'=>$_REQUEST['objectives2'],
-                    'anesthesiologist_id'=>$prefAnest2,
+                    'anesthesiologist_id'=>$pref_anest2,
                     'isValid'=>1
                 ]);
             }
@@ -708,9 +708,9 @@ class ScheduleDataController extends Controller
 
         }
 
-        if (isset($_REQUEST['prefAnest3'])){
-            if ($_REQUEST['prefAnest3']!= 0){
-                $prefAnest3 = $_REQUEST['prefAnest3'];
+        if (isset($_REQUEST['pref_anest3'])){
+            if ($_REQUEST['pref_anest3']!= 0){
+                $pref_anest3 = $_REQUEST['pref_anest3'];
             }
         }
 
@@ -733,7 +733,7 @@ class ScheduleDataController extends Controller
                             'attending' => $attending,
                             'milestones'=>$_REQUEST['milestones3'],
                             'objectives'=>$_REQUEST['objectives3'],
-                            'anesthesiologist_id'=>$prefAnest3,
+                            'anesthesiologist_id'=>$pref_anest3,
                             'isValid'=>1
                         ]);
             } else {
@@ -756,7 +756,7 @@ class ScheduleDataController extends Controller
                     'option' => $choice,
                     'milestones'=>$_REQUEST['milestones3'],
                     'objectives'=>$_REQUEST['objectives3'],
-                    'anesthesiologist_id'=>$prefAnest3,
+                    'anesthesiologist_id'=>$pref_anest3,
                     'isValid'=>1]
                 );
             }

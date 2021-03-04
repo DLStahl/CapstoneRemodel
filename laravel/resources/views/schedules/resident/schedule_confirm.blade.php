@@ -22,8 +22,8 @@
 			</p>
 		    <p>Milestone:<br> {{ $previous[0]['milestone'][0]['category'] }} - {{$previous[0]['milestone'][0]['detail'] }}</p>
 		    <p>Objective:<br> {{ $previous[0]['prevPref'][0]['objectives'] }}</p>
-			@if ($previous[0]['prefAnest'] != '[]') <!-- if an anesthesiologist was chosen in previous selection, print their name, if not then print No Preference--> 
-				<p>Preferred Anesthesiologist: <br> {{$previous[0]['prefAnest'][0]['first_name']}} {{$previous[0]['prefAnest'][0]['last_name']}}</p>
+			@if ($previous[0]['pref_anest'] != '[]') 
+				<p>Preferred Anesthesiologist: <br> {{$previous[0]['pref_anest'][0]['first_name']}} {{$previous[0]['pref_anest'][0]['last_name']}}</p>
 				@else 
 				<p>Preferred Anesthesiologist: <br> No Preference </p>
 				@endif
@@ -48,8 +48,8 @@
 				</p>
 			    <p>Milestone:<br> {{ $previous[1]['milestone'][0]['category'] }} - {{$previous[1]['milestone'][0]['detail'] }}</p>
 			    <p>Objective:<br> {{ $previous[1]['prevPref'][0]['objectives'] }}</p>
-				@if ($previous[1]['prefAnest'] != '[]')
-				<p>Preferred Anesthesiologist: <br> {{$previous[1]['prefAnest'][0]['first_name']}} {{$previous[1]['prefAnest'][0]['last_name']}}</p>
+				@if ($previous[1]['pref_anest'] != '[]')
+				<p>Preferred Anesthesiologist: <br> {{$previous[1]['pref_anest'][0]['first_name']}} {{$previous[1]['pref_anest'][0]['last_name']}}</p>
 				@else 
 				<p>Preferred Anesthesiologist: <br> No Preference </p>
 				@endif
@@ -74,8 +74,8 @@
 				</p>
 			    <p>Milestone:<br> {{ $previous[2]['milestone'][0]['category'] }} - {{$previous[2]['milestone'][0]['detail'] }}</p>
 			    <p>Objective:<br> {{ $previous[2]['prevPref'][0]['objectives'] }}</p>
-				@if ($previous[2]['prefAnest'] != '[]')
-				<p>Preferred Anesthesiologist: <br> {{$previous[2]['prefAnest'][0]['first_name']}} {{$previous[2]['prefAnest'][0]['last_name']}}</p>
+				@if ($previous[2]['pref_anest'] != '[]')
+				<p>Preferred Anesthesiologist: <br> {{$previous[2]['pref_anest'][0]['first_name']}} {{$previous[2]['pref_anest'][0]['last_name']}}</p>
 				@else 
 				<p>Preferred Anesthesiologist: <br> No Preference </p>
 				@endif
@@ -103,19 +103,19 @@
 		</p>
 	    <p>Milestone:<br> {{ $input[0]['milestones'][0]['category'] }} - {{ $input[0]['milestones'][0]['detail'] }}</p>
 	    <p>Objective:<br> {{ $input[0]['objectives'] }}</p>
-		@if ($_REQUEST['prefAnest1'] != "No Preference")  <!-- if an anesthesiologist was chosen, print their name, if not then print No Preference--> 
-		<p>Preferred Anesthesiologist:<br> {{$input[0]['prefAnest'][0]['first_name'] }} {{ $input[0]['prefAnest'][0]['last_name']}}</p>
+		@if ($_REQUEST['pref_anest1'] != "No Preference") 
+		<p>Preferred Anesthesiologist:<br> {{$input[0]['pref_anest'][0]['first_name'] }} {{ $input[0]['pref_anest'][0]['last_name']}}</p>
 			@else
-			<p> Preferred Anesthesiologist:<br> {{ $_REQUEST['prefAnest1']}} </p>
+			<p> Preferred Anesthesiologist:<br> No Preference </p>
 			@endif
 
 		<input type="hidden" name="option1" value="{{ $input[0]['choice'] }}">
 		<input type="hidden" name="milestones1" value="{{ $input[0]['milestones'][0]['id'] }}">
 		<input type="hidden" name="objectives1" value="{{ $input[0]['objectives'] }}">
-		@if ($_REQUEST['prefAnest1'] != "No Preference")
-				<input type="hidden" name="prefAnest1" value="{{ $input[0]['prefAnest'][0]['id'] }}">
+		@if ($_REQUEST['pref_anest1'] != "No Preference")
+				<input type="hidden" name="pref_anest1" value="{{ $input[0]['pref_anest'][0]['id'] }}">
 			@else 
-				<input type="hidden" name="prefAnest1" value=0>
+				<input type="hidden" name="pref_anest1" value=0>
 			@endif
 
 
@@ -138,10 +138,10 @@
 			</p>
 		    <p>Milestone:<br> {{ $input[1]['milestones'][0]['category'] }} - {{ $input[1]['milestones'][0]['detail'] }}</p>
 			<p> Objective:<br> {{ $input[1]['objectives'] }}</p>
-			@if ($_REQUEST['prefAnest2'] != "No Preference") 
-			<p>Preferred Anesthesiologist:<br> {{$input[1]['prefAnest'][0]['first_name'] }} {{ $input[1]['prefAnest'][0]['last_name']}}</p>
+			@if ($_REQUEST['pref_anest2'] != "No Preference") 
+			<p>Preferred Anesthesiologist:<br> {{$input[1]['pref_anest'][0]['first_name'] }} {{ $input[1]['pref_anest'][0]['last_name']}}</p>
 			@else
-			<p> Preferred Anesthesiologist:<br> {{ $_REQUEST['prefAnest2']}} </p>
+			<p> Preferred Anesthesiologist:<br> No Preference </p>
 			@endif
 			
 			<!-- Put the preffered Anesthesiologist here --> 
@@ -149,10 +149,10 @@
 			<input type="hidden" name="option2" value="{{ $input[1]['choice']}}">
 			<input type="hidden" name="milestones2" value="{{ $input[1]['milestones'][0]['id']}}">
 			<input type="hidden" name="objectives2" value="{{ $input[1]['objectives']}}">
-			@if ($_REQUEST['prefAnest2'] != "No Preference")
-				<input type="hidden" name="prefAnest2" value="{{ $input[1]['prefAnest'][0]['id'] }}">
+			@if ($_REQUEST['pref_anest2'] != "No Preference")
+				<input type="hidden" name="pref_anest2" value="{{ $input[1]['pref_anest'][0]['id'] }}">
 			@else 
-				<input type="hidden" name="prefAnest2" value=0>
+				<input type="hidden" name="pref_anest2" value=0>
 			@endif
 
 
@@ -176,20 +176,20 @@
 			</p>
 		    <p>Milestone:<br> {{ $input[2]['milestones'][0]['category'] }} - {{ $input[2]['milestones'][0]['detail'] }}</p>
 			<p> Objective:<br> {{ $input[2]['objectives'] }}</p>
-			@if ($_REQUEST['prefAnest3'] != "No Preference") 
-			<p>Preferred Anesthesiologist:<br> {{$input[2]['prefAnest'][0]['first_name'] }} {{ $input[2]['prefAnest'][0]['last_name']}}</p>
+			@if ($_REQUEST['pref_anest3'] != "No Preference") 
+			<p>Preferred Anesthesiologist:<br> {{$input[2]['pref_anest'][0]['first_name'] }} {{ $input[2]['pref_anest'][0]['last_name']}}</p>
 			@else
-			<p> Preferred Anesthesiologist:<br> {{ $_REQUEST['prefAnest3']}} </p>
+			<p> Preferred Anesthesiologist:<br> No Preference </p>
 			@endif
 
 			
 			<input type="hidden" name="option3" value="{{ $input[2]['choice']}}">
 			<input type="hidden" name="milestones3" value="{{ $input[2]['milestones'][0]['id']}}">
 			<input type="hidden" name="objectives3" value="{{ $input[2]['objectives']}}">
-			@if ($_REQUEST['prefAnest3'] != "No Preference")
-				<input type="hidden" name="prefAnest3" value="{{ $input[2]['prefAnest'][0]['id'] }}">
+			@if ($_REQUEST['pref_anest3'] != "No Preference")
+				<input type="hidden" name="pref_anest3" value="{{ $input[2]['pref_anest'][0]['id'] }}">
 			@else 
-				<input type="hidden" name="prefAnest3" value=0>
+				<input type="hidden" name="pref_anest3" value=0>
 			@endif
 
 		@endif

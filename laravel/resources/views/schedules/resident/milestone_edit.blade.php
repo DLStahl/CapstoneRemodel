@@ -38,7 +38,7 @@
 			<div id="anesthesiologist_preference">
 				<label>Anesthesiologist Preference:</label>
 				<br>
-				<select name = "prefAnest1" id = "prefAnest1" class="PreferenceSelector">
+				<select name = "pref_anest1" id = "pref_anest1" class="PreferenceSelector">
 					<option selected="selected">No Preference</option>
 					@foreach($anesthesiologists as $a)
 						<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
@@ -81,7 +81,7 @@
 				<div id="anesthesiologist_preference">
 					<label>Anesthesiologist Preference:</label>
 					<br>
-					<select name = "prefAnest2" id = "prefAnest2" class="PreferenceSelector">
+					<select name = "pref_anest2" id = "pref_anest2" class="PreferenceSelector">
 						<option selected="selected">No Preference</option>
 						@foreach($anesthesiologists as $a)
 							<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
@@ -126,7 +126,7 @@
 				<div id="anesthesiologist_preference">
 					<label>Anesthesiologist Preference:</label>
 					<br>
-					<select name = "prefAnest3" id = "prefAnest3" class="PreferenceSelector">
+					<select name = "pref_anest3" id = "pref_anest3" class="PreferenceSelector">
 						<option selected="selected">No Preference</option>
 						@foreach($anesthesiologists as $a)
 							<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>

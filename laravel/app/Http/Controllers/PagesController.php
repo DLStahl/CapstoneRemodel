@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Admin;
+use App\Anesthesiologist;
 use App\Announcements;
 use App\Resident;
 use App\Attending;
@@ -93,32 +94,50 @@ class PagesController extends Controller
         $milestone1C = Milestone::where('id', $milestone1)->value('category');
         $milestone1D = Milestone::where('id', $milestone1)->value('detail');
         $objective1 = Option::where('date', $date)->where('resident', $id)->where('option', 1)->value('objectives');
+        $pref_anest_id = Option::where('date', $date)->where('resident', $id)->where('option', 1)->value('anesthesiologist_id');
+        if ($pref_anest_id != NULL){
+            $pref_anest1 = Anesthesiologist::where('id', $pref_anest_id)->value('first_name') ." ". Anesthesiologist::where('id', $pref_anest_id)->value('last_name');
+        } else {
+            $pref_anest1 = "No Preference";
+        }
         $schedule2 = Option::where('date', $date)->where('resident', $id)->where('option', 2)->value('schedule');
         $milestone2 = Option::where('date', $date)->where('resident', $id)->where('option', 2)->value('milestones');
         $milestone2C = Milestone::where('id', $milestone2)->value('category');
         $milestone2D = Milestone::where('id', $milestone2)->value('detail');
         $objective2 = Option::where('date', $date)->where('resident', $id)->where('option', 2)->value('objectives');
+        $pref_anest_id = Option::where('date', $date)->where('resident', $id)->where('option', 2)->value('anesthesiologist_id');
+        if ($pref_anest_id != NULL){
+            $pref_anest2 = Anesthesiologist::where('id', $pref_anest_id)->value('first_name') ." ". Anesthesiologist::where('id', $pref_anest_id)->value('last_name');
+        } else {
+            $pref_anest2 = "No Preference";
+        }
         $schedule3 = Option::where('date', $date)->where('resident', $id)->where('option', 3)->value('schedule');
         $milestone3 = Option::where('date', $date)->where('resident', $id)->where('option', 3)->value('milestones');
         $milestone3C = Milestone::where('id', $milestone3)->value('category');
         $milestone3D = Milestone::where('id', $milestone3)->value('detail');
         $objective3 = Option::where('date', $date)->where('resident', $id)->where('option', 3)->value('objectives');
+        $pref_anest_id = Option::where('date', $date)->where('resident', $id)->where('option', 3)->value('anesthesiologist_id');
+        if ($pref_anest_id != NULL){
+            $pref_anest3 = Anesthesiologist::where('id', $pref_anest_id)->value('first_name') ." ". Anesthesiologist::where('id', $pref_anest_id)->value('last_name');
+        } else {
+            $pref_anest3 = "No Preference";
+        }
 
 
         if ($schedule1 != null) {
-            $day_arr['first'] = "First Choice: ".self::processSingleChoice($schedule1) ."\n  Milestone: ". $milestone1C. " - ".$milestone1D. "\n  Objective: ". $objective1 ;
+            $day_arr['first'] = "First Choice: ".self::processSingleChoice($schedule1) ."\n  Milestone: ". $milestone1C. " - ".$milestone1D. "\n  Objective: ". $objective1. "\n Anesthesiologist Preference: ". $pref_anest1;
             $day_arr['ids'] = $schedule1."_";
         } else {
             $day_arr['ids'] = "0_";
         }
         if ($schedule2 != null) {
-            $day_arr['second'] = "\n \n Second Choice: ".self::processSingleChoice($schedule2)."\n Milestone: ". $milestone2C. " - ".$milestone2D. " \n Objective: ". $objective2;
+            $day_arr['second'] = "\n \n Second Choice: ".self::processSingleChoice($schedule2)."\n Milestone: ". $milestone2C. " - ".$milestone2D. " \n Objective: ". $objective2. "\n Anesthesiologist Preference: ". $pref_anest2;
             $day_arr['ids'] .= $schedule2."_" ;
         } else {
             $day_arr['ids'] .= "0_";
         }
         if ($schedule3 != null) {
-            $day_arr['third'] = "\n \n Third Choice: ".self::processSingleChoice($schedule3) ."\n Milestone: ". $milestone3C. " - ".$milestone3D."\n  Objective: ". $objective3;
+            $day_arr['third'] = "\n \n Third Choice: ".self::processSingleChoice($schedule3) ."\n Milestone: ". $milestone3C. " - ".$milestone3D."\n  Objective: ". $objective3. "\n Anesthesiologist Preference: ". $pref_anest3;
              $day_arr['ids'] .= $schedule3."_";
         } else {
             $day_arr['ids'] .= "0_";
