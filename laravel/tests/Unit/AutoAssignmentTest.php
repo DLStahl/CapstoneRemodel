@@ -16,13 +16,21 @@ class AutoAssignmentTest extends TestCase
     public static $residentC = 300;
     public static $residentD = 881;
     public static $CCCT10 = 143907;
+    public static $CCCT10Attending = "051011";
     public static $CCCT14 = 143910;
+    public static $CCCT14Attending = "033548";
     public static $CCCT11 = 143914;
+    public static $CCCT11Attending = "368563";
     public static $EP05 =143908;
+    public static $EP05Attending = "745117";
     public static $UH19 = 143905;
+    public static $UH19Attending = "363283";
     public static $UH2 = 143909;
+    public static $UH2Attending = "420596";
     public static $UH16 = 143912;
+    public static $UH16Attending = "328666";
     public static $CCCTLeasingUH = 143924;
+    public static $CCCTLeasingUHAttending = "035089";
 
     public function addOptionsToDatabase($optionsDataArrays) {
         $optionIds = array();
@@ -53,6 +61,7 @@ class AutoAssignmentTest extends TestCase
                 ->where('resident', $expectedAssignment[0])
                 ->where('schedule', $expectedAssignment[1])
                 ->where('anesthesiologist_id', $expectedAssignment[2])
+                ->where('attending', $expectedAssignment[3] )
                 ->delete();
         }
     }
@@ -64,6 +73,7 @@ class AutoAssignmentTest extends TestCase
                 ->where('resident', $expectedAssignment[0])
                 ->where('schedule', $expectedAssignment[1])
                 ->where('anesthesiologist_id', $expectedAssignment[2])
+                ->where('attending', $expectedAssignment[3])
                 ->exists();
             $allCorrect = $allCorrect && $assignmentExists;
         }
@@ -98,9 +108,9 @@ class AutoAssignmentTest extends TestCase
             [self::$residentC, self::$CCCT11, 3, 3]
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$CCCT10, 1],
-            [self::$residentB, self::$CCCT14, 2],
-            [self::$residentC, self::$CCCT11, 3]
+            [self::$residentA, self::$CCCT10, 1, self::$CCCT10Attending],
+            [self::$residentB, self::$CCCT14, 2, self::$CCCT14Attending],
+            [self::$residentC, self::$CCCT11, 3, self::$CCCT11Attending]
         ];
         $expectedProbTotals = [
             [self::$residentA, 2],
@@ -134,10 +144,10 @@ class AutoAssignmentTest extends TestCase
             [self::$residentD, self::$CCCT11, 3, 1]
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$EP05, 1],
-            [self::$residentB, self::$CCCT10, NULL],
-            [self::$residentC, self::$CCCT14, NULL],
-            [self::$residentD, self::$CCCT11, NULL]
+            [self::$residentA, self::$EP05, 1, self::$EP05Attending],
+            [self::$residentB, self::$CCCT10, NULL, self::$CCCT10Attending],
+            [self::$residentC, self::$CCCT14, NULL, self::$CCCT14Attending],
+            [self::$residentD, self::$CCCT11, NULL, self::$CCCT11Attending]
         ];
         $expectedProbTotals = [
             [self::$residentA, 0],
@@ -171,9 +181,9 @@ class AutoAssignmentTest extends TestCase
             [self::$residentC, self::$CCCT11, 3, NULL]
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$CCCT10, NULL],
-            [self::$residentB, self::$CCCT14, NULL],
-            [self::$residentC, self::$CCCT11, NULL]
+            [self::$residentA, self::$CCCT10, NULL, self::$CCCT10Attending],
+            [self::$residentB, self::$CCCT14, NULL, self::$CCCT14Attending],
+            [self::$residentC, self::$CCCT11, NULL, self::$CCCT11Attending]
         ];
         $expectedProbTotals = [
             [self::$residentA, 2],
@@ -206,7 +216,7 @@ class AutoAssignmentTest extends TestCase
             [self::$residentD, self::$CCCT14, 3, 1]
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$CCCT14, 1]
+            [self::$residentA, self::$CCCT14, 1, self::$CCCT14Attending]
         ];
         $expectedProbTotals = [
             [self::$residentA, 1],
@@ -238,8 +248,8 @@ class AutoAssignmentTest extends TestCase
             [self::$residentB, self::$CCCT14, 1, 1]
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$EP05, 1],
-            [self::$residentB, self::$CCCT14, NULL]
+            [self::$residentA, self::$EP05, 1, self::$EP05Attending ],
+            [self::$residentB, self::$CCCT14, NULL, self::$CCCT14Attending]
         ];
         $expectedProbTotals = [
             [self::$residentA, 0],
@@ -266,9 +276,9 @@ class AutoAssignmentTest extends TestCase
             [self::$residentC, self::$CCCT11, 1, 1]
         ];
         $expectedAssignments1 = [
-            [self::$residentA, self::$CCCT10, 1],
-            [self::$residentB, self::$CCCT14, 1],
-            [self::$residentC, self::$CCCT11, NULL]
+            [self::$residentA, self::$CCCT10, 1, self::$CCCT10Attending],
+            [self::$residentB, self::$CCCT14, 1, self::$CCCT14Attending],
+            [self::$residentC, self::$CCCT11, NULL, self::$CCCT11Attending]
         ];
         $expectedProbTotals1 = [
             [self::$residentA, 0],
@@ -276,9 +286,9 @@ class AutoAssignmentTest extends TestCase
             [self::$residentC, 1]
         ];
         $expectedAssignments2 = [
-            [self::$residentA, self::$CCCT10, 1],
-            [self::$residentB, self::$CCCT14, NULL],
-            [self::$residentC, self::$CCCT11, 1]
+            [self::$residentA, self::$CCCT10, 1, self::$CCCT10Attending],
+            [self::$residentB, self::$CCCT14, NULL, self::$CCCT14Attending],
+            [self::$residentC, self::$CCCT11, 1, self::$CCCT11Attending]
         ];
         $expectedProbTotals2 = [
             [self::$residentA, 0],
@@ -314,9 +324,9 @@ class AutoAssignmentTest extends TestCase
             [self::$residentC, self::$UH16, 1, 1]
         ];
         $expectedAssignments1 = [
-            [self::$residentA, self::$UH19, 1],
-            [self::$residentB, self::$UH2, 1],
-            [self::$residentC, self::$UH16, NULL]
+            [self::$residentA, self::$UH19, 1, self::$UH19Attending],
+            [self::$residentB, self::$UH2, 1, self::$UH2Attending],
+            [self::$residentC, self::$UH16, NULL, self::$UH16Attending]
         ];
         $expectedProbTotals1 = [
             [self::$residentA, 0],
@@ -324,9 +334,9 @@ class AutoAssignmentTest extends TestCase
             [self::$residentC, 1]
         ];
         $expectedAssignments2 = [
-            [self::$residentA, self::$UH19, 1],
-            [self::$residentB, self::$UH2, NULL],
-            [self::$residentC, self::$UH16, 1]
+            [self::$residentA, self::$UH19, 1, self::$UH19Attending],
+            [self::$residentB, self::$UH2, NULL,  self::$UH2Attending],
+            [self::$residentC, self::$UH16, 1, self::$UH16Attending]
         ];
         $expectedProbTotals2 = [
             [self::$residentA, 0],
@@ -363,9 +373,9 @@ class AutoAssignmentTest extends TestCase
             [self::$residentC, self::$CCCT11, 2, 1]
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$CCCT14, 1],
-            [self::$residentB, self::$CCCTLeasingUH, 1],
-            [self::$residentC, self::$CCCT11, NULL]
+            [self::$residentA, self::$CCCT14, 1, self::$CCCT14Attending],
+            [self::$residentB, self::$CCCTLeasingUH, 1, self::$CCCTLeasingUHAttending],
+            [self::$residentC, self::$CCCT11, NULL, self::$CCCT11Attending]
         ];
         $expectedProbTotals = [
             [self::$residentA, 1],
@@ -395,9 +405,9 @@ class AutoAssignmentTest extends TestCase
             [self::$residentC, self::$CCCT11, 2, 1]
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$CCCTLeasingUH, 1],
-            [self::$residentB, self::$CCCT14, 1],
-            [self::$residentC, self::$CCCT11, NULL]
+            [self::$residentA, self::$CCCTLeasingUH, 1, self::$CCCTLeasingUHAttending],
+            [self::$residentB, self::$CCCT14, 1, self::$CCCT14Attending],
+            [self::$residentC, self::$CCCT11, NULL, self::$CCCT11Attending ]
         ];
         $expectedProbTotals = [
             [self::$residentA, 0],
@@ -428,9 +438,9 @@ class AutoAssignmentTest extends TestCase
             [self::$residentC, self::$UH2, 3, 1]
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$UH19, 1],
-            [self::$residentB, self::$CCCTLeasingUH, NULL],
-            [self::$residentC, self::$UH2, 1]
+            [self::$residentA, self::$UH19, 1, self::$UH19Attending],
+            [self::$residentB, self::$CCCTLeasingUH, NULL, self::$CCCTLeasingUHAttending],
+            [self::$residentC, self::$UH2, 1, self::$UH2Attending]
         ];
         $expectedProbTotals = [
             [self::$residentA, 2],
@@ -461,9 +471,9 @@ class AutoAssignmentTest extends TestCase
             [self::$residentC, self::$CCCT11, 2, 1]
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$CCCTLeasingUH, 1],
-            [self::$residentB, self::$UH19, NULL],
-            [self::$residentC, self::$CCCT11, 1]
+            [self::$residentA, self::$CCCTLeasingUH, 1, self::$CCCTLeasingUHAttending],
+            [self::$residentB, self::$UH19, NULL, self::$UH19Attending],
+            [self::$residentC, self::$CCCT11, 1, self::$CCCT11Attending]
         ];
         $expectedProbTotals = [
             [self::$residentA, 1],
@@ -484,5 +494,5 @@ class AutoAssignmentTest extends TestCase
         self::deleteOptionsInDatabase($optionIds);
         self::deleteExpectedAssignments($expectedAssignments);
     }
-    
+
 }
