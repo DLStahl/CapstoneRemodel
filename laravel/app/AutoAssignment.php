@@ -37,7 +37,7 @@ class AutoAssignment extends Model
             if (Option::where('date', $date)
                 ->where('resident', $unassignedResident)
                 ->count() > 0){
-                    self::updateProbability($unassignedResident, 6);
+                    self::increaseProbability($unassignedResident, 6);
             }
         }
     }
@@ -101,7 +101,7 @@ class AutoAssignment extends Model
         } 
         //determine who gets the schedule when multiple residents want the same one
         foreach($wantedSchedules as $wantedSchedule){
-            $schedRotation = ScheduleData::find($wantedSchedule)->value('rotation');
+            $schedRotation = ScheduleData::find($wantedSchedule)->rotation;
             // holds all valid options that want same schedule and have same preference rank                
             $competingOptions = Option::where('date', $date)
                             ->where('schedule', $wantedSchedule)
@@ -116,7 +116,7 @@ class AutoAssignment extends Model
             $notOnRotation = array(); 
             // identify which residents have/don't have same rotation as the schedule rotation 
             foreach($competingOptions as $competingOption){
-                $resName = Resident::find($competingOption['resident'])->value('name');
+                $resName = Resident::find($competingOption['resident'])->name;
                 $resRotations = Rotations::where('name', $resName)->get();
                 $serviceId ="";
                 foreach($resRotations as $resRotation){
@@ -215,7 +215,7 @@ class AutoAssignment extends Model
         // if resident has an anesthesiologist pref - check if anest can be assigned
         if(!is_null($anestPref)){
             // get room
-            $room = ScheduleData::where('date', $date)->where('id', $schedule)->value('room');
+            $room = ScheduleData::find($schedule)->room;
             $room = strval($room);
             //if anest_id isn't a key in array -> anest hasn't been assigned yet
             if(!array_key_exists($anestPref, $anestsAssigned)){
@@ -243,7 +243,7 @@ class AutoAssignment extends Model
             }
         }
         self::addAssignment($schedule, $resident, $date, $anestPref);
-        self::updateProbability($resident, $ticketsToAdd);
+        self::increaseProbability($resident, $ticketsToAdd);
         return $anestsAssigned;
     }
 
@@ -261,7 +261,7 @@ class AutoAssignment extends Model
         Option::where('schedule', $schedule)->update([
             'isValid' => '0'
         ]);
-        $attending = ScheduleData::find($schedule)->value('lead_surgeon');
+        $attending =ScheduleData::find($schedule)->lead_surgeon;
         $pos = strpos($attending, '[');
         $pos_end = strpos($attending, "]");
         $attending = substr($attending, $pos + 1, $pos_end - $pos - 1);
@@ -281,7 +281,7 @@ class AutoAssignment extends Model
     // updates resident's total value in Probability table
         // resident = id for resident
         // ticketsToAdd = number of tickets that will be added to resident's total
-    private static function updateProbability($resident, $ticketsToAdd) {
+    private static function increaseProbability($resident, $ticketsToAdd) {
         $total = Probability::where('resident', $resident)->value('total') + $ticketsToAdd;
         Probability::where('resident', $resident)->update([
             'total' => $total
