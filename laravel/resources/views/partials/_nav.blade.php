@@ -87,6 +87,7 @@
 	<a href="/laravel/public/admin/db/filter_rotation"><img src="/laravel/resources/views/partials/icons/icons8-medical-doctor-50.png"/>Edit Surgeons/Rotations</a>
 	<a href="/laravel/public/admin/db/admin"><img src="/laravel/resources/views/partials/icons/icons8-administrative-tools-50.png"/>Edit Admins</a>
 	<a href="/laravel/public/admin/db/evaluation_forms"><img src="/laravel/resources/views/partials/icons/icons8-google-forms-50.png"/>Edit Evaluation Forms</a>
+	<a href="/laravel/public/admin/db/task_abbreviations"><img src="/laravel/resources/views/partials/icons/icons8-merge-vertical-48.png"/>Edit Task Abbreviations</a>
 	<a href="/laravel/public/admin/db/schedule_data_static"><img src="/laravel/resources/views/partials/icons/icons8-edit-calendar-50.png"/>Edit Static Schedule Data</a>
 	<a href="/laravel/public/admin/db/variables"><img src="/laravel/resources/views/partials/icons/icons8-variable-50.png"/>Edit Variables</a>
 	<a href="/laravel/public/admin/schedules"><img src="/laravel/resources/views/partials/icons/icons8-view-schedule-50.png"/>Edit Schedules</a>
@@ -98,11 +99,6 @@
 	<a href="/laravel/public/admin/medhubtest"><img src="/laravel/resources/views/partials/icons/icons8-test-tube-50.png"/>MedHub Test</a>
 </div>
 @endif
-<script>
-if ($(window).width() < 770) {
-   console.log("hi");
-}
-</script>
 <style>
 .custom-toggler.navbar-toggler {
  /* border-color: rgb(255,255,255); */
