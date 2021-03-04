@@ -94,14 +94,14 @@ class AutoAssignment extends Model
                                 ->where('resident', $resident)
                                 ->value('anesthesiologist_id');
                     $anestsAssigned = self::handleAssignment($schedulePref, $resident, $date, $ticketsToAdd, $anestPref, $anestsAssigned); 
-            // add schedule pref if it is not already in wantedSchedules array  
+            // for competing schedules add schedule pref if it is not already in wantedSchedules array  
             } else if(!in_array($schedulePref, $wantedSchedules)){
                 array_push($wantedSchedules, $schedulePref);
             }
         } 
         //determine who gets the schedule when multiple residents want the same one
         foreach($wantedSchedules as $wantedSchedule){
-            $schedRotation = ScheduleData::find($wantedSchedule)->rotation;
+            $schedRotation = ScheduleData::where('id', $wantedSchedule)->value('rotation');
             // holds all valid options that want same schedule and have same preference rank                
             $competingOptions = Option::where('date', $date)
                             ->where('schedule', $wantedSchedule)
@@ -116,7 +116,7 @@ class AutoAssignment extends Model
             $notOnRotation = array(); 
             // identify which residents have/don't have same rotation as the schedule rotation 
             foreach($competingOptions as $competingOption){
-                $resName = Resident::find($competingOption['resident'])->name;
+                $resName = Resident::where('id',$competingOption['resident'])->value('name');
                 $resRotations = Rotations::where('name', $resName)->get();
                 $serviceId ="";
                 foreach($resRotations as $resRotation){
@@ -215,7 +215,7 @@ class AutoAssignment extends Model
         // if resident has an anesthesiologist pref - check if anest can be assigned
         if(!is_null($anestPref)){
             // get room
-            $room = ScheduleData::find($schedule)->room;
+            $room = ScheduleData::where('id', $schedule)->value('room');
             $room = strval($room);
             //if anest_id isn't a key in array -> anest hasn't been assigned yet
             if(!array_key_exists($anestPref, $anestsAssigned)){
@@ -261,7 +261,7 @@ class AutoAssignment extends Model
         Option::where('schedule', $schedule)->update([
             'isValid' => '0'
         ]);
-        $attending =ScheduleData::find($schedule)->lead_surgeon;
+        $attending =ScheduleData::where('id', $schedule)->value('lead_surgeon');
         $pos = strpos($attending, '[');
         $pos_end = strpos($attending, "]");
         $attending = substr($attending, $pos + 1, $pos_end - $pos - 1);
