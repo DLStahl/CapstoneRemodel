@@ -106,16 +106,106 @@ class PushSchedule extends Command
         fclose($fp);
     }
     
-	/**
+    /**
+	* Returns an authorized API client.
+	* @return Google_Client the authorized client object
+	*/
+    
+	public function getClient()
+	{
+		$client = new Google_Client();
+		$client->setApplicationName('REMODEL');
+		$client->setScopes(Google_Service_Sheets::DRIVE);
+		$client->addScope(Google_Service_Sheets::DRIVE_FILE);
+		$client->addScope(Google_Service_Sheets::SPREADSHEETS);
+		$client->setAuthConfig('/usr/local/webs/remodel.anesthesiology/htdocs/REMODEL-0dfb917af5de.json');
+
+		// Load previously authorized token from a file, if it exists.
+		$tokenPath = '/htdocs/token.json';
+		if (file_exists($tokenPath)) {
+			$accessToken = json_decode(file_get_contents($tokenPath), true);
+			$client->setAccessToken($accessToken);
+		}
+		return $client;
+	}
+
+    /**
      * Execute the console command.
      *
      * @return mixed
      */
     public function handle()
-    { 
-        $date = date("Y-m-d", strtotime('+2 day'));
-        self::updateOption($date);
-    }
+    {
 
+        // connect to the api and our sheet
+        $client = self::getClient();
+        $service = new Google_Service_Sheets($client);
+        $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
+        $title = date("Y-m-d", strtotime('+1 day'));
+		$index = 0;
+
+        // create new sheet for today
+        $newSheet = new Google_Service_Sheets_BatchUpdateSpreadsheetRequest(array(
+                'requests' => array(
+                    'addSheet' => array(
+                        'properties' => array(
+                            'title' => $title,
+							'index' => $index
+                        )
+                    )
+                )
+            ));
+        $service->spreadsheets->batchUpdate('1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY', $newSheet);
+
+        // setup today's sheet to be ready to be added to
+        $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
+        $title = '\''.$title.'\'!';
+        $range = $title.'A1:K15';
+
+		//update the values in the options sheet
+		$date = date("Y-m-d", strtotime('+1 day'));
+		self::updateOption($date);
+
+        // get the values from the options file and save them to an array
+		$path = "/usr/local/webs/remodel.anesthesiology/htdocs/downloads/assignment".$date.".csv";
+        $file = fopen($path, 'r');
+        $csv = array();
+        while (($line = fgetcsv($file)) !== FALSE) {
+            //$line is an array of the csv elements
+            $csv[] = $line;
+        }
+        fclose($file);
+
+        // create the correct update to send back to google sheets to fill the sheet with the array created above
+        $body = new Google_Service_Sheets_ValueRange([
+            'values' => $csv
+        ]);
+        $params = [
+            'valueInputOption' => 'USER_ENTERED'
+        ];
+        $result = $service->spreadsheets_values->update($spreadsheetId, $range, $body, $params);
+
+
+		$response = $service->spreadsheets->get($spreadsheetId);
+
+		if(count($response) > 30)
+		{
+			$lastEntry =  $response[count($response)-1];
+
+			$properties = $lastEntry['properties'];
+
+			$sheetId = $properties['sheetId'];
+
+			$delete = new Google_Service_Sheets_BatchUpdateSpreadsheetRequest(array(
+				'requests' => array(
+					'deleteSheet' => array(
+							'sheetId' => $sheetId
+					)
+				)
+			));
+			$service->spreadsheets->batchUpdate('1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY', $delete);
+		}
+
+    }
 
 }
