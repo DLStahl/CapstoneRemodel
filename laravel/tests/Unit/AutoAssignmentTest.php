@@ -10,1198 +10,479 @@ use App\Probability;
 
 class AutoAssignmentTest extends TestCase
 {
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
+    public static $date = "2021-03-03";
+    public static $residentA = 113;
+    public static $residentB = 270;
+    public static $residentC = 300;
+    public static $residentD = 881;
+    public static $CCCT10 = 143907;
+    public static $CCCT14 = 143910;
+    public static $CCCT11 = 143914;
+    public static $EP05 =143908;
+    public static $UH19 = 143905;
+    public static $UH2 = 143909;
+    public static $UH16 = 143912;
+    public static $CCCTLeasingUH = 143924;
+
+    public function addOptionsToDatabase($optionsDataArrays) {
+        $optionIds = array();
+        foreach($optionsDataArrays as $optionDataArray){
+            $optionId = Option::insertGetId([
+                "date" =>  self::$date,
+                "resident" => $optionDataArray[0],
+                "schedule" => $optionDataArray[1],
+                "attending" => 349746,
+                "option" => $optionDataArray[2],
+                "isValid" => 1,
+                "anesthesiologist_id" => $optionDataArray[3]
+            ]);
+            array_push($optionIds, $optionId);
+        }
+        return $optionIds;
+    }
+
+    public function deleteOptionsInDatabase($options) {
+        foreach($options as $option){
+            Option::find($option)->delete();
+        }  
+    }
+
+    public function deleteExpectedAssignments($expectedAssignments) {
+        foreach($expectedAssignments as $expectedAssignment){
+            Assignment::where('date', self::$date)
+                ->where('resident', $expectedAssignment[0])
+                ->where('schedule', $expectedAssignment[1])
+                ->where('anesthesiologist_id', $expectedAssignment[2])
+                ->delete();
+        }
+    }
+    
+    public function correctAssignments($expectedAssignments) {
+        $allCorrect = true;
+        foreach($expectedAssignments as $expectedAssignment){
+            $assignmentExists = Assignment::where('date', self::$date)
+                ->where('resident', $expectedAssignment[0])
+                ->where('schedule', $expectedAssignment[1])
+                ->where('anesthesiologist_id', $expectedAssignment[2])
+                ->exists();
+            $allCorrect = $allCorrect && $assignmentExists;
+        }
+        return $allCorrect;
+    }
+
+    public function correctProbTotals($expectedTotals){
+        $allCorrect = true;
+        foreach($expectedTotals as $expectedTotal){
+            $total = Probability::where('resident', $expectedTotal[0])->value('total');
+            $correctTotal = $total == $expectedTotal[1];
+            $allCorrect = $allCorrect && $correctTotal;
+        }
+        return $allCorrect;
+    }
+
+    public function callAssignmentMethod() {
+        $autoAssignment = new AutoAssignment();
+        $autoAssignment->assignment(self::$date);
+    }
+
+    
     // Tests for ticketing given types assignments 
     
     public function testPreferenceTicketingWithAnestsGranted() {
-        $date = "2021-03-03";
-        // create options for residents
-        $ResidentAOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 113,
-            "schedule" => 143907,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143907,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption2CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 2
-        ]);
-        $ResidentCOption1CCCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143907,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption2CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 2
-        ]);
-        $ResidentCOption3CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143914,
-            "attending" => 349746,
-            "option" => 3,
-            "isValid" => 1,
-            "anesthesiologist_id" => 3
-        ]);
-        // update total for residents needed for correct assignment
-        Probability::where('resident', 113)->update(['total' => 2]);
-        Probability::where('resident', 270)->update(['total' => 1]);
-        Probability::where('resident', 300)->update(['total' => 0]);
-        // assignment method call
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment($date);
-        // bools and values for assignments existing and current total for residents
-        $foundAssignmentForA = Assignment::where('date', $date)
-                            ->where('resident', 113)
-                            ->where('schedule', 143907)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentA = Probability::where('resident', 113)->value('total');
-        $foundAssignmentForB =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143910)
-                            ->where('anesthesiologist_id', 2)
-                            ->exists();
-        $ProbTotalResidentB = Probability::where('resident', 270)->value('total');
-        $foundAssignmentForC =Assignment::where('date', $date)
-                            ->where('resident',300)
-                            ->where('schedule', 143914)
-                            ->where('anesthesiologist_id', 3)
-                            ->exists();
-        $ProbTotalResidentC = Probability::where('resident', 300)->value('total');
-        // assertions for correct assignments                    
-        $this->assertTrue($foundAssignmentForA);
-        $this->assertTrue($foundAssignmentForB);
-        $this->assertTrue($foundAssignmentForC);
-        // assertions for correct total in probability table after assignment
-        $this->assertEquals($ProbTotalResidentA, 2);
-        $this->assertEquals($ProbTotalResidentB, 3);
-        $this->assertEquals($ProbTotalResidentC, 4);
-        // delete dummy data for option table
-        Option::find($ResidentAOption1CCCT)->delete();
-        Option::find($ResidentBOption1CCCT)->delete();
-        Option::find($ResidentBOption2CCCT)->delete();
-        Option::find($ResidentCOption1CCCCT)->delete();
-        Option::find($ResidentCOption2CCCT)->delete();
-        Option::find($ResidentCOption3CCCT)->delete();
-        // delete dummy assignments
-        Assignment::where('date', $date)
-            ->where('resident', 113)
-            ->where('schedule', 143907)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 270)
-            ->where('schedule', 143910)
-            ->where('anesthesiologist_id', 2)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 300)
-            ->where('schedule', 143914)
-            ->where('anesthesiologist_id', 3)
-            ->delete();
+        $options = [
+            [self::$residentA, self::$CCCT10, 1, 1],
+            [self::$residentB, self::$CCCT10, 1, 1],
+            [self::$residentB, self::$CCCT14, 2, 2],
+            [self::$residentC, self::$CCCT10, 1, 1],
+            [self::$residentC, self::$CCCT14, 2, 2],
+            [self::$residentC, self::$CCCT11, 3, 3]
+        ];
+        $expectedAssignments = [
+            [self::$residentA, self::$CCCT10, 1],
+            [self::$residentB, self::$CCCT14, 2],
+            [self::$residentC, self::$CCCT11, 3]
+        ];
+        $expectedProbTotals = [
+            [self::$residentA, 2],
+            [self::$residentB, 3],
+            [self::$residentC, 4]
+        ];
+        
+        $optionIds = self::addOptionsToDatabase($options);
+        Probability::where('resident', self::$residentA)->update(['total' => 2]);
+        Probability::where('resident', self::$residentB)->update(['total' => 1]);
+        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+
+        self::callAssignmentMethod();
+       
+        $this->assertTrue(self::correctAssignments($expectedAssignments));
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+     
+        self::deleteOptionsInDatabase($optionIds);
+        self::deleteExpectedAssignments($expectedAssignments);
+
     }
 
     public function testPreferenceTicketingWithAnestsNotGranted() {
-        $date = "2021-03-03";
-        // create options for residents 
-        $ResidentAOption1EP = Option::insertGetId([
-            "date" => $date,
-            "resident" => 113,
-            "schedule" => 143908,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143907,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143907,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption2CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentDOption1CCCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 881,
-            "schedule" => 143907,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentDOption2CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 881,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentDOption3CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 881,
-            "schedule" => 143914,
-            "attending" => 349746,
-            "option" => 3,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        // update total for residents needed for correct assignment
-        Probability::where('resident', 113)->update(['total' => 0]);
-        Probability::where('resident', 270)->update(['total' => 2]);
-        Probability::where('resident', 300)->update(['total' => 1]);
-        Probability::where('resident', 881)->update(['total' => 0]);
-        // assignment method call
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment($date);
-        // bools and values for assignments existing and current total for residents
-        $foundAssignmentForA = Assignment::where('date', $date)
-                            ->where('resident', 113)
-                            ->where('schedule', 143908)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentA = Probability::where('resident', 113)->value('total');
-        $foundAssignmentForB =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143907)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentB = Probability::where('resident', 270)->value('total');
-        $foundAssignmentForC =Assignment::where('date', $date)
-                            ->where('resident', 300)
-                            ->where('schedule', 143910)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentC = Probability::where('resident', 300)->value('total');
-        $foundAssignmentForD =Assignment::where('date', $date)
-                            ->where('resident', 881)
-                            ->where('schedule', 143914)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentD = Probability::where('resident', 881)->value('total');
-        // assertions for correct assignments                    
-        $this->assertTrue($foundAssignmentForA);
-        $this->assertTrue($foundAssignmentForB);
-        $this->assertTrue($foundAssignmentForC);
-        $this->assertTrue($foundAssignmentForD);
-        // assertions for correct total in probability table after assignment
-        $this->assertEquals($ProbTotalResidentA, 0);
-        $this->assertEquals($ProbTotalResidentB, 3);
-        $this->assertEquals($ProbTotalResidentC, 4);
-        $this->assertEquals($ProbTotalResidentD, 5);
-        // delete dummy data for option table
-        Option::find($ResidentAOption1EP)->delete();
-        Option::find($ResidentBOption1CCCT)->delete();
-        Option::find($ResidentCOption1CCCT)->delete();
-        Option::find($ResidentCOption2CCCT)->delete();
-        Option::find($ResidentDOption1CCCCT)->delete();
-        Option::find($ResidentDOption2CCCT)->delete();
-        Option::find($ResidentDOption3CCCT)->delete();
-        // delete dummy assignments
-        Assignment::where('date', $date)
-            ->where('resident', 113)
-            ->where('schedule', 143908)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 270)
-            ->where('schedule', 143907)
-            ->where('anesthesiologist_id', NULL)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 300)
-            ->where('schedule', 143910)
-            ->where('anesthesiologist_id', NULL)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 881)
-            ->where('schedule', 143914)
-            ->where('anesthesiologist_id', NULL)
-            ->delete();
+        $options = [
+            [self::$residentA, self::$EP05, 1, 1],
+            [self::$residentB, self::$CCCT10, 1, 1],
+            [self::$residentC, self::$CCCT10, 1, 1],
+            [self::$residentC, self::$CCCT14, 2, 1],
+            [self::$residentD, self::$CCCT10, 1, 1],
+            [self::$residentD, self::$CCCT14, 2, 1],
+            [self::$residentD, self::$CCCT11, 3, 1]
+        ];
+        $expectedAssignments = [
+            [self::$residentA, self::$EP05, 1],
+            [self::$residentB, self::$CCCT10, NULL],
+            [self::$residentC, self::$CCCT14, NULL],
+            [self::$residentD, self::$CCCT11, NULL]
+        ];
+        $expectedProbTotals = [
+            [self::$residentA, 0],
+            [self::$residentB, 3],
+            [self::$residentC, 4],
+            [self::$residentD, 5]
+        ];
+
+        $optionIds = self::addOptionsToDatabase($options);
+        Probability::where('resident', self::$residentA)->update(['total' => 0]);
+        Probability::where('resident', self::$residentB)->update(['total' => 2]);
+        Probability::where('resident', self::$residentC)->update(['total' => 1]);
+        Probability::where('resident', self::$residentD)->update(['total' => 0]);
+
+        self::callAssignmentMethod();
+                    
+        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+
+        self::deleteOptionsInDatabase($optionIds);
+        self::deleteExpectedAssignments($expectedAssignments);
     }
     
     public function testPreferenceTicketingNoAnestsPreferences() {
-        $date = "2021-03-03";
-        // create options for residents 
-        $ResidentAOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 113,
-            "schedule" => 143907,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => NULL
-        ]);
-        $ResidentBOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143907,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => NULL
-        ]);
-        $ResidentBOption2CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => NULL
-        ]);
-        $ResidentCOption1CCCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143907,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => NULL
-        ]);
-        $ResidentCOption2CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => NULL
-        ]);
-        $ResidentCOption3CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143914,
-            "attending" => 349746,
-            "option" => 3,
-            "isValid" => 1,
-            "anesthesiologist_id" => NULL
-        ]);
-        // update total for residents needed for correct assignment
-        Probability::where('resident', 113)->update(['total' => 2]);
-        Probability::where('resident', 270)->update(['total' => 1]);
-        Probability::where('resident', 300)->update(['total' => 0]);
-        // assignment method call
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment($date);
-        // bools and values for assignments existing and current total for residents
-        $foundAssignmentForA = Assignment::where('date', $date)
-                            ->where('resident', 113)
-                            ->where('schedule', 143907)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentA = Probability::where('resident', 113)->value('total');
-        $foundAssignmentForB =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143910)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentB = Probability::where('resident', 270)->value('total');
-        $foundAssignmentForC =Assignment::where('date', $date)
-                            ->where('resident',300)
-                            ->where('schedule', 143914)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentC = Probability::where('resident', 300)->value('total');
-        // assertions for correct assignments                    
-        $this->assertTrue($foundAssignmentForA);
-        $this->assertTrue($foundAssignmentForB);
-        $this->assertTrue($foundAssignmentForC);
-        // assertions for correct total in probability table after assignment
-        $this->assertEquals($ProbTotalResidentA, 2);
-        $this->assertEquals($ProbTotalResidentB, 3);
-        $this->assertEquals($ProbTotalResidentC, 4);
-        // delete dummy data for option table
-        Option::find($ResidentAOption1CCCT)->delete();
-        Option::find($ResidentBOption1CCCT)->delete();
-        Option::find($ResidentBOption2CCCT)->delete();
-        Option::find($ResidentCOption1CCCCT)->delete();
-        Option::find($ResidentCOption2CCCT)->delete();
-        Option::find($ResidentCOption3CCCT)->delete();
-        // delete dummy assignments
-        Assignment::where('date', $date)
-            ->where('resident', 113)
-            ->where('schedule', 143907)
-            ->where('anesthesiologist_id', NULL)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 270)
-            ->where('schedule', 143910)
-            ->where('anesthesiologist_id', NULL)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 300)
-            ->where('schedule', 143914)
-            ->where('anesthesiologist_id', NULL)
-            ->delete();
+        $options = [
+            [self::$residentA, self::$CCCT10, 1, NULL],
+            [self::$residentB, self::$CCCT10, 1, NULL],
+            [self::$residentB, self::$CCCT14, 2, NULL],
+            [self::$residentC, self::$CCCT10, 1, NULL],
+            [self::$residentC, self::$CCCT14, 2, NULL],
+            [self::$residentC, self::$CCCT11, 3, NULL]
+        ];
+        $expectedAssignments = [
+            [self::$residentA, self::$CCCT10, NULL],
+            [self::$residentB, self::$CCCT14, NULL],
+            [self::$residentC, self::$CCCT11, NULL]
+        ];
+        $expectedProbTotals = [
+            [self::$residentA, 2],
+            [self::$residentB, 3],
+            [self::$residentC, 4]
+        ];
+
+        $optionIds = self::addOptionsToDatabase($options);
+        Probability::where('resident', self::$residentA)->update(['total' => 2]);
+        Probability::where('resident', self::$residentB)->update(['total' => 1]);
+        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+
+        self::callAssignmentMethod();     
+
+        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+
+        self::deleteOptionsInDatabase($optionIds);
+        self::deleteExpectedAssignments($expectedAssignments);
     }
 
     public function testPreferenceTicketingForUnassignedResidents() {
-        $date = "2021-03-03"; 
-        // create options for residents
-        $ResidentAOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 113,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption2CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentDOption1CCCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 881,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentDOption2CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 881,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentDOption3CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 881,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 3,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        // update total for residents needed for correct assignment
-        Probability::where('resident', 113)->update(['total' => 1]);
-        Probability::where('resident', 270)->update(['total' => 0]);
-        Probability::where('resident', 300)->update(['total' => 0]);
-        Probability::where('resident', 881)->update(['total' => 0]);
-        // assignment method call
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment($date);
-        // bools and values for assignments existing and current total for residents
-        $foundAssignmentForA = Assignment::where('date', $date)
-                            ->where('resident', 113)
-                            ->where('schedule', 143910)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentA = Probability::where('resident', 113)->value('total');
-        $ProbTotalResidentB = Probability::where('resident', 270)->value('total');
-        $ProbTotalResidentC = Probability::where('resident', 300)->value('total');
-        $ProbTotalResidentD = Probability::where('resident', 881)->value('total');
-        // assertions for correct assignments                    
-        $this->assertTrue($foundAssignmentForA);
-        // assertions for correct total in probability table after assignment
-        $this->assertEquals($ProbTotalResidentA, 1);
-        $this->assertEquals($ProbTotalResidentB, 6);
-        $this->assertEquals($ProbTotalResidentC, 6);
-        $this->assertEquals($ProbTotalResidentD, 6);
-        // delete dummy data for option table
-        Option::find($ResidentAOption1CCCT)->delete();
-        Option::find($ResidentBOption1CCCT)->delete();
-        Option::find($ResidentCOption1CCCT)->delete();
-        Option::find($ResidentCOption2CCCT)->delete();
-        Option::find($ResidentDOption1CCCCT)->delete();
-        Option::find($ResidentDOption2CCCT)->delete();
-        Option::find($ResidentDOption3CCCT)->delete();
-        // delete dummy assignments
-        Assignment::where('date', $date)
-            ->where('resident', 113)
-            ->where('schedule', 143910)
-            ->where('anesthesiologist_id', 1)
-            ->delete();  
+        $options = [
+            [self::$residentA, self::$CCCT14, 1, 1],
+            [self::$residentB, self::$CCCT14, 1, 1],
+            [self::$residentC, self::$CCCT14, 1, 1],
+            [self::$residentC, self::$CCCT14, 2, 1],
+            [self::$residentD, self::$CCCT14, 1, 1],
+            [self::$residentD, self::$CCCT14, 2, 1],
+            [self::$residentD, self::$CCCT14, 3, 1]
+        ];
+        $expectedAssignments = [
+            [self::$residentA, self::$CCCT14, 1]
+        ];
+        $expectedProbTotals = [
+            [self::$residentA, 1],
+            [self::$residentB, 6],
+            [self::$residentC, 6],
+            [self::$residentD, 6]
+        ];
+
+        $optionIds = self::addOptionsToDatabase($options);
+        Probability::where('resident', self::$residentA)->update(['total' => 1]);
+        Probability::where('resident', self::$residentB)->update(['total' => 0]);
+        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+        Probability::where('resident', self::$residentD)->update(['total' => 0]);
+
+        self::callAssignmentMethod();
+                          
+        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+
+        self::deleteOptionsInDatabase($optionIds);
+        self::deleteExpectedAssignments($expectedAssignments); 
     }
 
     // Tests for Anesthesiologist Preference Assignment
 
     public function testAnestAssignedOnce() {
-        $date = "2021-03-03"; 
-        // create options for residents
-        $ResidentAOption1EP = Option::insertGetId([
-            "date" => $date,
-            "resident" => 113,
-            "schedule" => 143908,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        // update total for residents needed for correct assignment
-        Probability::where('resident', 113)->update(['total' => 0]);
-        Probability::where('resident', 270)->update(['total' => 0]);
-        // assignment method call
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment($date);
-        // bools and values for assignments existing and current total for residents
-        $foundAssignmentForA = Assignment::where('date', $date)
-                            ->where('resident', 113)
-                            ->where('schedule', 143908)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentA = Probability::where('resident', 113)->value('total');
-        $foundAssignmentForB =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143910)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentB = Probability::where('resident', 270)->value('total');
-        // assertions for correct assignments                    
-        $this->assertTrue($foundAssignmentForA);
-        $this->assertTrue($foundAssignmentForB);
-        // assertions for correct total in probability table after assignment
-        $this->assertEquals($ProbTotalResidentA, 0);
-        $this->assertEquals($ProbTotalResidentB, 1);
-        // delete dummy data for option table
-        Option::find($ResidentAOption1EP)->delete();
-        Option::find($ResidentBOption1CCCT)->delete();
-        // delete dummy assignments
-        Assignment::where('date', $date)
-            ->where('resident', 113)
-            ->where('schedule', 143908)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 270)
-            ->where('schedule', 143910)
-            ->where('anesthesiologist_id', NULL)
-            ->delete();   
+        $options = [
+            [self::$residentA, self::$EP05, 1, 1],
+            [self::$residentB, self::$CCCT14, 1, 1]
+        ];
+        $expectedAssignments = [
+            [self::$residentA, self::$EP05, 1],
+            [self::$residentB, self::$CCCT14, NULL]
+        ];
+        $expectedProbTotals = [
+            [self::$residentA, 0],
+            [self::$residentB, 1]
+        ];
+
+        $optionIds = self::addOptionsToDatabase($options);
+        Probability::where('resident', self::$residentA)->update(['total' => 0]);
+        Probability::where('resident', self::$residentB)->update(['total' => 0]);
+ 
+        self::callAssignmentMethod();
+                   
+        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+  
+        self::deleteOptionsInDatabase($optionIds);
+        self::deleteExpectedAssignments($expectedAssignments); 
     }
 
     public function testAnestDoubleAssignedCCCT() {
-        $date = "2021-03-03"; 
-        // create options for residents
-        $ResidentAOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 113,
-            "schedule" => 143907,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption1CCCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143914,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        // update total for residents needed for correct assignment
-        Probability::where('resident', 113)->update(['total' => 0]);
-        Probability::where('resident', 270)->update(['total' => 0]);
-        Probability::where('resident', 300)->update(['total' => 0]);
-        // assignment method call
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment($date);
-        // bools and values for assignments existing and current total for residents
-        $foundAssignmentForA = Assignment::where('date', $date)
-                            ->where('resident', 113)
-                            ->where('schedule', 143907)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentA = Probability::where('resident', 113)->value('total');
-        $foundAssignmentForBWithAnest =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143910)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $foundAssignmentForBWithoutAnest =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143910)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentB = Probability::where('resident', 270)->value('total');
-        $foundAssignmentForCWithAnest =Assignment::where('date', $date)
-                            ->where('resident',300)
-                            ->where('schedule', 143914)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $foundAssignmentForCWithoutAnest =Assignment::where('date', $date)
-                            ->where('resident',300)
-                            ->where('schedule', 143914)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentC = Probability::where('resident', 300)->value('total');
-        // assertions for correct assignments                    
-        $this->assertTrue($foundAssignmentForA);
-        $bGotAnest = $foundAssignmentForBWithAnest && $foundAssignmentForCWithoutAnest;
-        $cGotAnest = $foundAssignmentForCWithAnest && $foundAssignmentForBWithoutAnest;
+        $options = [
+            [self::$residentA, self::$CCCT10, 1, 1],
+            [self::$residentB, self::$CCCT14, 1, 1],
+            [self::$residentC, self::$CCCT11, 1, 1]
+        ];
+        $expectedAssignments1 = [
+            [self::$residentA, self::$CCCT10, 1],
+            [self::$residentB, self::$CCCT14, 1],
+            [self::$residentC, self::$CCCT11, NULL]
+        ];
+        $expectedProbTotals1 = [
+            [self::$residentA, 0],
+            [self::$residentB, 0],
+            [self::$residentC, 1]
+        ];
+        $expectedAssignments2 = [
+            [self::$residentA, self::$CCCT10, 1],
+            [self::$residentB, self::$CCCT14, NULL],
+            [self::$residentC, self::$CCCT11, 1]
+        ];
+        $expectedProbTotals2 = [
+            [self::$residentA, 0],
+            [self::$residentB, 1],
+            [self::$residentC, 0]
+        ];
+
+        $optionIds = self::addOptionsToDatabase($options);
+        Probability::where('resident', self::$residentA)->update(['total' => 0]);
+        Probability::where('resident', self::$residentB)->update(['total' => 0]);
+        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+
+        self::callAssignmentMethod();
+
+        $bGotAnest = self::correctAssignments($expectedAssignments1);
+        $cGotAnest = self::correctAssignments($expectedAssignments2);
         $this->assertTrue( $bGotAnest || $cGotAnest);
-        // assertions for correct total in probability table after assignment
-        $this->assertEquals($ProbTotalResidentA, 0);
+
         if($bGotAnest){
-            $this->assertEquals($ProbTotalResidentB, 0);
-            $this->assertEquals($ProbTotalResidentC, 1);
+            $this->assertTrue(self::correctProbTotals($expectedProbTotals1));
+            self::deleteExpectedAssignments($expectedAssignments1);
         } else{
-            $this->assertEquals($ProbTotalResidentB, 1);
-            $this->assertEquals($ProbTotalResidentC, 0);
+            $this->assertTrue(self::correctProbTotals($expectedProbTotals2));
+            self::deleteExpectedAssignments($expectedAssignments2);
         }
-        // delete dummy data for option table
-        Option::find($ResidentAOption1CCCT)->delete();
-        Option::find($ResidentBOption1CCCT)->delete();
-        Option::find($ResidentCOption1CCCCT)->delete();
-        // delete dummy assignments
-        Assignment::where('date', $date)
-            ->where('resident', 113)
-            ->where('schedule', 143907)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
-        if($bGotAnest){
-            Assignment::where('date', $date)
-                ->where('resident', 270)
-                ->where('schedule', 143910)
-                ->where('anesthesiologist_id', 1)
-                ->delete();
-            Assignment::where('date', $date)
-                ->where('resident', 300)
-                ->where('schedule', 143914)
-                ->where('anesthesiologist_id', NULL)
-                ->delete();
-        } else{
-             Assignment::where('date', $date)
-                ->where('resident', 270)
-                ->where('schedule', 143910)
-                ->where('anesthesiologist_id', NULL)
-                ->delete();
-            Assignment::where('date', $date)
-                ->where('resident', 300)
-                ->where('schedule', 143914)
-                ->where('anesthesiologist_id', 1)
-                ->delete();
-        }
+        self::deleteOptionsInDatabase($optionIds);
     }
 
     public function testAnestDoubleAssignedUH() {
-        $date = "2021-03-03"; 
-        // create options for residents
-        $ResidentAOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 113,
-            "schedule" => 143905,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143909,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption1CCCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143912,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        // update total for residents needed for correct assignment
-        Probability::where('resident', 113)->update(['total' => 0]);
-        Probability::where('resident', 270)->update(['total' => 0]);
-        Probability::where('resident', 300)->update(['total' => 0]);
-        // assignment method call
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment($date);
-        // bools and values for assignments existing and current total for residents
-        $foundAssignmentForA = Assignment::where('date', $date)
-                            ->where('resident', 113)
-                            ->where('schedule', 143905)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentA = Probability::where('resident', 113)->value('total');
-        $foundAssignmentForBWithAnest =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143909)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $foundAssignmentForBWithoutAnest =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143909)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentB = Probability::where('resident', 270)->value('total');
-        $foundAssignmentForCWithAnest =Assignment::where('date', $date)
-                            ->where('resident',300)
-                            ->where('schedule', 143912)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $foundAssignmentForCWithoutAnest =Assignment::where('date', $date)
-                            ->where('resident',300)
-                            ->where('schedule', 143912)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentC = Probability::where('resident', 300)->value('total');
-        // assertions for correct assignments                    
-        $this->assertTrue($foundAssignmentForA);
-        $bGotAnest = $foundAssignmentForBWithAnest && $foundAssignmentForCWithoutAnest;
-        $cGotAnest = $foundAssignmentForCWithAnest && $foundAssignmentForBWithoutAnest;
+        $options = [
+            [self::$residentA, self::$UH19, 1, 1],
+            [self::$residentB, self::$UH2, 1, 1],
+            [self::$residentC, self::$UH16, 1, 1]
+        ];
+        $expectedAssignments1 = [
+            [self::$residentA, self::$UH19, 1],
+            [self::$residentB, self::$UH2, 1],
+            [self::$residentC, self::$UH16, NULL]
+        ];
+        $expectedProbTotals1 = [
+            [self::$residentA, 0],
+            [self::$residentB, 0],
+            [self::$residentC, 1]
+        ];
+        $expectedAssignments2 = [
+            [self::$residentA, self::$UH19, 1],
+            [self::$residentB, self::$UH2, NULL],
+            [self::$residentC, self::$UH16, 1]
+        ];
+        $expectedProbTotals2 = [
+            [self::$residentA, 0],
+            [self::$residentB, 1],
+            [self::$residentC, 0]
+        ];
+
+        $optionIds = self::addOptionsToDatabase($options);
+        Probability::where('resident', self::$residentA)->update(['total' => 0]);
+        Probability::where('resident', self::$residentB)->update(['total' => 0]);
+        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+
+        self::callAssignmentMethod();
+                   
+        $bGotAnest = self::correctAssignments($expectedAssignments1);
+        $cGotAnest = self::correctAssignments($expectedAssignments2);
         $this->assertTrue( $bGotAnest || $cGotAnest);
-        // assertions for correct total in probability table after assignment
-        $this->assertEquals($ProbTotalResidentA, 0);
+
         if($bGotAnest){
-            $this->assertEquals($ProbTotalResidentB, 0);
-            $this->assertEquals($ProbTotalResidentC, 1);
+            $this->assertTrue(self::correctProbTotals($expectedProbTotals1));
+            self::deleteExpectedAssignments($expectedAssignments1);
         } else{
-            $this->assertEquals($ProbTotalResidentB, 1);
-            $this->assertEquals($ProbTotalResidentC, 0);
+            $this->assertTrue(self::correctProbTotals($expectedProbTotals2));
+            self::deleteExpectedAssignments($expectedAssignments2);
         }
-        // delete dummy data for option table
-        Option::find($ResidentAOption1CCCT)->delete();
-        Option::find($ResidentBOption1CCCT)->delete();
-        Option::find($ResidentCOption1CCCCT)->delete();
-        // delete dummy assignments
-        Assignment::where('date', $date)
-            ->where('resident', 113)
-            ->where('schedule', 143905)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
-        if($bGotAnest){
-            Assignment::where('date', $date)
-                ->where('resident', 270)
-                ->where('schedule', 143909)
-                ->where('anesthesiologist_id', 1)
-                ->delete();
-            Assignment::where('date', $date)
-                ->where('resident', 300)
-                ->where('schedule', 143912)
-                ->where('anesthesiologist_id', NULL)
-                ->delete();
-        } else{
-             Assignment::where('date', $date)
-                ->where('resident', 270)
-                ->where('schedule', 143909)
-                ->where('anesthesiologist_id', NULL)
-                ->delete();
-            Assignment::where('date', $date)
-                ->where('resident', 300)
-                ->where('schedule', 143912)
-                ->where('anesthesiologist_id', 1)
-                ->delete();
-        }
+        self::deleteOptionsInDatabase($optionIds);
     }
 
     public function testAnestDoubleAssignedCCCTLeasingUHGivenCCCTAssignment() {
-        $date = "2021-03-03";
-        // create options for residents 
-        $ResidentAOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 113,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption1CCCTLeasingUH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143924,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption1CCCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption2CCCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143914,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        // update total for residents needed for correct assignment
-        Probability::where('resident', 113)->update(['total' => 1]);
-        Probability::where('resident', 270)->update(['total' => 0]);
-        Probability::where('resident', 300)->update(['total' => 0]);
-        // assignment method call
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment($date);
-        // bools and values for assignments existing and current total for residents
-        $foundAssignmentForA = Assignment::where('date', $date)
-                            ->where('resident', 113)
-                            ->where('schedule', 143910)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentA = Probability::where('resident', 113)->value('total');
-        $foundAssignmentForB =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143924)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentB = Probability::where('resident', 270)->value('total');
-        $foundAssignmentForC =Assignment::where('date', $date)
-                            ->where('resident',300)
-                            ->where('schedule', 143914)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentC = Probability::where('resident', 300)->value('total');
-        // assertions for correct assignments                    
-        $this->assertTrue($foundAssignmentForA);
-        $this->assertTrue($foundAssignmentForB);
-        $this->assertTrue($foundAssignmentForC);
-        // assertions for correct total in probability table after assignment
-        $this->assertEquals($ProbTotalResidentA, 1);
-        $this->assertEquals($ProbTotalResidentB, 0);
-        $this->assertEquals($ProbTotalResidentC, 3);
-        // delete dummy data for option table
-        Option::find($ResidentAOption1CCCT)->delete();
-        Option::find($ResidentBOption1CCCTLeasingUH)->delete();
-        Option::find($ResidentCOption1CCCCT)->delete();
-        Option::find($ResidentCOption2CCCCT)->delete();
-        // delete dummy assignments
-        Assignment::where('date', $date)
-            ->where('resident', 113)
-            ->where('schedule', 143910)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 270)
-            ->where('schedule', 143924)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 300)
-            ->where('schedule', 143914)
-            ->where('anesthesiologist_id', NULL)
-            ->delete();
+        $options = [
+            [self::$residentA, self::$CCCT14, 1, 1],
+            [self::$residentB, self::$CCCTLeasingUH, 1, 1],
+            [self::$residentC, self::$CCCT14, 1, 1],
+            [self::$residentC, self::$CCCT11, 2, 1]
+        ];
+        $expectedAssignments = [
+            [self::$residentA, self::$CCCT14, 1],
+            [self::$residentB, self::$CCCTLeasingUH, 1],
+            [self::$residentC, self::$CCCT11, NULL]
+        ];
+        $expectedProbTotals = [
+            [self::$residentA, 1],
+            [self::$residentB, 0],
+            [self::$residentC, 3]
+        ];
+
+        $optionIds = self::addOptionsToDatabase($options); 
+        Probability::where('resident', self::$residentA)->update(['total' => 1]);
+        Probability::where('resident', self::$residentB)->update(['total' => 0]);
+        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+
+        self::callAssignmentMethod();
+                  
+        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+        
+        self::deleteOptionsInDatabase($optionIds);
+        self::deleteExpectedAssignments($expectedAssignments);
     }
     
     public function testAnestDoubleAssignedCCCTGivenCCCTLeasingUHAssignment() {
-        $date = "2021-03-03"; 
-        // create options for residents
-        $ResidentAOption1CCCTLeasingUH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 113,
-            "schedule" => 143924,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption1CCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption1CCCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143910,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption2CCCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143914,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        // update total for residents needed for correct assignment
-        Probability::where('resident', 113)->update(['total' => 0]);
-        Probability::where('resident', 270)->update(['total' => 1]);
-        Probability::where('resident', 300)->update(['total' => 0]);
-        // assignment method call
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment($date);
-        // bools and values for assignments existing and current total for residents
-        $foundAssignmentForA = Assignment::where('date', $date)
-                            ->where('resident', 113)
-                            ->where('schedule', 143924)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentA = Probability::where('resident', 113)->value('total');
-        $foundAssignmentForB =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143910)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentB = Probability::where('resident', 270)->value('total');
-        $foundAssignmentForC =Assignment::where('date', $date)
-                            ->where('resident',300)
-                            ->where('schedule', 143914)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentC = Probability::where('resident', 300)->value('total');
-        // assertions for correct assignments                    
-        $this->assertTrue($foundAssignmentForA);
-        $this->assertTrue($foundAssignmentForB);
-        $this->assertTrue($foundAssignmentForC);
-        // assertions for correct total in probability table after assignment
-        $this->assertEquals($ProbTotalResidentA, 0);
-        $this->assertEquals($ProbTotalResidentB, 1);
-        $this->assertEquals($ProbTotalResidentC, 3);
-        // delete dummy data for option table
-        Option::find($ResidentAOption1CCCTLeasingUH)->delete();
-        Option::find($ResidentBOption1CCCT)->delete();
-        Option::find($ResidentCOption1CCCCT)->delete();
-        Option::find($ResidentCOption2CCCCT)->delete();
-        // delete dummy assignments
-        Assignment::where('date', $date)
-            ->where('resident', 113)
-            ->where('schedule', 143924)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 270)
-            ->where('schedule', 143910)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 300)
-            ->where('schedule', 143914)
-            ->where('anesthesiologist_id', NULL)
-            ->delete();
+        $options = [
+            [self::$residentA, self::$CCCTLeasingUH, 1, 1],
+            [self::$residentB, self::$CCCT14, 1, 1],
+            [self::$residentC, self::$CCCT14, 1, 1],
+            [self::$residentC, self::$CCCT11, 2, 1]
+        ];
+        $expectedAssignments = [
+            [self::$residentA, self::$CCCTLeasingUH, 1],
+            [self::$residentB, self::$CCCT14, 1],
+            [self::$residentC, self::$CCCT11, NULL]
+        ];
+        $expectedProbTotals = [
+            [self::$residentA, 0],
+            [self::$residentB, 1],
+            [self::$residentC, 3]
+        ];
+
+        $optionIds = self::addOptionsToDatabase($options);
+        Probability::where('resident', self::$residentA)->update(['total' => 0]);
+        Probability::where('resident', self::$residentB)->update(['total' => 1]);
+        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+        self::callAssignmentMethod();
+                 
+        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+
+        self::deleteOptionsInDatabase($optionIds);
+        self::deleteExpectedAssignments($expectedAssignments);
     }
 
     public function testAnestDoubleAssignedCCCTLeasingUHGivenUHAssignment() {
-        $date = "2021-03-03"; 
-        // create options for residents
-        $ResidentAOption1UH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 113,
-            "schedule" => 143905,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption1UH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143905,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption2CCCTLeasingUH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143924,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption1UH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143905,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption2CCCTLeasingUH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143924,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption3UH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143909,
-            "attending" => 349746,
-            "option" => 3,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        // update total for residents needed for correct assignment
-        Probability::where('resident', 113)->update(['total' => 2]);
-        Probability::where('resident', 270)->update(['total' => 1]);
-        Probability::where('resident', 300)->update(['total' => 0]);
-        // assignment method call
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment($date);
-        // bools and values for assignments existing and current total for residents
-        $foundAssignmentForA = Assignment::where('date', $date)
-                            ->where('resident', 113)
-                            ->where('schedule', 143905)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentA = Probability::where('resident', 113)->value('total');
-        $foundAssignmentForB =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143924)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentB = Probability::where('resident', 270)->value('total');
-        $foundAssignmentForC =Assignment::where('date', $date)
-                            ->where('resident',300)
-                            ->where('schedule', 143909)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentC = Probability::where('resident', 300)->value('total');
-        // assertions for correct assignments                    
-        $this->assertTrue($foundAssignmentForA);
-        $this->assertTrue($foundAssignmentForB);
-        $this->assertTrue($foundAssignmentForC); 
-        // assertions for correct total in probability table after assignment
-        $this->assertEquals($ProbTotalResidentA, 2);
-        $this->assertEquals($ProbTotalResidentB, 4);
-        $this->assertEquals($ProbTotalResidentC, 4);
-        // delete dummy data for option table
-        Option::find($ResidentAOption1UH)->delete();
-        Option::find($ResidentBOption1UH)->delete();
-        Option::find($ResidentBOption2CCCTLeasingUH)->delete();
-        Option::find($ResidentCOption1UH)->delete();
-        Option::find($ResidentCOption2CCCTLeasingUH)->delete();
-        Option::find($ResidentCOption3UH)->delete();
-        // delete dummy assignments
-        Assignment::where('date', $date)
-            ->where('resident', 113)
-            ->where('schedule', 143905)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 270)
-            ->where('schedule', 143924)
-            ->where('anesthesiologist_id', NULL)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 300)
-            ->where('schedule', 143909)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
+        $options = [
+            [self::$residentA, self::$UH19, 1, 1],
+            [self::$residentB, self::$UH19, 1, 1],
+            [self::$residentB, self::$CCCTLeasingUH, 2, 1],
+            [self::$residentC, self::$UH19, 1, 1],
+            [self::$residentC, self::$CCCTLeasingUH, 2, 1],
+            [self::$residentC, self::$UH2, 3, 1]
+        ];
+        $expectedAssignments = [
+            [self::$residentA, self::$UH19, 1],
+            [self::$residentB, self::$CCCTLeasingUH, NULL],
+            [self::$residentC, self::$UH2, 1]
+        ];
+        $expectedProbTotals = [
+            [self::$residentA, 2],
+            [self::$residentB, 4],
+            [self::$residentC, 4]
+        ];
+
+        $optionIds = self::addOptionsToDatabase($options); 
+        Probability::where('resident', self::$residentA)->update(['total' => 2]);
+        Probability::where('resident', self::$residentB)->update(['total' => 1]);
+        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+        
+        self::callAssignmentMethod();
+                    
+        $this->assertTrue(self::correctAssignments($expectedAssignments));  
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+        
+        self::deleteOptionsInDatabase($optionIds);
+        self::deleteExpectedAssignments($expectedAssignments);
     }
   
     public function testAnestDoubleAssignedUHGivenCCCTLeasingUHAssignment() {
-        $date = "2021-03-03"; 
-        // create options for residents
-        $ResidentAOption1CCCTLeasingUH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 113,
-            "schedule" => 143924,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption1CCCTLeasingUH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143924,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentBOption2UH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 270,
-            "schedule" => 143905,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption1CCCTLeasingUH = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143924,
-            "attending" => 349746,
-            "option" => 1,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        $ResidentCOption2CCCCT = Option::insertGetId([
-            "date" => $date,
-            "resident" => 300,
-            "schedule" => 143914,
-            "attending" => 349746,
-            "option" => 2,
-            "isValid" => 1,
-            "anesthesiologist_id" => 1
-        ]);
-        // update total for residents needed for correct assignment
-        Probability::where('resident', 113)->update(['total' => 1]);
-        Probability::where('resident', 270)->update(['total' => 0]);
-        Probability::where('resident', 300)->update(['total' => 0]);
-        // assignment method call
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment($date);
-        // bools and values for assignments existing and current total for residents
-        $foundAssignmentForA = Assignment::where('date', $date)
-                            ->where('resident', 113)
-                            ->where('schedule', 143924)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentA = Probability::where('resident', 113)->value('total');
-        $foundAssignmentForB =Assignment::where('date', $date)
-                            ->where('resident', 270)
-                            ->where('schedule', 143905)
-                            ->where('anesthesiologist_id', NULL)
-                            ->exists();
-        $ProbTotalResidentB = Probability::where('resident', 270)->value('total');
-        $foundAssignmentForC =Assignment::where('date', $date)
-                            ->where('resident',300)
-                            ->where('schedule', 143914)
-                            ->where('anesthesiologist_id', 1)
-                            ->exists();
-        $ProbTotalResidentC = Probability::where('resident', 300)->value('total');
-        // assertions for correct assignments                    
-        $this->assertTrue($foundAssignmentForA);
-        $this->assertTrue($foundAssignmentForB);
-        $this->assertTrue($foundAssignmentForC);
-        // assertions for correct total in probability table after assignment
-        $this->assertEquals($ProbTotalResidentA, 1);
-        $this->assertEquals($ProbTotalResidentB, 3);
-        $this->assertEquals($ProbTotalResidentC, 2);
-        // delete dummy data for option table
-        Option::find($ResidentAOption1CCCTLeasingUH)->delete();
-        Option::find($ResidentBOption1CCCTLeasingUH)->delete();
-        Option::find($ResidentBOption2UH)->delete();
-        Option::find($ResidentCOption1CCCTLeasingUH)->delete();
-        Option::find($ResidentCOption2CCCCT)->delete();
-        // delete dummy assignments
-        Assignment::where('date', $date)
-            ->where('resident', 113)
-            ->where('schedule', 143924)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 270)
-            ->where('schedule', 143905)
-            ->where('anesthesiologist_id', NULL)
-            ->delete();
-        Assignment::where('date', $date)
-            ->where('resident', 300)
-            ->where('schedule', 143914)
-            ->where('anesthesiologist_id', 1)
-            ->delete();
+        $options = [
+            [self::$residentA, self::$CCCTLeasingUH, 1, 1],
+            [self::$residentB, self::$CCCTLeasingUH, 1, 1],
+            [self::$residentB, self::$UH19, 2, 1],
+            [self::$residentC, self::$CCCTLeasingUH, 1, 1],
+            [self::$residentC, self::$CCCT11, 2, 1]
+        ];
+        $expectedAssignments = [
+            [self::$residentA, self::$CCCTLeasingUH, 1],
+            [self::$residentB, self::$UH19, NULL],
+            [self::$residentC, self::$CCCT11, 1]
+        ];
+        $expectedProbTotals = [
+            [self::$residentA, 1],
+            [self::$residentB, 3],
+            [self::$residentC, 2]
+        ];
+
+        $optionIds = self::addOptionsToDatabase($options); 
+        Probability::where('resident', self::$residentA)->update(['total' => 1]);
+        Probability::where('resident', self::$residentB)->update(['total' => 0]);
+        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+
+        self::callAssignmentMethod();
+                
+        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+        
+        self::deleteOptionsInDatabase($optionIds);
+        self::deleteExpectedAssignments($expectedAssignments);
     }
     
 }
