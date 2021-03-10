@@ -434,7 +434,8 @@ class ScheduleDataController extends Controller
             'schedule' => null,
             'attending' => null,
             'milestone' => null,
-            'objective'=> null
+            'objective'=> null,
+            'pref_anest'=> null
         );
         // get information for first choice
         $choice = 1;
@@ -455,6 +456,7 @@ class ScheduleDataController extends Controller
                 $data1['milestone'] = $milestone1[0];
             }
             $data1['objective'] = $option1[0]['objectives'];
+            $data1['pref_anest'] = $option1[0]['anesthesiologist_id'];
         }
 
         //Initiate second choice data
@@ -462,7 +464,8 @@ class ScheduleDataController extends Controller
             'schedule' => null,
             'attending' => null,
             'milestone' => null,
-            'objective'=> null
+            'objective'=> null,
+            'pref_anest' => null
         );
         $choice++;
         // If the second choice exists, get information for second choice
@@ -483,6 +486,7 @@ class ScheduleDataController extends Controller
                     $data2['milestone'] = $milestone2[0];
                 }
                 $data2['objective'] = $option2[0]['objectives'];
+                $data2['pref_anest'] = $option2[0]['anesthesiologist_id'];
             }
         }
 
@@ -491,7 +495,8 @@ class ScheduleDataController extends Controller
             'schedule' => null,
             'attending' => null,
             'milestone' => null,
-            'objective'=> null
+            'objective'=> null,
+            'pref_anest' => null
         );
         $choice++;
         // If the third choice exists, get information for third choice
@@ -512,6 +517,7 @@ class ScheduleDataController extends Controller
                     $data3['milestone'] = $milestone3[0];
                 }
                 $data3['objective'] = $option3[0]['objectives'];
+                $data3['pref_anest'] = $option3[0]['anesthesiologist_id'];
             }
         }
 

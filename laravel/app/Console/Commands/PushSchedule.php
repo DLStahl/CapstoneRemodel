@@ -52,7 +52,7 @@ class PushSchedule extends Command
 
 	public static function updateOption($date)
     {
-        $dir = "/usr/local/webs/remodel.anesthesiology_test/htdocs/downloads/assignment".$date.".csv";
+        $dir = "/usr/local/webs/remodel.anesthesiology/htdocs/downloads/assignment".$date.".csv";
         $fp = null;
 
         if (file_exists($dir)) {
@@ -96,7 +96,7 @@ class PushSchedule extends Command
                 $pref_anest_name = Anesthesiologist::where('id', $pref_anest_id)->value('first_name') ." ". Anesthesiologist::where('id', $pref_anest_id)->value('last_name');
                 $pref_anest_staff_key = Anesthesiologist::where('id', $pref_anest_id)->value('staff_key');
             } else {
-                $pref_anest_name = "No assignment";
+                $pref_anest_name = "No anesthesiologist assignment";
                 $pref_anest_staff_key = NULL;
             }
 
