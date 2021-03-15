@@ -38,10 +38,14 @@
 			<div id="anesthesiologist_preference">
 				<label>Anesthesiologist Preference:</label>
 				<br>
-				<select class="PreferenceSelector">
+				<select name = "pref_anest1" id = "pref_anest1" class="PreferenceSelector">
 					<option selected="selected">No Preference</option>
 					@foreach($anesthesiologists as $a)
-						<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
+						@if ($a->id == $data1['pref_anest'])
+							<option value="{{ $a->id }}" selected>Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
+						@else 
+							<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
+						@endif
 					@endforeach
 				</select>
 			</div>
@@ -81,10 +85,14 @@
 				<div id="anesthesiologist_preference">
 					<label>Anesthesiologist Preference:</label>
 					<br>
-					<select class="PreferenceSelector">
+					<select name = "pref_anest2" id = "pref_anest2" class="PreferenceSelector">
 						<option selected="selected">No Preference</option>
 						@foreach($anesthesiologists as $a)
-							<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
+							@if ($a->id == $data2['pref_anest'])
+								<option value="{{ $a->id }}" selected>Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
+							@else 
+								<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
+							@endif
 						@endforeach
 					</select>
 				</div>
@@ -126,10 +134,14 @@
 				<div id="anesthesiologist_preference">
 					<label>Anesthesiologist Preference:</label>
 					<br>
-					<select class="PreferenceSelector">
+					<select name = "pref_anest3" id = "pref_anest3" class="PreferenceSelector">
 						<option selected="selected">No Preference</option>
 						@foreach($anesthesiologists as $a)
-							<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
+							@if ($a->id == $data3['pref_anest'])
+								<option value="{{ $a->id }}" selected>Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
+							@else 
+								<option value="{{ $a->id }}">Dr. {{ $a->first_name }} {{ $a->last_name }}</option>
+							@endif
 						@endforeach
 					</select>
 				</div>

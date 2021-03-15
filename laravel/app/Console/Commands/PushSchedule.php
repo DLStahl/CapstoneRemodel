@@ -8,6 +8,7 @@ use App\Option;
 use App\Resident;
 use App\ScheduleData;
 use App\Milestone;
+use App\Anesthesiologist;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Google_Client;
@@ -59,10 +60,9 @@ class PushSchedule extends Command
         } else {
             $fp = fopen($dir, 'c');
         }
-
-       //MEGAN CHANGE
         fputcsv($fp, array('date', 'room', 'case procedure', 'start time', 'end time',
-                            'lead surgeon', 'resident', 'preference', 'milestones', 'objectives'));
+                            'lead surgeon', 'resident', 'preference', 'milestones', 'objectives', 'anest staff key', 'anest name'));
+        
         $options = null;
         if ($date == null) {
             $options = Assignment::orderBy('date', 'desc')->get();
@@ -79,7 +79,7 @@ class PushSchedule extends Command
             $date = $option['date'];
 
             $room = ScheduleData::where('id', $schedule_id)->value('room');
-            //MEGAN CHANGE
+
             $case_procedure = ScheduleData::where('id', $schedule_id)->value('case_procedure');
             $start_time = ScheduleData::where('id', $schedule_id)->value('start_time');
             $end_time = ScheduleData::where('id', $schedule_id)->value('end_time');
@@ -91,18 +91,26 @@ class PushSchedule extends Command
             $preference = Option::where('id', $option_id)->value('option');
             $milestones = Milestone::where('id', $milestone_id)->value('category');
             $objectives = Option::where('id', $option_id)->value('objectives');
+            $pref_anest_id = $option['anesthesiologist_id'];
+            if ($pref_anest_id != NULL){
+                $pref_anest_name = Anesthesiologist::where('id', $pref_anest_id)->value('first_name') ." ". Anesthesiologist::where('id', $pref_anest_id)->value('last_name');
+                $pref_anest_staff_key = Anesthesiologist::where('id', $pref_anest_id)->value('staff_key');
+            } else {
+                $pref_anest_name = "No anesthesiologist assignment";
+                $pref_anest_staff_key = NULL;
+            }
 
-            //MEGAN CHANGE
             fputcsv($fp, array($date, $room, $case_procedure, $start_time, $end_time,
-                            $lead_surgeon, $resident, $preference, $milestones, $objectives));
+        $lead_surgeon, $resident, $preference, $milestones, $objectives, $pref_anest_staff_key, $pref_anest_name));
         }
         fclose($fp);
     }
-
-	/**
+    
+    /**
 	* Returns an authorized API client.
 	* @return Google_Client the authorized client object
 	*/
+    
 	public function getClient()
 	{
 		$client = new Google_Client();
@@ -199,6 +207,5 @@ class PushSchedule extends Command
 		}
 
     }
-
 
 }
