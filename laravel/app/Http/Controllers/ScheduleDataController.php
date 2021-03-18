@@ -13,11 +13,14 @@ use App\ScheduleParser;
 use App\Resident;
 use App\Option;
 use App\Admin;
+use App\Anesthesiologist;
 use App\FilterRotation;
 use App\Assignment;
 use App\Milestone;
+use Carbon\Carbon;
 use Mail;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Mail as FacadesMail;
 
 class ScheduleDataController extends Controller
 {
@@ -269,6 +272,7 @@ class ScheduleDataController extends Controller
             'schedule' => ScheduleData::where('id', $split[0])->get(),
             'choice'=>$choice,
             'milestones'=>Milestone::where('id', $_REQUEST['milestones1'])->get(),
+            'pref_anest'=>Anesthesiologist::where('id', $_REQUEST['pref_anest1'])->get(),
             'objectives'=>$_REQUEST['objectives1']
         );
 
@@ -282,6 +286,7 @@ class ScheduleDataController extends Controller
                 'schedule'=>ScheduleData::where('id', $split[1])->get(),
                 'choice'=>$choice,
                 'milestones'=>Milestone::where('id', $_REQUEST['milestones2'])->get(),
+                'pref_anest'=>Anesthesiologist::where('id', $_REQUEST['pref_anest2'])->get(),
                 'objectives'=>$_REQUEST['objectives2']
             );
         } else {
@@ -299,6 +304,7 @@ class ScheduleDataController extends Controller
                 'schedule'=>ScheduleData::where('id', $split[2])->get(),
                 'choice'=>$choice,
                 'milestones'=>Milestone::where('id', $_REQUEST['milestones3'])->get(),
+                'pref_anest'=>Anesthesiologist::where('id', $_REQUEST['pref_anest3'])->get(),
                 'objectives'=>$_REQUEST['objectives3']
             );
         } else {
@@ -316,7 +322,8 @@ class ScheduleDataController extends Controller
             $previous[0] = array(
                 'prevPref'=> $prevFirst,
                 'schedule'=> ScheduleData::where('id', $prevFirst[0]['schedule'])->get(),
-                'milestone'=> Milestone::where('id', $prevFirst[0]['milestones'])->get()
+                'milestone'=> Milestone::where('id', $prevFirst[0]['milestones'])->get(),
+                'pref_anest'=> Anesthesiologist::where('id', $prevFirst[0]['anesthesiologist_id'])->get()
             );
         } else {
             $previous[0] = NULL;
@@ -326,7 +333,8 @@ class ScheduleDataController extends Controller
             $previous[1] = array(
                 'prevPref'=> $prevSecond,
                 'schedule'=> ScheduleData::where('id', $prevSecond[0]['schedule'])->get(),
-                'milestone'=> Milestone::where('id', $prevSecond[0]['milestones'])->get()
+                'milestone'=> Milestone::where('id', $prevSecond[0]['milestones'])->get(),
+                'pref_anest'=> Anesthesiologist::where('id', $prevSecond[0]['anesthesiologist_id'])->get()
             );
         } else {
             $previous[1] = NULL;
@@ -336,7 +344,8 @@ class ScheduleDataController extends Controller
             $previous[2] = array(
                 'prevPref'=> $prevThird,
                 'schedule'=> ScheduleData::where('id', $prevThird[0]['schedule'])->get(),
-                'milestone'=> Milestone::where('id', $prevThird[0]['milestones'])->get()
+                'milestone'=> Milestone::where('id', $prevThird[0]['milestones'])->get(),
+                'pref_anest'=> Anesthesiologist::where('id', $prevThird[0]['anesthesiologist_id'])->get()
             );
         } else {
             $previous[2] = NULL;
@@ -401,11 +410,15 @@ class ScheduleDataController extends Controller
             // Store second choice data
             $data3['schedule'] = $schedule_data3[0];
             $data3['attending'] = $attending3;
-	    }
-
+        }
+        
         $milestones = Milestone::where('exists', 1)->get();
 
-        return view('schedules.resident.milestone', compact('id', 'milestones', 'data1', 'data2', 'data3'));
+        $anesthesiologists = Anesthesiologist::where('updated_at', '>', Carbon::today())
+            ->orderBy('last_name')
+            ->get();
+
+        return view('schedules.resident.milestone', compact('id', 'milestones', 'data1', 'data2', 'data3', 'anesthesiologists'));
 	}
 
     public function updateMilestones($id){
@@ -421,7 +434,8 @@ class ScheduleDataController extends Controller
             'schedule' => null,
             'attending' => null,
             'milestone' => null,
-            'objective'=> null
+            'objective'=> null,
+            'pref_anest'=> null
         );
         // get information for first choice
         $choice = 1;
@@ -442,6 +456,7 @@ class ScheduleDataController extends Controller
                 $data1['milestone'] = $milestone1[0];
             }
             $data1['objective'] = $option1[0]['objectives'];
+            $data1['pref_anest'] = $option1[0]['anesthesiologist_id'];
         }
 
         //Initiate second choice data
@@ -449,7 +464,8 @@ class ScheduleDataController extends Controller
             'schedule' => null,
             'attending' => null,
             'milestone' => null,
-            'objective'=> null
+            'objective'=> null,
+            'pref_anest' => null
         );
         $choice++;
         // If the second choice exists, get information for second choice
@@ -470,6 +486,7 @@ class ScheduleDataController extends Controller
                     $data2['milestone'] = $milestone2[0];
                 }
                 $data2['objective'] = $option2[0]['objectives'];
+                $data2['pref_anest'] = $option2[0]['anesthesiologist_id'];
             }
         }
 
@@ -478,7 +495,8 @@ class ScheduleDataController extends Controller
             'schedule' => null,
             'attending' => null,
             'milestone' => null,
-            'objective'=> null
+            'objective'=> null,
+            'pref_anest' => null
         );
         $choice++;
         // If the third choice exists, get information for third choice
@@ -499,12 +517,17 @@ class ScheduleDataController extends Controller
                     $data3['milestone'] = $milestone3[0];
                 }
                 $data3['objective'] = $option3[0]['objectives'];
+                $data3['pref_anest'] = $option3[0]['anesthesiologist_id'];
             }
         }
 
         $milestones = Milestone::all();
 
-        return view('schedules.resident.milestone_edit', compact('id', 'milestones', 'data1', 'data2', 'data3'));
+        $anesthesiologists = Anesthesiologist::where('updated_at', '>', Carbon::today())
+            ->orderBy('last_name')
+            ->get();
+
+        return view('schedules.resident.milestone_edit', compact('id', 'milestones', 'data1', 'data2', 'data3', 'anesthesiologists'));
     }
 
 	public function notifyResidentOverwrittenPreferences($toName, $toEmail, $residentName, $date, $overwrittenChoices)
@@ -539,6 +562,9 @@ class ScheduleDataController extends Controller
     // Update options when overwriting preferences.
     private function insertOption()
     {
+        $pref_anest1 = null; 
+        $pref_anest2 = null;
+        $pref_anest3 = null;
 		// variables to track if the use has overwritten a preference
 		$notify = false;
 		$overwrittenChoices = array();
@@ -567,6 +593,12 @@ class ScheduleDataController extends Controller
         $attending = substr($attending_string, strpos($attending_string, "[")+1,
                             strpos($attending_string, "]")-(strpos($attending_string, "[")+1));
 
+        if (isset($_REQUEST['pref_anest1'])){ // if they chose an anesthesiologist, add their ID to the DB, if not, add NULL
+            if ($_REQUEST['pref_anest1'] != 0){
+                $pref_anest1 = $_REQUEST['pref_anest1'];
+            }
+        }
+        
         // Update or insert option 1 data
         if (Option::where('date', $date)
                     ->where('resident', $resident)
@@ -585,6 +617,7 @@ class ScheduleDataController extends Controller
                         'attending' => $attending,
                         'milestones'=>$_REQUEST['milestones1'],
                         'objectives'=>$_REQUEST['objectives1'],
+                        'anesthesiologist_id'=>$pref_anest1,
                         'isValid'=>1
                     ]);
         } else {
@@ -593,7 +626,7 @@ class ScheduleDataController extends Controller
             Option::insert(
                 ['date' => $date, 'resident' => $resident, 'schedule' => $split[0],
                 'attending' => $attending, 'option' => $choice, 'milestones'=>$_REQUEST['milestones1'],
-                'objectives'=>$_REQUEST['objectives1'], 'isValid'=>1]
+                'objectives'=>$_REQUEST['objectives1'], 'anesthesiologist_id'=>$pref_anest1, 'isValid'=>1] 
             );
         }
 
@@ -610,6 +643,12 @@ class ScheduleDataController extends Controller
             $attending_string = $schedule_data2[0]['lead_surgeon'];
             $attending = substr($attending_string, strpos($attending_string, "[")+1,
                               strpos($attending_string, "]")-(strpos($attending_string, "[")+1));
+        }
+        
+        if (isset($_REQUEST['pref_anest2'])){
+            if ($_REQUEST['pref_anest2']!= 0){
+                $pref_anest2 = $_REQUEST['pref_anest2'];
+            }
         }
 
         // Update/Insert option 2 data
@@ -631,6 +670,7 @@ class ScheduleDataController extends Controller
                             'attending' => $attending,
                             'milestones'=>$_REQUEST['milestones2'],
                             'objectives'=>$_REQUEST['objectives2'],
+                            'anesthesiologist_id'=>$pref_anest2,
                             'isValid'=>1
                         ]);
             } else {
@@ -651,6 +691,7 @@ class ScheduleDataController extends Controller
                     'option' => $choice,
                     'milestones'=>$_REQUEST['milestones2'],
                     'objectives'=>$_REQUEST['objectives2'],
+                    'anesthesiologist_id'=>$pref_anest2,
                     'isValid'=>1
                 ]);
             }
@@ -672,6 +713,13 @@ class ScheduleDataController extends Controller
 
 
         }
+
+        if (isset($_REQUEST['pref_anest3'])){
+            if ($_REQUEST['pref_anest3']!= 0){
+                $pref_anest3 = $_REQUEST['pref_anest3'];
+            }
+        }
+
 		//Insert/Update old option 3 data
 		if (Option::where('date', $date)
 		          ->where('resident', $resident)
@@ -691,6 +739,7 @@ class ScheduleDataController extends Controller
                             'attending' => $attending,
                             'milestones'=>$_REQUEST['milestones3'],
                             'objectives'=>$_REQUEST['objectives3'],
+                            'anesthesiologist_id'=>$pref_anest3,
                             'isValid'=>1
                         ]);
             } else {
@@ -713,6 +762,7 @@ class ScheduleDataController extends Controller
                     'option' => $choice,
                     'milestones'=>$_REQUEST['milestones3'],
                     'objectives'=>$_REQUEST['objectives3'],
+                    'anesthesiologist_id'=>$pref_anest3,
                     'isValid'=>1]
                 );
             }

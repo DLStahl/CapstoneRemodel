@@ -137,6 +137,7 @@
     </script>
 
     @if(sizeof($schedule_data)>0)
+
         <div id="schedule_table"></div>
 		<br><br>
         <!-- A block fixed at the bottom of the page. Display information for selected preferences. -->
