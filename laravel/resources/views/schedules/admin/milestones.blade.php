@@ -86,7 +86,7 @@
     });
 
     // get all existing abbr.
-    var codes = <?php echo json_encode($codes); ?>;
+    var codes = @json($codes);
     console.log(codes);
 
     function addMilestone()

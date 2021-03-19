@@ -67,9 +67,9 @@
         </form>
 
         <script type="text/javascript">
-            var newData = <?php echo json_encode($data['new']); ?>;
-            var updateData = <?php echo json_encode($data['update']); ?>;
-            var invalidData = <?php echo json_encode($data['invalid']); ?>;
+            var newData = @json($data['new']);
+            var updateData = @json($data['update']);
+            var invalidData = @json($data['invalid']);
             console.log(newData);
             console.log(updateData);
             console.log(invalidData);

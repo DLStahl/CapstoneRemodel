@@ -30,13 +30,13 @@
     </table>
 </div>
 <script>
-    var usersArr = <?php echo json_encode($usersArr); ?>;
+    var usersArr = @json($usersArr);
     console.log(usersArr);
-    var facArr = <?php echo json_encode($facArr); ?>;
+    var facArr = @json($facArr);
     console.log(facArr);
-    var EvalsForm = <?php echo json_encode($formArr); ?>;
+    var EvalsForm = @json($formArr);
     console.log(EvalsForm);
-    var EvaluationTypes = <?php echo json_encode($typesArr); ?>;
+    var EvaluationTypes = @json($typesArr);
     console.log(EvaluationTypes);
 </script>
 @endsection

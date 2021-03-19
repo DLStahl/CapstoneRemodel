@@ -97,7 +97,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             // print filter options in console for test
-            var filter_options = <?php echo json_encode($filter_options); ?>;
+            var filter_options = @json($filter_options);
             console.log(filter_options);
 
             // Set initial filter options
@@ -354,7 +354,7 @@
         // --------------------------- Data --------------------------------
         var locations = [];
         var events = [];
-        var schedule_data = <?php echo json_encode($schedule_data); ?>;
+        var schedule_data = @json($schedule_data);
         console.log(schedule_data);
         schedule_data.forEach(function(schedule){
             // add room and start/end time of each room to locations in this format:
