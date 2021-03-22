@@ -58,4 +58,4 @@
 
     <br><br><br>
 	
-@endsection('content')
+@endsection
