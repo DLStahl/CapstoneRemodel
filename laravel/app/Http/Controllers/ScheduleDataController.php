@@ -417,8 +417,10 @@ class ScheduleDataController extends Controller
         $anesthesiologists = Anesthesiologist::where('updated_at', '>', Carbon::today())
             ->orderBy('last_name')
             ->get();
+            
+        $datas = compact('data1', 'data2', 'data3');
 
-        return view('schedules.resident.milestone', compact('id', 'milestones', 'data1', 'data2', 'data3', 'anesthesiologists'));
+        return view('schedules.resident.milestone', compact('id', 'milestones', 'datas', 'anesthesiologists'));
 	}
 
     public function updateMilestones($id){
@@ -527,7 +529,9 @@ class ScheduleDataController extends Controller
             ->orderBy('last_name')
             ->get();
 
-        return view('schedules.resident.milestone_edit', compact('id', 'milestones', 'data1', 'data2', 'data3', 'anesthesiologists'));
+        $datas = compact('data1', 'data2', 'data3');
+
+        return view('schedules.resident.milestone', compact('id', 'milestones', 'datas', 'anesthesiologists'));
     }
 
 	public function notifyResidentOverwrittenPreferences($toName, $toEmail, $residentName, $date, $overwrittenChoices)
