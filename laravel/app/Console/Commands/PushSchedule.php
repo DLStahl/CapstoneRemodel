@@ -160,7 +160,7 @@ class PushSchedule extends Command
         // setup today's sheet to be ready to be added to
         $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
         $title = '\''.$title.'\'!';
-        $range = $title.'A1:K15';
+        $range = $title.'A1:M15';
 
 		//update the values in the options sheet
 		$date = date("Y-m-d", strtotime('+1 day'));
