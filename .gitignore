@@ -1,2 +1,4 @@
 *.csv
-/Google
+/google
+/.idea
+/.vscode
