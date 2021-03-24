@@ -298,7 +298,8 @@ class ScheduleDataController extends Controller
     }
 
     public function parseCaseProcedure($case){
-        $case = preg_replace('/[0-9:()\[\]]/', '', $case);
+        $case = str_replace(' [', '', $case);
+	    $case = preg_replace('/[0-9:()\[\]]/', '', $case);
         return $case;
     }
 

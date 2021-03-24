@@ -5,11 +5,11 @@
 	<input type="hidden" name="schedule_id" value="{{ $id }}">
 	<div class="row">
 		@if(!is_null($previousChoices[0]))
-			<div class="col-12 col-md-6">
+			<div class="col">
 				<h3>Your Previous Selections</h3>
 			</div>
 		@endif
-		<div class="col-12 col-md-6">
+		<div class="col">
 			<h3>Your Current Selections</h3>
 		</div>
 	</div>
@@ -17,7 +17,7 @@
 		<div class="row">
 			<!-- Previous Choice -->
 			@if(!is_null($previousChoices[0]))
-				<div class="col-12 col-md-6">
+				<div class="col">
 					<h4>{{ $choiceTypes[$i] }} Choice: </h4>
 					@if(is_null($previousChoices[$i]))
 						<p>None</p>
@@ -36,7 +36,7 @@
 				</div>
 			@endif
 			<!-- Current Choice -->
-			<div class="col-12 col-md-6">
+			<div class="col">
 				<h4>{{ $choiceTypes[$i]  }} Choice: </h4>
 				@if(is_null($currentChoices[$i]))
 					<p>None</p>
@@ -61,6 +61,6 @@
 			</div>
 		</div>
 	@endfor
-	<input align = "left" type="submit" value="Confirm" class='btn btn-md btn-success'>
+	<input type="submit" value="Confirm" class='btn btn-md btn-success'>
 </form>
 @endsection
