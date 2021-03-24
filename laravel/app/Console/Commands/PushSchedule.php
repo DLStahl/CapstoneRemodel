@@ -50,48 +50,39 @@ class PushSchedule extends Command
         parent::__construct();
     }
 
+
+    //Takes the date of the assignments as a parameter. Returns a nested array with all array elements being data from that day's assignments to be printed to the Google Sheet
 	public static function updateOption($date)
     {
-        $dir = "/usr/local/webs/remodel.anesthesiology/htdocs/downloads/assignment".$date.".csv";
-        $fp = null;
 
-        if (file_exists($dir)) {
-            $fp = fopen($dir, 'w');
-        } else {
-            $fp = fopen($dir, 'c');
-        }
-        fputcsv($fp, array('date', 'room', 'case procedure', 'start time', 'end time',
-                            'lead surgeon', 'resident', 'preference', 'milestones', 'objectives', 'anest staff key', 'anest name'));
-        
-        $options = null;
+        $all_assignments = array();
+        $assignments = null;
         if ($date == null) {
-            $options = Assignment::orderBy('date', 'desc')->get();
+            $assignments = Assignment::orderBy('date', 'desc')->get();
         }
         else {
-            $options = Assignment::where('date', $date)->get();
+            $assignments = Assignment::where('date', $date)->get();
         }
 
-        foreach ($options as $option)
+        //find all relavant data for the assignments 
+        foreach ($assignments as $assignment)
         {
-            $schedule_id = $option['schedule'];
-            $resident_id = $option['resident'];
-			$schedule_id = $option['schedule'];
-            $date = $option['date'];
+            $resident_id = $assignment['resident'];
+			$schedule_id = $assignment['schedule'];
 
+            $date = $assignment['date'];
             $room = ScheduleData::where('id', $schedule_id)->value('room');
-
             $case_procedure = ScheduleData::where('id', $schedule_id)->value('case_procedure');
             $start_time = ScheduleData::where('id', $schedule_id)->value('start_time');
             $end_time = ScheduleData::where('id', $schedule_id)->value('end_time');
             $lead_surgeon = ScheduleData::where('id', $schedule_id)->value('lead_surgeon');
             $resident = Resident::where('id', $resident_id)->value('name');
-
-            $option_id = $option['option'];
-            $milestone_id = Option::where('id', $option_id)->value('milestones');
-            $preference = Option::where('id', $option_id)->value('option');
+            $assignment_id = $assignment['option'];
+            $milestone_id = Option::where('id', $assignment_id)->value('milestones');
+            $preference = Option::where('id', $assignment_id)->value('option');
             $milestones = Milestone::where('id', $milestone_id)->value('category');
-            $objectives = Option::where('id', $option_id)->value('objectives');
-            $pref_anest_id = $option['anesthesiologist_id'];
+            $objectives = Option::where('id', $assignment_id)->value('objectives');
+            $pref_anest_id = $assignment['anesthesiologist_id'];
             if ($pref_anest_id != NULL){
                 $pref_anest_name = Anesthesiologist::where('id', $pref_anest_id)->value('first_name') ." ". Anesthesiologist::where('id', $pref_anest_id)->value('last_name');
                 $pref_anest_staff_key = Anesthesiologist::where('id', $pref_anest_id)->value('staff_key');
@@ -100,10 +91,13 @@ class PushSchedule extends Command
                 $pref_anest_staff_key = NULL;
             }
 
-            fputcsv($fp, array($date, $room, $case_procedure, $start_time, $end_time,
-        $lead_surgeon, $resident, $preference, $milestones, $objectives, $pref_anest_staff_key, $pref_anest_name));
+            $cur_assignment = array($date, $room, $case_procedure, $start_time, $end_time,
+                $lead_surgeon, $resident, $preference, $milestones, $objectives, $pref_anest_staff_key, $pref_anest_name);
+
+            array_push($all_assignments, $cur_assignment);
+
         }
-        fclose($fp);
+        return $all_assignments;
     }
     
     /**
@@ -137,6 +131,7 @@ class PushSchedule extends Command
     public function handle()
     {
 
+
         // connect to the api and our sheet
         $client = self::getClient();
         $service = new Google_Service_Sheets($client);
@@ -160,14 +155,37 @@ class PushSchedule extends Command
         // setup today's sheet to be ready to be added to
         $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
         $title = '\''.$title.'\'!';
-        $range = $title.'A1:K15';
+        $range = $title.'A1:M15';
 
-		//update the values in the options sheet
-		$date = date("Y-m-d", strtotime('+1 day'));
-		self::updateOption($date);
+
+        $date = date("Y-m-d", strtotime('+1 day'));
+
+        //Relative path for assignment sheet
+        $dir = "../downloads/assignment".$date.".csv";
+        $fp = null;
+
+        if (file_exists($dir)) {
+            $fp = fopen($dir, 'w');
+        } else {
+            $fp = fopen($dir, 'c');
+        }
+        //print header for sheet
+        fputcsv($fp, array('date', 'room', 'case procedure', 'start time', 'end time',
+                            'lead surgeon', 'resident', 'preference', 'milestones', 'objectives', 'anest staff key', 'anest name'));
+
+        //Get the array that contains all assigments for day + 1.
+		$all_assns = self::updateOption($date);
+
+        //print all assignments to path
+        foreach($all_assns as $assignemnts) {
+            fputcsv($fp, $assignemnts);
+        }
+
+        fclose($fp);
+
 
         // get the values from the options file and save them to an array
-		$path = "/usr/local/webs/remodel.anesthesiology/htdocs/downloads/assignment".$date.".csv";
+		$path = "../downloads/assignment".$date.".csv";
         $file = fopen($path, 'r');
         $csv = array();
         while (($line = fgetcsv($file)) !== FALSE) {
@@ -204,8 +222,8 @@ class PushSchedule extends Command
 				)
 			));
 			$service->spreadsheets->batchUpdate('1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY', $delete);
-		}
+		} 
 
-    }
+    } 
 
 }
