@@ -249,109 +249,59 @@ class ScheduleDataController extends Controller
         return view('schedules.resident.schedule_table',compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'rotation_options'));
     }
 
-    public function getChoice()
-    {
-        /**
-         * Exclude Admin from selecting preferences
-         */
+    public function getChoice() {
+        // Exclude Admin from selecting preferences
         if (!Resident::where('email', $_SERVER["HTTP_EMAIL"])->exists()) {
             return view('nonpermit');
         }
         // get the id from the form
         $id = $_REQUEST['schedule_id'];
-
+        $choiceTypes = array("First", "Second", "Third");
 		// id is stored as id1_id2_id3, need to split it to get the individual ids
 		$split = explode("_", $id);
-
-		//start with the first choice
-		$choice = 1;
-		// get the first choices data
-        $schedule_data1 = ScheduleData::where('id', $split[0])->get();
-        $input[0] = array(
-            'id'=>$split[0],
-            'schedule' => ScheduleData::where('id', $split[0])->get(),
-            'choice'=>$choice,
-            'milestones'=>Milestone::where('id', $_REQUEST['milestones1'])->get(),
-            'pref_anest'=>Anesthesiologist::where('id', $_REQUEST['pref_anest1'])->get(),
-            'objectives'=>$_REQUEST['objectives1']
-        );
-
-    	// get the second choices data
-    	$choice++;
-    	// check if the second choice exists
-        if ($split[1] != 0){
-        	$schedule_data2 = ScheduleData::where('id', $split[1])->get();
-            $input[1] = array(
-                'id'=>$split[1],
-                'schedule'=>ScheduleData::where('id', $split[1])->get(),
-                'choice'=>$choice,
-                'milestones'=>Milestone::where('id', $_REQUEST['milestones2'])->get(),
-                'pref_anest'=>Anesthesiologist::where('id', $_REQUEST['pref_anest2'])->get(),
-                'objectives'=>$_REQUEST['objectives2']
-            );
-        } else {
-            $input[1] = NULL;
+        // get current preferences
+        $currentChoices = array();
+        for($i = 0; $i < 3; $i++) {
+            if($split[$i] != 0) {
+                $schedule = ScheduleData::where('id', $split[$i])->get();
+                $currentChoices[$i] = array(
+                    'choiceType' => $choiceTypes[$i],
+                    'schedule' => $schedule,
+                    'case_procedure' => self::parseCaseProcedure($schedule[0]['case_procedure']),
+                    'milestone' => Milestone::where('id', $_REQUEST["milestones".($i+1)])->get(),
+                    'objective' => $_REQUEST["objectives" . ($i+1)],
+                    'anesthesiologist_pref' => Anesthesiologist::where('id', $_REQUEST["pref_anest".($i+1)])->get()
+                );
+            } else {
+                $currentChoices[$i] = NULL;
+            }
         }
-
-
-    	// get the third choices data
-        $choice++;
-    	// check if the third choice exists
-        if ($split[2] != 0){
-    		$schedule_data3 = ScheduleData::where('id', $split[2])->get();
-            $input[2] = array(
-                'id'=>$split[2],
-                'schedule'=>ScheduleData::where('id', $split[2])->get(),
-                'choice'=>$choice,
-                'milestones'=>Milestone::where('id', $_REQUEST['milestones3'])->get(),
-                'pref_anest'=>Anesthesiologist::where('id', $_REQUEST['pref_anest3'])->get(),
-                'objectives'=>$_REQUEST['objectives3']
-            );
-        } else {
-            $input[2] = NULL;
-        }
-
         // Get previous preferences of the same date
-        $date = $schedule_data1[0]['date'];
-        $resident_data = Resident::where('email', $_SERVER["HTTP_EMAIL"])->get();
-        $resident = $resident_data[0]['id'];
-        $prevFirst = Option::where('date', $date)->where('resident', $resident)->where('option', 1)->where('isValid', 1)->get();
-        $prevSecond = Option::where('date', $date)->where('resident', $resident)->where('option', 2)->where('isValid', 1)->get();
-        $prevThird = Option::where('date', $date)->where('resident', $resident)->where('option', 3)->where('isValid', 1)->get();
-        if (sizeof($prevFirst) > 0){
-            $previous[0] = array(
-                'prevPref'=> $prevFirst,
-                'schedule'=> ScheduleData::where('id', $prevFirst[0]['schedule'])->get(),
-                'milestone'=> Milestone::where('id', $prevFirst[0]['milestones'])->get(),
-                'pref_anest'=> Anesthesiologist::where('id', $prevFirst[0]['anesthesiologist_id'])->get()
-            );
-        } else {
-            $previous[0] = NULL;
+        $date = $currentChoices[0]['schedule'][0]['date'];
+        $previousChoices = array();
+        $resident = Resident::where('email', $_SERVER["HTTP_EMAIL"])->value('id');
+        for($i = 0; $i < 3; $i++) {
+            $previousOption = Option::where('date', $date)->where('resident', $resident)->where('option', ($i+1))->where('isValid', 1)->get();
+            if(sizeof($previousOption) > 0) {
+                $schedule = ScheduleData::where('id', $previousOption[0]['schedule'])->get();
+                $previousChoices[$i] = array(
+                    'choiceType' => $choiceTypes[$i],
+                    'schedule' => $schedule,
+                    'case_procedure' => self::parseCaseProcedure($schedule[0]['case_procedure']),
+                    'milestone' => Milestone::where('id', $previousOption[0]['milestones'])->get(),
+                    'objective' => $previousOption[0]['objectives'],
+                    'anesthesiologist_pref'=> Anesthesiologist::where('id', $previousOption[0]['anesthesiologist_id'])->get()
+                );
+            } else {
+                $previousChoices[$i] = NULL;
+            }
         }
+        return view('schedules.resident.schedule_confirm', compact('id', 'currentChoices', 'previousChoices'));
+    }
 
-        if (sizeof($prevSecond) > 0){
-            $previous[1] = array(
-                'prevPref'=> $prevSecond,
-                'schedule'=> ScheduleData::where('id', $prevSecond[0]['schedule'])->get(),
-                'milestone'=> Milestone::where('id', $prevSecond[0]['milestones'])->get(),
-                'pref_anest'=> Anesthesiologist::where('id', $prevSecond[0]['anesthesiologist_id'])->get()
-            );
-        } else {
-            $previous[1] = NULL;
-        }
-
-        if (sizeof($prevThird) > 0){
-            $previous[2] = array(
-                'prevPref'=> $prevThird,
-                'schedule'=> ScheduleData::where('id', $prevThird[0]['schedule'])->get(),
-                'milestone'=> Milestone::where('id', $prevThird[0]['milestones'])->get(),
-                'pref_anest'=> Anesthesiologist::where('id', $prevThird[0]['anesthesiologist_id'])->get()
-            );
-        } else {
-            $previous[2] = NULL;
-        }
-
-        return view('schedules.resident.schedule_confirm', compact('id', 'input', 'previous'));
+    public function parseCaseProcedure($case){
+        $case = preg_replace('/[0-9:()\[\]]/', '', $case);
+        return $case;
     }
 
 	public function selectMilestones($id){
