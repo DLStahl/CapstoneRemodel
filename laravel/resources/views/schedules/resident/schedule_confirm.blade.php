@@ -1,16 +1,23 @@
 @extends('main')
 @section('content')
-	<!-- Use a hidden form to store selected schedule ids, milestones and education objectives. -->
+	<!-- Use a hidden form to store selected schedule ids, milestones, education objectives, and anest pref. -->
 <form method="POST" action="./submit">
 	<input type="hidden" name="schedule_id" value="{{ $id }}">
+	<div class="row">
+		@if(!is_null($previousChoices[0]))
+			<div class="col-12 col-md-6">
+				<h3>Your Previous Selections</h3>
+			</div>
+		@endif
+		<div class="col-12 col-md-6">
+			<h3>Your Current Selections</h3>
+		</div>
+	</div>
 	@for($i = 0; $i < 3; $i++)
 		<div class="row">
 			<!-- Previous Choice -->
 			@if(!is_null($previousChoices[0]))
 				<div class="col-12 col-md-6">
-					@if($i == 0)
-						<h3>Your Previous Selections</h3>
-					@endif
 					<h4>{{ $choiceTypes[$i] }} Choice: </h4>
 					@if(is_null($previousChoices[$i]))
 						<p>None</p>
@@ -30,9 +37,6 @@
 			@endif
 			<!-- Current Choice -->
 			<div class="col-12 col-md-6">
-				@if($i == 0)
-					<h3>Your Current Selections</h3>
-				@endif
 				<h4>{{ $choiceTypes[$i]  }} Choice: </h4>
 				@if(is_null($currentChoices[$i]))
 					<p>None</p>
