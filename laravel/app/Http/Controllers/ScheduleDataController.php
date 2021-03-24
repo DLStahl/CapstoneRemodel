@@ -265,7 +265,6 @@ class ScheduleDataController extends Controller
             if($split[$i] != 0) {
                 $schedule = ScheduleData::where('id', $split[$i])->get();
                 $currentChoices[$i] = array(
-                    'choiceType' => $choiceTypes[$i],
                     'schedule' => $schedule,
                     'case_procedure' => self::parseCaseProcedure($schedule[0]['case_procedure']),
                     'milestone' => Milestone::where('id', $_REQUEST["milestones".($i+1)])->get(),
@@ -285,7 +284,6 @@ class ScheduleDataController extends Controller
             if(sizeof($previousOption) > 0) {
                 $schedule = ScheduleData::where('id', $previousOption[0]['schedule'])->get();
                 $previousChoices[$i] = array(
-                    'choiceType' => $choiceTypes[$i],
                     'schedule' => $schedule,
                     'case_procedure' => self::parseCaseProcedure($schedule[0]['case_procedure']),
                     'milestone' => Milestone::where('id', $previousOption[0]['milestones'])->get(),
@@ -296,7 +294,7 @@ class ScheduleDataController extends Controller
                 $previousChoices[$i] = NULL;
             }
         }
-        return view('schedules.resident.schedule_confirm', compact('id', 'currentChoices', 'previousChoices'));
+        return view('schedules.resident.schedule_confirm', compact('id', 'currentChoices', 'previousChoices', 'choiceTypes'));
     }
 
     public function parseCaseProcedure($case){
