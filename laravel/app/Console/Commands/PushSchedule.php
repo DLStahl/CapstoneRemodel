@@ -52,7 +52,7 @@ class PushSchedule extends Command
 
 
     //Takes the date of the assignments as a parameter. Returns a nested array with all array elements being data from that day's assignments to be printed to the Google Sheet
-	public static function updateOption($date)
+	public static function updateAssignments($date)
     {
 
         $all_assignments = array();
@@ -174,7 +174,7 @@ class PushSchedule extends Command
                             'lead surgeon', 'resident', 'preference', 'milestones', 'objectives', 'anest staff key', 'anest name'));
 
         //Get the array that contains all assigments for day + 1.
-		$all_assns = self::updateOption($date);
+		$all_assns = self::updateAssignments($date);
 
         //print all assignments to path
         foreach($all_assns as $assignemnts) {
@@ -184,7 +184,7 @@ class PushSchedule extends Command
         fclose($fp);
 
 
-        // get the values from the options file and save them to an array
+        // get the values from the assignment file and save them to an array
 		$path = "../downloads/assignment".$date.".csv";
         $file = fopen($path, 'r');
         $csv = array();
