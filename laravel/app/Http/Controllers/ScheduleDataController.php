@@ -296,7 +296,7 @@ class ScheduleDataController extends Controller
         }
         return view('schedules.resident.schedule_confirm', compact('id', 'currentChoices', 'previousChoices', 'choiceTypes'));
     }
-
+    // parse case_procedure by removing time and case number 
     public function parseCaseProcedure($case){
         $case = str_replace(' [', '', $case);
 	    $case = preg_replace('/[0-9:()\[\]]/', '', $case);

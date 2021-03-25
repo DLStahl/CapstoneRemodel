@@ -5,18 +5,18 @@
 	<input type="hidden" name="schedule_id" value="{{ $id }}">
 	<div class="row">
 		@if(!is_null($previousChoices[0]))
-			<div class="col">
+			<div class="col-12 col-md">
 				<h3>Your Previous Selections</h3>
 			</div>
 		@endif
-		<div class="col">
+		<div class="col-12 col-md">
 			<h3>Your Current Selections</h3>
 		</div>
 	</div>
 	@foreach($choiceTypes as $choiceType)
 		<div class="row">
 			@if(!is_null($previousChoices[0]))
-				<div class="col">
+				<div class="col-12 col-md">
 					<h4>{{ $choiceType }} Choice: </h4>
 					@if(is_null($previousChoices[$loop->iteration - 1]))
 						<p>None</p>
@@ -34,7 +34,7 @@
 					@endif
 				</div>
 			@endif
-			<div class="col">
+			<div class="col-12 col-md">
 				<h4>{{ $choiceType }} Choice: </h4>
 				@if(is_null($currentChoices[$loop->iteration - 1]))
 					<p>None</p>
