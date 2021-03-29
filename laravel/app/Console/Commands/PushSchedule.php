@@ -51,8 +51,11 @@ class PushSchedule extends Command
     }
 
 
-    //Takes the date of the assignments as a parameter. Returns a nested array with all array elements being data from that day's assignments to be printed to the Google Sheet
-	public static function updateAssignments($date)
+    /*Takes the date of the assignments as a parameter. 
+    Returns a nested array with all array elements being data 
+    from that day's assignments to be printed to the Google Sheet
+	*/
+    public static function updateAssignments($date)
     {
 
         $all_assignments = array();
@@ -156,22 +159,16 @@ class PushSchedule extends Command
         $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
         $title = '\''.$title.'\'!';
         $range = $title.'A1:M15';
-<<<<<<< HEAD
-
 
         $date = date("Y-m-d", strtotime('+1 day'));
-=======
->>>>>>> cleanup
 
         //Relative path for assignment sheet
         $dir = "../downloads/assignment".$date.".csv";
         $fp = null;
 
-        if (file_exists($dir)) {
-            $fp = fopen($dir, 'w');
-        } else {
-            $fp = fopen($dir, 'c');
-        }
+        $mode = file_exists($dir) ? 'w' : 'c';
+        $fp = fopen($dir, $mode);
+
         //print header for sheet
         fputcsv($fp, array('date', 'room', 'case procedure', 'start time', 'end time',
                             'lead surgeon', 'resident', 'preference', 'milestones', 'objectives', 'anest staff key', 'anest name'));
@@ -225,8 +222,8 @@ class PushSchedule extends Command
 				)
 			));
 			$service->spreadsheets->batchUpdate('1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY', $delete);
-		} 
+		}
 
-    } 
+    }
 
 }
