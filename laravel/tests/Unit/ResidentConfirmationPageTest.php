@@ -13,8 +13,8 @@ class ResidentConfirmationPageTest extends TestCase
      *
      * @return void
      */
-    
-    // Confirmation page have Milestone 
+
+    // Confirmation page have Milestone
     public function testContainMilestone()
     {
         // $this->get('/schedule/confirm');

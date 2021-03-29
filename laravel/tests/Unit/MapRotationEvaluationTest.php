@@ -13,26 +13,30 @@ class MapRotationEvaluation extends TestCase
      *
      * @return void
      */
-	 public function testResidentTableHasData()
+    public function testResidentTableHasData()
     {
-        $this->assertDatabaseHas('resident',['name' => 'Priscilla Agbenyefia']);
+        $this->assertDatabaseHas("resident", [
+            "name" => "Priscilla Agbenyefia",
+        ]);
     }
-	/**
+    /**
      * A basic test to check that the residents table has values
      *
      * @return void
      */
-	 public function testAttendingTableHasData()
+    public function testAttendingTableHasData()
     {
-        $this->assertDatabaseHas('attending',['name' => 'David Stahl']);
+        $this->assertDatabaseHas("attending", ["name" => "David Stahl"]);
     }
-	/**
+    /**
      * A basic test to check that the residents table has values
      *
      * @return void
      */
-	 public function testEvalTableHasData()
+    public function testEvalTableHasData()
     {
-        $this->assertDatabaseHas('evaluation_data',['resident' => 'Adam Thomas']);
+        $this->assertDatabaseHas("evaluation_data", [
+            "resident" => "Adam Thomas",
+        ]);
     }
 }

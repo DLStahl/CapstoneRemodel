@@ -16,26 +16,24 @@ class GenerateUserNotFoundNotificationTest extends TestCase
      *
      * @return void
      */
-	
-	public function testGenerateResidentTableHasData()
+
+    public function testGenerateResidentTableHasData()
     {
-        $this->assertDatabaseHas('resident',['id' => '1']);
+        $this->assertDatabaseHas("resident", ["id" => "1"]);
     }
-	
-	public function testGenerateResidentTableNoticesMissingData()
+
+    public function testGenerateResidentTableNoticesMissingData()
     {
-        $this->assertDatabaseMissing('resident',['id' => '9999999']);
+        $this->assertDatabaseMissing("resident", ["id" => "9999999"]);
     }
-	
-	public function testGenerateResidentTableHasCorrectNameData()
+
+    public function testGenerateResidentTableHasCorrectNameData()
     {
-        $this->assertDatabaseHas('resident',['name' => 'Amy Baumann']);
+        $this->assertDatabaseHas("resident", ["name" => "Amy Baumann"]);
     }
-	
-	public function testGenerateResidentTableHasCorrectIDData()
+
+    public function testGenerateResidentTableHasCorrectIDData()
     {
-        $this->assertDatabaseHas('resident',['medhubId' => '114144']);
+        $this->assertDatabaseHas("resident", ["medhubId" => "114144"]);
     }
-	
-	
 }
