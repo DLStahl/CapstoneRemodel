@@ -1,27 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Model;
 
-use App\Admin;
-use App\Anesthesiologist;
-use App\Announcements;
-use App\Resident;
-use App\Attending;
-use App\Option;
-use App\Milestone;
-use App\ScheduleData;
-use App\Assignment;
-use App\Status;
-use App\ScheduleParser;
+use Illuminate\Http\Request;
+
+use App\Models\Admin;
+use App\Models\Anesthesiologist;
+use App\Models\Announcements;
+use App\Models\Resident;
+use App\Models\Attending;
+use App\Models\Option;
+use App\Models\Milestone;
+use App\Models\ScheduleData;
+use App\Models\Assignment;
 use App\EvaluationParser;
-use App\AutoAssignment;
-use App\Google;
-use App\Http\Requests;
-use App\Post;
-use Mail;
-use Session;
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
 class PagesController extends Controller

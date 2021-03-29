@@ -2,25 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
-/**
- * Models used in ScheduleDataController
- */
-use App\ScheduleData;
-use App\ScheduleParser;
-use App\Resident;
-use App\Option;
-use App\Admin;
-use App\Anesthesiologist;
-use App\FilterRotation;
-use App\Assignment;
-use App\Milestone;
+use App\Models\ScheduleData;
+use App\Models\Resident;
+use App\Models\Option;
+use App\Models\Anesthesiologist;
+use App\Models\FilterRotation;
+use App\Models\Assignment;
+use App\Models\Milestone;
 use Carbon\Carbon;
-use Mail;
-use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Mail as FacadesMail;
+use Illuminate\Support\Facades\Mail;
 
 class ScheduleDataController extends Controller
 {

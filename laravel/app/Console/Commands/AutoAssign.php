@@ -1,16 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: shaw
- * Date: 10/12/18
- * Time: 3:50 PM
- */
 
 namespace App\Console\Commands;
-use App\Status;
+
+use App\Models\Status;
 use App\AutoAssignment;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
+
 class AutoAssign extends Command
 {
     /**
@@ -57,8 +52,5 @@ class AutoAssign extends Command
                 'assignment' => 1
             ]);
         }
-
     }
-
-
 }

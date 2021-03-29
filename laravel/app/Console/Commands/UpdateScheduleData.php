@@ -3,10 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\ScheduleData;
+use App\Models\ScheduleData;
 use App\ScheduleParser;
-use App\Status;
-use App\ScheduleDataStatic;
+use App\Models\Status;
+use App\Models\ScheduleDataStatic;
 
 class UpdateScheduleData extends Command
 {

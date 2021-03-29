@@ -1,7 +1,7 @@
 <?php
-	use App\Resident;
-	use App\Admin;
-	use App\Announcements;
+	use App\Models\Resident;
+	use App\Models\Admin;
+	use App\Models\Announcements;
 
 	$super_access = false;
 	if (Admin::where('email', $_SERVER['HTTP_EMAIL'])->where('exists','1')->exists()) {

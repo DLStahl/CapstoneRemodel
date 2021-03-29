@@ -8,8 +8,8 @@
 
 
 	<?php
-		use App\Resident;
-		use App\Admin;
+		use App\Models\Resident;
+		use App\Models\Admin;
 
 		$super_access = false;
 		$access = false;

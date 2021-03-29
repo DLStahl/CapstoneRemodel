@@ -12,10 +12,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Constant;
-use App\EvaluateData;
-use App\Resident;
-use App\Option;
-use App\Assignment;
+use App\Models\EvaluateData;
+use App\Models\Resident;
+use App\Models\Option;
+use App\Models\Assignment;
+use App\Models\Attending;
 use App\Http\Controllers\MedhubController;
 
 class user{

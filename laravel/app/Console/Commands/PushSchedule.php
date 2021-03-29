@@ -1,18 +1,15 @@
 <?php
 
 namespace App\Console\Commands;
-use App\Status;
-use App\AutoAssignment;
-use App\Assignment;
-use App\Option;
-use App\Resident;
-use App\ScheduleData;
-use App\Milestone;
-use App\Anesthesiologist;
+
+use App\Models\Assignment;
+use App\Models\Option;
+use App\Models\Resident;
+use App\Models\ScheduleData;
+use App\Models\Milestone;
+use App\Models\Anesthesiologist;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Google_Client;
-use Google_Service_Drive;
 use Google_Service_Sheets;
 use Google_Service_Sheets_ValueRange;
 use Google_Service_Sheets_BatchUpdateSpreadsheetRequest;

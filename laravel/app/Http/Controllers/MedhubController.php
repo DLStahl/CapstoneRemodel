@@ -20,17 +20,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
-use App\Resident;
-use App\EvaluateData;
-use App\Rotations;
-use App\Attending;
-use Mail;
-use \Datetime;
+use App\Models\Attending;
+use App\Models\Resident;
+use Illuminate\Support\Facades\Mail;
 
 class MedhubController extends Controller
 {

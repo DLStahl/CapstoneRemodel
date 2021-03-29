@@ -5,7 +5,7 @@ namespace App\Http\Controllers\admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-use App\FilterRotation;
+use App\Models\FilterRotation;
 
 class FilterRotationsController extends Controller
 {

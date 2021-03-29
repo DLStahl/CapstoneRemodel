@@ -4,11 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Constant;
-use App\ScheduleData;
-use App\Option;
-use App\Resident;
-use App\FilterRotation;
-use Mail;
+use App\Models\ScheduleData;
+use App\Models\Option;
+use App\Models\Resident;
+use App\Models\FilterRotation;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
 class ScheduleParser extends Model

@@ -1,28 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: shaw
- * Date: 10/12/18
- * Time: 3:50 PM
- */
 
 namespace App\Console\Commands;
-use App\Status;
-use App\AutoAssignment;
+
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
-use App\Resident;
-use App\EvaluateData;
-use App\Rotations; 
-use App\Attending;
-use App\EvaluationForms;
-use Mail;
-use \Datetime;
+use App\Models\Resident;
+use App\Models\Rotations;
+use App\Models\EvaluationForms;
 
 class InitiateEval extends Command
 {

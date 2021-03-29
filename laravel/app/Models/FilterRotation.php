@@ -1,25 +1,24 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ScheduleDataStatic extends Model
+class FilterRotation extends Model
 {
-    
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'schedule_data_static';
+    protected $table = 'filter_rotation';
 
     /**
      * Indicates if the model should be timestamped.
      *
      * @var bool
      */
-    public $timestamps = true;
+    public $timestamps = false;
 	
 	public function getTableColumns() {
         return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());

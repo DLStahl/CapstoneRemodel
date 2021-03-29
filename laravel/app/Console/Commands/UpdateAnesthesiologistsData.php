@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Anesthesiologist;
-use App\TaskAbbreviation;
+use App\Models\Anesthesiologist;
+use App\Models\TaskAbbreviation;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
