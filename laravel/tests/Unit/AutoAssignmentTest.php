@@ -124,13 +124,15 @@ class AutoAssignmentTest extends TestCase
         Probability::where('resident', self::$residentC)->update(['total' => 0]);
 
         self::callAssignmentMethod();
-       
-        $this->assertTrue(self::correctAssignments($expectedAssignments));
-        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+
+        $correctAssignments = self::correctAssignments($expectedAssignments);
+        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
      
         self::deleteOptionsInDatabase($optionIds);
         self::deleteExpectedAssignments($expectedAssignments);
 
+        $this->assertTrue($correctAssignments);
+        $this->assertTrue($correctProbabilityTotals);
     }
 
     public function testPreferenceTicketingWithAnestsNotGranted() {
@@ -164,11 +166,14 @@ class AutoAssignmentTest extends TestCase
 
         self::callAssignmentMethod();
                     
-        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
-        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+        $correctAssignments = self::correctAssignments($expectedAssignments);
+        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
 
         self::deleteOptionsInDatabase($optionIds);
         self::deleteExpectedAssignments($expectedAssignments);
+
+        $this->assertTrue($correctAssignments);
+        $this->assertTrue($correctProbabilityTotals);
     }
     
     public function testPreferenceTicketingNoAnestsPreferences() {
@@ -198,11 +203,14 @@ class AutoAssignmentTest extends TestCase
 
         self::callAssignmentMethod();     
 
-        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
-        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+        $correctAssignments = self::correctAssignments($expectedAssignments);
+        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
 
         self::deleteOptionsInDatabase($optionIds);
         self::deleteExpectedAssignments($expectedAssignments);
+
+        $this->assertTrue($correctAssignments);
+        $this->assertTrue($correctProbabilityTotals);
     }
 
     public function testPreferenceTicketingForUnassignedResidents() {
@@ -233,11 +241,14 @@ class AutoAssignmentTest extends TestCase
 
         self::callAssignmentMethod();
                           
-        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
-        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+        $correctAssignments = self::correctAssignments($expectedAssignments);
+        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
 
         self::deleteOptionsInDatabase($optionIds);
         self::deleteExpectedAssignments($expectedAssignments); 
+
+        $this->assertTrue($correctAssignments);
+        $this->assertTrue($correctProbabilityTotals);
     }
 
     // Tests for Anesthesiologist Preference Assignment
@@ -261,12 +272,15 @@ class AutoAssignmentTest extends TestCase
         Probability::where('resident', self::$residentB)->update(['total' => 0]);
  
         self::callAssignmentMethod();
-                   
-        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
-        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+       
+        $correctAssignments = self::correctAssignments($expectedAssignments);
+        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
   
         self::deleteOptionsInDatabase($optionIds);
         self::deleteExpectedAssignments($expectedAssignments); 
+
+        $this->assertTrue($correctAssignments);
+        $this->assertTrue($correctProbabilityTotals);
     }
 
     public function testAnestDoubleAssignedCCCT() {
@@ -305,16 +319,16 @@ class AutoAssignmentTest extends TestCase
 
         $bGotAnest = self::correctAssignments($expectedAssignments1);
         $cGotAnest = self::correctAssignments($expectedAssignments2);
-        $this->assertTrue( $bGotAnest || $cGotAnest);
-
-        if($bGotAnest){
-            $this->assertTrue(self::correctProbTotals($expectedProbTotals1));
-            self::deleteExpectedAssignments($expectedAssignments1);
-        } else{
-            $this->assertTrue(self::correctProbTotals($expectedProbTotals2));
-            self::deleteExpectedAssignments($expectedAssignments2);
-        }
+        
         self::deleteOptionsInDatabase($optionIds);
+        if($bGotAnest){
+            self::deleteExpectedAssignments($expectedAssignments1);
+            $this->assertTrue(self::correctProbTotals($expectedProbTotals1));
+        } else{
+            self::deleteExpectedAssignments($expectedAssignments2);
+            $this->assertTrue(self::correctProbTotals($expectedProbTotals2));
+        }
+        $this->assertTrue( $bGotAnest || $cGotAnest);
     }
 
     public function testAnestDoubleAssignedUH() {
@@ -353,16 +367,17 @@ class AutoAssignmentTest extends TestCase
                    
         $bGotAnest = self::correctAssignments($expectedAssignments1);
         $cGotAnest = self::correctAssignments($expectedAssignments2);
-        $this->assertTrue( $bGotAnest || $cGotAnest);
-
-        if($bGotAnest){
-            $this->assertTrue(self::correctProbTotals($expectedProbTotals1));
-            self::deleteExpectedAssignments($expectedAssignments1);
-        } else{
-            $this->assertTrue(self::correctProbTotals($expectedProbTotals2));
-            self::deleteExpectedAssignments($expectedAssignments2);
-        }
+        
         self::deleteOptionsInDatabase($optionIds);
+        if($bGotAnest){
+            self::deleteExpectedAssignments($expectedAssignments1);
+            $this->assertTrue(self::correctProbTotals($expectedProbTotals1));
+        } else{
+            self::deleteExpectedAssignments($expectedAssignments2);
+            $this->assertTrue(self::correctProbTotals($expectedProbTotals2));
+        }
+        
+        $this->assertTrue( $bGotAnest || $cGotAnest);
     }
 
     public function testAnestDoubleAssignedCCCTLeasingUHGivenCCCTAssignment() {
@@ -390,11 +405,14 @@ class AutoAssignmentTest extends TestCase
 
         self::callAssignmentMethod();
                   
-        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
-        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+        $correctAssignments = self::correctAssignments($expectedAssignments);
+        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
         
         self::deleteOptionsInDatabase($optionIds);
         self::deleteExpectedAssignments($expectedAssignments);
+
+        $this->assertTrue($correctAssignments);
+        $this->assertTrue($correctProbabilityTotals);
     }
     
     public function testAnestDoubleAssignedCCCTGivenCCCTLeasingUHAssignment() {
@@ -421,11 +439,14 @@ class AutoAssignmentTest extends TestCase
         Probability::where('resident', self::$residentC)->update(['total' => 0]);
         self::callAssignmentMethod();
                  
-        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
-        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+        $correctAssignments = self::correctAssignments($expectedAssignments);
+        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
 
         self::deleteOptionsInDatabase($optionIds);
         self::deleteExpectedAssignments($expectedAssignments);
+
+        $this->assertTrue($correctAssignments);
+        $this->assertTrue($correctProbabilityTotals);
     }
 
     public function testAnestDoubleAssignedCCCTLeasingUHGivenUHAssignment() {
@@ -454,12 +475,15 @@ class AutoAssignmentTest extends TestCase
         Probability::where('resident', self::$residentC)->update(['total' => 0]);
         
         self::callAssignmentMethod();
-                    
-        $this->assertTrue(self::correctAssignments($expectedAssignments));  
-        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+        
+        $correctAssignments = self::correctAssignments($expectedAssignments);
+        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
         
         self::deleteOptionsInDatabase($optionIds);
         self::deleteExpectedAssignments($expectedAssignments);
+
+        $this->assertTrue($correctAssignments);
+        $this->assertTrue($correctProbabilityTotals);
     }
   
     public function testAnestDoubleAssignedUHGivenCCCTLeasingUHAssignment() {
@@ -488,11 +512,14 @@ class AutoAssignmentTest extends TestCase
 
         self::callAssignmentMethod();
                 
-        $this->assertTrue(self::correctAssignments($expectedAssignments)); 
-        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
+        $correctAssignments = self::correctAssignments($expectedAssignments);
+        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
         
         self::deleteOptionsInDatabase($optionIds);
         self::deleteExpectedAssignments($expectedAssignments);
+
+        $this->assertTrue($correctAssignments);
+        $this->assertTrue($correctProbabilityTotals);
     }
 
 }
