@@ -156,9 +156,12 @@ class PushSchedule extends Command
         $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
         $title = '\''.$title.'\'!';
         $range = $title.'A1:M15';
+<<<<<<< HEAD
 
 
         $date = date("Y-m-d", strtotime('+1 day'));
+=======
+>>>>>>> cleanup
 
         //Relative path for assignment sheet
         $dir = "../downloads/assignment".$date.".csv";
