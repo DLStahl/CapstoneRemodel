@@ -155,7 +155,6 @@ class PushSchedule extends Command
         // setup today's sheet to be ready to be added to
         $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
         $title = '\''.$title.'\'!';
-        $range = $title.'A1:M15';
 
         $date = date("Y-m-d", strtotime('+1 day'));
 
@@ -173,12 +172,42 @@ class PushSchedule extends Command
         //Get the array that contains all assigments for day + 1.
 		$all_assns = self::updateAssignments($date);
 
+
         //print all assignments to path
         foreach($all_assns as $assignemnts) {
             fputcsv($fp, $assignemnts);
         }
 
         fclose($fp);
+
+        $column_name = "";
+
+        if (count($all_assns) > 0){
+            $cur_assignment = $all_assns[0];
+            $count = (count($cur_assignment));
+        } else {
+            $count = 0;
+        }
+
+        while($count > 0){
+	        $rem = $count % 26;
+    
+            if ($rem == 0) {
+    	        $column_name .= "Z";
+                $count = ($count/26) - 1;
+            } else {
+    	        $column_name .= chr($rem + 833);
+                $count = $count/26;
+                if ($count < 1) {
+                    $count = 0;
+                }
+        	}
+        }
+
+        $column_name = strrev($column_name);
+        $row_number = count($all_assns);
+
+        $range = $title.'A1:'.$column_name.$row_number;
 
 
         // get the values from the assignment file and save them to an array
