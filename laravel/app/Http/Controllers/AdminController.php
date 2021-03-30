@@ -3,25 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Model;
 
-use App\Console\Commands\UpdateScheduleData;
-use App\Admin;
-use App\Attending;
-use App\Resident;
-use App\Option;
-use App\Assignment;
+use App\Models\Admin;
+use App\Models\Attending;
+use App\Models\Resident;
+use App\Models\Option;
+use App\Models\Assignment;
 use App\AdminDownload;
-use App\ScheduleData;
-use App\Probability;
-use App\EvaluateData;
-use App\Rotations;
-use App\Milestone;
-use App\Http\Requests;
-use App\EvaluationForms;
-use Session;
+use App\Models\ScheduleData;
+use App\Models\Probability;
+use App\Models\EvaluateData;
+use App\Models\Rotations;
+use App\Models\Milestone;
+use App\Models\EvaluationForms;
 use \Datetime;
-use Artisan;
+
+use Illuminate\Support\Facades\Artisan;
 
 class AdminController extends Controller
 {

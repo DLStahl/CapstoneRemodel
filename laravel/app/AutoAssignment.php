@@ -4,11 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-use App\Option;
-use App\Assignment;
-use App\Resident;
-use App\Probability;
-use App\ScheduleData;
+use App\Models\Option;
+use App\Models\Assignment;
+use App\Models\Resident;
+use App\Models\Probability;
+use App\Models\ScheduleData;
+use App\Models\Rotations;
+use App\Models\EvaluationForms;
 use Illuminate\Support\Facades\Log;
 
 class AutoAssignment extends Model

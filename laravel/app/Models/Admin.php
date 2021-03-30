@@ -1,17 +1,17 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class FilterRotation extends Model
+class Admin extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'filter_rotation';
+    protected $table = 'admin';
 
     /**
      * Indicates if the model should be timestamped.
@@ -19,8 +19,5 @@ class FilterRotation extends Model
      * @var bool
      */
     public $timestamps = false;
-	
-	public function getTableColumns() {
-        return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
-    }
+
 }

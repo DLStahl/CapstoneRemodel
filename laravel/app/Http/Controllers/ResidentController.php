@@ -2,11 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Admin;
-use App\Resident;
-
 class ResidentController extends Controller
 {
 

@@ -5,8 +5,8 @@
         // url: survey/yearmonday
         // e.g. survey/20180709
 
-        use App\Resident;
-        use App\Attending;
+        use App\Models\Resident;
+        use App\Models\Attending;
 
         /**
          * Determine the role of the current user

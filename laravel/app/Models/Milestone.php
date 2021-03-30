@@ -1,17 +1,17 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Resident extends Model
+class Milestone extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'resident';
+    protected $table = 'milestone';
 
     /**
      * Indicates if the model should be timestamped.

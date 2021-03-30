@@ -5,7 +5,7 @@ namespace App\Http\Controllers\admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-use App\ScheduleDataStatic;
+use App\Models\ScheduleDataStatic;
 
 class StaticOptionsController extends Controller
 {

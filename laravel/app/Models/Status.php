@@ -1,17 +1,17 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Admin extends Model
+class Status extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'admin';
+    protected $table = 'status';
 
     /**
      * Indicates if the model should be timestamped.
@@ -19,5 +19,4 @@ class Admin extends Model
      * @var bool
      */
     public $timestamps = false;
-
 }

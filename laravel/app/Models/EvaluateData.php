@@ -1,17 +1,17 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Assignment extends Model
+class EvaluateData extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'assignment';
+    protected $table = 'evaluation_data';
 
     /**
      * Indicates if the model should be timestamped.

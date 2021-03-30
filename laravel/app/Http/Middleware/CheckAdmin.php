@@ -4,8 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-use App\Resident;
-use App\Admin;
+use App\Models\Admin;
 
 class CheckAdmin
 {

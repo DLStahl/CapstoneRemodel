@@ -6,8 +6,7 @@
     </div>
 </nav>
 <?php
-	use App\Resident;
-	use App\Admin;
+	use App\Models\Admin;
 
 	$super_access = false;
 	if (Admin::where('email', $_SERVER['HTTP_EMAIL'])->where('exists','1')->exists()) {

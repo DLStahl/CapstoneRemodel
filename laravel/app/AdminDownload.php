@@ -4,12 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-use App\Admin;
-use App\Resident;
-use App\Attending;
-use App\Assignment;
-use App\Option;
-use App\ScheduleData;
+use App\Models\Admin;
+use App\Models\Resident;
+use App\Models\Attending;
+use App\Models\Assignment;
+use App\Models\Option;
+use App\Models\ScheduleData;
 
 class AdminDownload extends Model
 {
