@@ -66,7 +66,7 @@ class EvaluationParser extends Model
             $name = array_reverse($name);
             $namefml = implode(" ", $name);
             $namefml = preg_replace( "/\s(?=\s)/","\\1", $namefml);
-            echo 'name fml:'.$namefml."\n";
+            // echo 'name fml:'.$namefml."\n";
 
             $namefl = explode(" ", $namefml);
             $name_first = $namefl[0];
@@ -180,7 +180,7 @@ class EvaluationParser extends Model
         fgetcsv($fp);
         while(($line = fgetcsv($fp)) !== false){
             $participants=self::getParticipants($line[7]);
-            var_dump($participants);
+            // var_dump($participants);
 
             foreach ($participants as $resident) {
             	if($resident->occupation == 0 and $resident->diff >= $time_difference){
@@ -198,19 +198,19 @@ class EvaluationParser extends Model
                                 $rId = null;
                                 if(Resident::where('name', $resident->namefl)->doesntExist()){
                                     if (!in_array($resident->namefl, $failedAddingUsers)){
-                                        echo 'Resident '.$resident->namefl.' doesnt exist'."\n";
+                                        // echo 'Resident '.$resident->namefl.' doesnt exist'."\n";
                                         $MHC = new MedhubController();
                                         $residentAdded = $MHC->addUserFromMedhub('Resident', $resident->namefl);
-                                        echo 'Resident added: '.$residentAdded."\n";
+                                        // echo 'Resident added: '.$residentAdded."\n";
                                         if ($residentAdded){
-                                            echo 'Resident '.$resident->namefl.' added'."\n";
+                                            // echo 'Resident '.$resident->namefl.' added'."\n";
                                             $rId = Resident::where('name', $resident->namefl)->value('id');
                                         } else {
                                             array_push($failedAddingUsers, $resident->namefl);
                                         }
                                     }
                                 } else {
-                                    echo 'Resident '.$resident->namefl.' exists'."\n";
+                                    // echo 'Resident '.$resident->namefl.' exists'."\n";
                                     $rId = Resident::where('name', $resident->namefl)->value('id');
                                 }
 
@@ -218,12 +218,12 @@ class EvaluationParser extends Model
                                 $aId = null;
                                 if(Attending::where('name', $attending->namefl)->doesntExist()){
                                     if (!in_array($attending->namefl, $failedAddingUsers)){
-                                        echo 'Attending '.$attending->namefl.' doesnt exist'."\n";
+                                        // echo 'Attending '.$attending->namefl.' doesnt exist'."\n";
                                         $MHC = new MedhubController();
                                         $attendingAdded = $MHC->addUserFromMedhub('Attending', $attending->namefl);
-                                        echo 'resident added: '.$attendingAdded."\n";
+                                        // echo 'resident added: '.$attendingAdded."\n";
                                         if ($attendingAdded){
-                                            echo 'Attending '.$attending->namefl.' added'."\n";
+                                            // echo 'Attending '.$attending->namefl.' added'."\n";
                                             $aId = Attending::where('name', $attending->namefl)->value('id');
                                         } else {
                                             array_push($failedAddingUsers, $attending->namefl);
@@ -231,17 +231,17 @@ class EvaluationParser extends Model
                                     }
                                     
                                 } else {
-                                    echo 'Attending '.$attending->namefl.' exists'."\n";
+                                    // echo 'Attending '.$attending->namefl.' exists'."\n";
                                     $aId = Attending::where('name', $attending->namefl)->value('id');
                                 }
 
                                 $schedule = Assignment::where(['resident'=>$rId, 'date'=>$date])->value('schedule');
                                 $milestone = Option::where(['resident'=>$rId, 'schedule'=>$schedule])->value('milestones');
                                 $objective = Option::where(['resident'=>$rId, 'schedule'=>$schedule])->value('objectives');
-                                echo $rId."\n"."Diff mins is: ".$resident->diff."\n";
-                                echo "Resident ".$resident->namefl."\n";
-                                echo " work with Attending ".$attending->namefl."<br>";
-                                echo "see aId "."\n"."milestones ".$schedule."\n".$milestone;
+                                // echo $rId."\n"."Diff mins is: ".$resident->diff."\n";
+                                // echo "Resident ".$resident->namefl."\n";
+                                // echo " work with Attending ".$attending->namefl."<br>";
+                                // echo "see aId "."\n"."milestones ".$schedule."\n".$milestone;
                                 if(EvaluateData::where(['date'=>$date, 'location'=>$location, 'resident'=>$resident->namefl, 'attending'=>$attending->namefl])->doesntExist()){
                                     EvaluateData::insert(
                                         ['date' => $date, 'location' => $location, 'diagnosis' => $diagnosis, 'procedure' => $procedure,'asa' => $asa, 'rId' => $rId, 'resident' => $resident->namefl, 'aId' => $aId, 'attending' => $attending->namefl, 'diff' =>$resident->diff ]
@@ -251,14 +251,10 @@ class EvaluationParser extends Model
             			}
             		}
             	}
-
             }
         }
 
         fclose($fp);
         return true;
     }
-
-
-
 }
