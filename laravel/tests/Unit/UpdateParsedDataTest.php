@@ -18,29 +18,28 @@ class UpdateParsedDataTest extends TestCase
      */
     public function testParsedAssignmentTableHasData()
     {
-        $this->assertDatabaseHas('assignment',['id' => '1']);
+        $this->assertDatabaseHas("assignment", ["id" => "1"]);
     }
-	
-	public function testParsedEvaluationDataTableHasCorrectedNameData()
+
+    public function testParsedEvaluationDataTableHasCorrectedNameData()
     {
-        $this->assertDatabaseHas('evaluation_data',['resident' => 'Adam Thomas']);
+        $this->assertDatabaseHas("evaluation_data", [
+            "resident" => "Adam Thomas",
+        ]);
     }
-	
-	public function testParsedEvaluationDataTableHasData()
+
+    public function testParsedEvaluationDataTableHasData()
     {
-        $this->assertDatabaseHas('evaluation_data',['id' => '91']);
+        $this->assertDatabaseHas("evaluation_data", ["id" => "91"]);
     }
-	
-	public function testParsedResidentTableHasData()
+
+    public function testParsedResidentTableHasData()
     {
-        $this->assertDatabaseHas('resident',['id' => '1']);
+        $this->assertDatabaseHas("resident", ["id" => "1"]);
     }
-	
-	
-	public function testParsedResidentTableHasCorrectNameData()
+
+    public function testParsedResidentTableHasCorrectNameData()
     {
-        $this->assertDatabaseHas('resident',['name' => 'Amy Baumann']);
+        $this->assertDatabaseHas("resident", ["name" => "Amy Baumann"]);
     }
-	
-	
 }
