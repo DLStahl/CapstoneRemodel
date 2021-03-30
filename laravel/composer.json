@@ -8,7 +8,6 @@
         "php": "^7.2.0",
         "doctrine/dbal": "^2.12.1",
         "fideloper/proxy": "^4.4",
-        "guzzlehttp/guzzle": "^7.2.0",
         "laravel/framework": "5.7.*",
         "laravel/tinker": "^1.0.6"
     },
