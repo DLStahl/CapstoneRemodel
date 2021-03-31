@@ -16,166 +16,89 @@
     ...
  */
 
- // remodel is green 1611
+// remodel is green 1611
 
 namespace App\Http\Controllers;
 
 use GuzzleHttp\Client;
-use App\Models\Attending;
-use App\Models\Resident;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class MedhubController extends Controller
 {
 
 	public function medhubConnect()
-    {
-        $users = self::activeResidentsPOST()->getBody(); //get string JSON
-        $usersArr = json_decode($users, true); //turn json into an array
+	{
+		$users = self::activeResidentsPOST()->getBody(); //get string JSON
+		$usersArr = json_decode($users, true); //turn json into an array
 
 		$fac = self::activeFacultyPOST()->getBody(); //get string JSON
         $facArr = json_decode($fac, true); //turn json into an array
 		// echo var_dump($facArr);
 
-        $message = 'MedHub Active Residents';
+		$message = 'MedHub Active Residents';
 
-				$form = self::evaluationFormsPOST()->getBody();//get string JSON
-        $formArr = json_decode($form, true); //turn json into an array
-				$types = self::evaluationTypesPOST()->getBody();//get string JSON
-        $typesArr = json_decode($types, true); //turn json into an array
+		$form = self::evaluationFormsPOST()->getBody(); //get string JSON
+		$formArr = json_decode($form, true); //turn json into an array
+		$types = self::evaluationTypesPOST()->getBody(); //get string JSON
+		$typesArr = json_decode($types, true); //turn json into an array
 
-        return view('schedules.admin.medhubTestPage', compact('message','usersArr', 'facArr', 'formArr', 'typesArr'));
+		return view('schedules.admin.medhubTestPage', compact('message', 'usersArr', 'facArr', 'formArr', 'typesArr'));
 	}
 
 
-    // request format: json_encode(array('programID' => 73));
-    // or just a JSON encoded string: '{"programID":73}'
-    public function medhubPOST($callPath, $request = '{"programID":73}')
-    {
-        $client = new Client([
-            'base_uri' => 'https://osu.medhub.com/functions/api/'
-        ]);
-        $clientID='5006';
-        $privateKey='331xyg1hl65o';
-
-        return $client->request('POST', $callPath, [
-            'form_params' => [
-                $time = time(),
-                'clientID' => $clientID,
-                'ts' => $time,
-                'type' => 'json',
-                'request' => $request,
-                'verify' => hash('sha256', "$clientID|$time|$privateKey|$request")
-            ]
-        ]);
-    }
-
-	public function notifyAddUser($userType, $toName, $toEmail, $userName, $body='The resident could not be found and must be added manually.', $subject = 'REMODEL: Resident/Attending Needs to be Added')
-    {
-		//REMODEL Alert: Resident Needs to be Added
-		$heading = $userType." ".$userName.' needs to be added.';
-        $data = array('name'=>$toName, 'heading'=>$heading, 'body'=>$body);
-
-        Mail::send('emails.mail', $data, function($message) use ($toName, $toEmail, $subject) {
-            $message->to($toEmail, $toName)->subject($subject);
-            $message->from('OhioStateAnesthesiology@gmail.com');
-        });
-    }
-
-	public function findPeopleOSU($firstName, $lastName)
+	// request format: json_encode(array('programID' => 73));
+	// or just a JSON encoded string: '{"programID":73}'
+	public function medhubPOST($callPath, $request = '{"programID":73}')
 	{
 		$client = new Client([
-            'base_uri' => 'http://directory.osu.edu/'
+			'base_uri' => 'https://osu.medhub.com/functions/api/'
 		]);
-		$callPath = 'fpjson.php?';
-        $query = "firstname=$firstName&lastname=$lastName";
-	    // echo 'find people OSU: http://directory.osu.edu/fpjson.php?'.$query."\n";
-		return $client->request('GET', $callPath, ['query' => $query]);
+		$clientID = '5006';
+		$privateKey = '331xyg1hl65o';
+
+		return $client->request('POST', $callPath, [
+			'form_params' => [
+				$time = time(),
+				'clientID' => $clientID,
+				'ts' => $time,
+				'type' => 'json',
+				'request' => $request,
+				'verify' => hash('sha256', "$clientID|$time|$privateKey|$request")
+			]
+		]);
 	}
 
-	// Find user information using OSU Find People API.
-	public function addUserFromFindPeopleOSU($userType, $emailMessage, $name, $medhubId=null){
-    	$namefl = explode(" ", $name);
-    	$name_first = $namefl[0];
-    	$name_last = $namefl[1];
-
-    	$osuMatches = json_decode(self::findPeopleOSU($name_first, $name_last)->getBody(), true);
-
-		$added = false;
-		$osuEmail = '';
-		if(sizeof($osuMatches)==1){
-    		$osuEmail = $osuMatches[0]['email'];
-			// echo 'osu email: '.$osuEmail."\n";
-			// check if he/she is an Anesthesiology resident/attending
-        	if(sizeof($osuMatches[0]['appointments'])>0 && $osuMatches[0]['appointments'][0]['organization'] == 'Anesthesiology'){
-        		if(strcmp($userType, 'Resident') == 0){
-        			Resident::insert(['name'=>$name, 'email'=>$osuEmail, 'exists'=>1, 'medhubId'=>$medhubId]);
-				} else {
-				    Attending::insert(['name'=>$name, 'email'=>$osuEmail, 'exists'=>1, 'id'=>$medhubId]);
-				}
-        		
-        		// echo $userType." ".$name.' added to database'."\n";
-				$added = true;
-			} else {
-				//not an an Anesthesiology resident
-				$emailMessage = $emailMessage.$userType.' '.$name.' was found by OSU Find People but is not an Anesthesiology '.$userType.'. Please check the information and add user to database manually.';
-	            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
-			}
-		} elseif (sizeof($osuMatches)==0) {
-			// echo '0 residents found in FindPeopleOSU'."\n";
-        	$emailMessage = $emailMessage.'No matches for '.$userType.' '.$name.' were found by OSU Find People. The '.$userType.' may be using a preffered name at OSU. Please check the information and add user to database manually.';
-            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
-    	} else {
-    		// echo 'More than 1 residents found in FindPeopleOSU'."\n";
-    		$emailMessage = $emailMessage.'Multiple matches for '.$userType.' '.$name.' were found by OSU Find People. Please check the information and add user to database manually. ';
-            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
-    	}
-		// echo var_dump($osuMatches);
-    	return $added;
-	}
-
-	// Get user's medhubId from Medhub. Get user's name.# email address from OSU Find People.
-	// $userType is eiterh 'Resident' or 'Attending'
-	public function addUserFromMedhub($userType, $name){
-		$userAdded = false;
-		$medhubMatches = null;
-		if(strcmp($userType, 'Attending') == 0){
-			$medhubMatches = json_decode(self::medhubPOST("users/facultySearch",json_encode(array('name' => $name)))->getBody(), true);
-    	} else {
-        	$medhubMatches = json_decode(self::medhubPOST("users/residentSearch",json_encode(array('name' => $name)))->getBody(), true);
-    	}
-
-    	// echo'looking for '.$userType." ".$name.' info'."\n";
-
-    	if(sizeof($medhubMatches)==1){
-        	// echo "medhub found people success"."\n";
-        	$medhubId = $medhubMatches[0]['userID'];
-        	// echo 'medhub email: '.$medhubMatches[0]['email']."\n";
-        	$emailMessage = $userType." ".$name.' with MedHubID '.$medhubId.' was found on MedHub. ';
-        	$userAdded = self::addUserFromFindPeopleOSU($userType, $emailMessage, $name, $medhubId);
-        } elseif (sizeof($medhubMatches)==0) {
-      		// echo '0 '.$userType.'s found in MedHub'."\n";
-        	$emailMessage = 'No matches for '.$userType." ".$name.' were found on MedHub. ';
-        	if(strcmp($userType, 'Attending') == 0){
-	            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
-        	} else {
-	        	$userAdded = self::addUserFromFindPeopleOSU($userType, $emailMessage, $name);
-        	}
+	// Get Medhub Id using name and Medhub API
+    public function getMedhubId($userType, $name) {
+		$medhubId = null;
+		$medhubMatches = array();
+		if (strcmp($userType, 'Attending') == 0) {
+			try{
+				$medhubMatches = json_decode(self::medhubPOST("users/facultySearch", json_encode(array('name' => $name)))->getBody(), true);
+			}catch(\Exception $e){
+				Log::debug('Exception: Error in Medhub request users/facultySearch for name (' . $name . '). Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
+			}	
 		} else {
-			// echo 'More than one residents found in Medhub'."\n";
-			$emailMessage = 'Multiple matches for '.$userType." ".$name.' were found on MedHub. ';
-			if(strcmp($userType, 'Attending') == 0){
-	            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
-        	} else {
-	        	$userAdded = self::addUserFromFindPeopleOSU($userType, $emailMessage, $name);
-        	}
+			try{
+				$medhubMatches = json_decode(self::medhubPOST("users/residentSearch", json_encode(array('name' => $name)))->getBody(), true);
+			}catch(\Exception $e){
+				Log::debug('Exception: Error in Medhub request users/residentSearch for name (' . $name . '). Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
+			}
 		}
-
-		// echo var_dump($medhubMatches);
-		return $userAdded;
+		$emailMessage = '';
+		if (sizeof($medhubMatches) == 1) {
+			$medhubId = $medhubMatches[0]['userID'];
+			$emailMessage = $emailMessage . $userType . " " . $name . ' with MedHubID ' . $medhubId . ' was found on MedHub. ';
+		} elseif (sizeof($medhubMatches) == 0) {
+			$emailMessage = $emailMessage .'No matches for ' . $userType . " " . $name . ' were found on MedHub. ';
+		} else {
+			$emailMessage = $emailMessage . 'Multiple matches for ' . $userType . " " . $name . ' were found on MedHub. ';
+		}
+		return array(
+            'medhubId' => $medhubId,
+            'emailMessage' => $emailMessage
+        );
 	}
-
-
 
 	// needs to be refactored still
 	//post call for schedule (requires programID & rotationSetID from academicYearPOST)
@@ -188,17 +111,17 @@ class MedhubController extends Controller
 		$years = self::academicYearPOST()->getBody(); //call academicYearPOST to get the rotationSetID argument
 		$yearsArr = json_decode($years, true); //turn json into an array
 		$date = date('Y-m-d');
-		$date=date('Y-m-d', strtotime($date)); // get todays date
+		$date = date('Y-m-d', strtotime($date)); // get todays date
 		for ($i = 0; $i < count($yearsArr); $i++) {
 			$rotationsetID = $yearsArr[$i]['rotationsetID'];
 			$startDate = date('Y-m-d', strtotime($yearsArr[$i]['start_date'])); //get the rotation start date from academicYearPOST
 			$endDate = date('Y-m-d', strtotime($yearsArr[$i]['end_date'])); //get the rotation end date from academicYearPOST
 
-			if (($date> $startDate) && ($date<$endDate)){ // find the date range that fits today
+			if (($date > $startDate) && ($date < $endDate)) { // find the date range that fits today
 				break; // break so we can save the rotationSetID
 			}
 		}
-		$request = json_encode(array('programID' => $programID,"rotationsetID" =>$rotationsetID)); // setup the arguments properly
+		$request = json_encode(array('programID' => $programID, "rotationsetID" => $rotationsetID)); // setup the arguments properly
 		return self::medhubPOST($callPath, $request);
 	}
 
@@ -206,27 +129,27 @@ class MedhubController extends Controller
 	//post call for rotations (requires scheduleID & rotationSetID from schedulePOST, academicYearPOST)
 	public function rotationsPOST()
 	{
-			$callPath = 'schedules/rotations';
-		$programID=73;
+		$callPath = 'schedules/rotations';
+		$programID = 73;
 
 		$rotationsetID = 0; //temporarily set the rotationSetID to 0
 		$years = self::academicYearPOST()->getBody(); //call academicYearPOST to get the rotationSetID argument
 		$yearsArr = json_decode($years, true); //turn json into an array
 		$date = date('Y-m-d');
-		$date=date('Y-m-d', strtotime($date)); // get todays date
+		$date = date('Y-m-d', strtotime($date)); // get todays date
 		for ($i = 0; $i < count($yearsArr); $i++) {
 			$rotationsetID = $yearsArr[$i]['rotationsetID'];
 			$startDate = date('Y-m-d', strtotime($yearsArr[$i]['start_date'])); //get the rotation start date from academicYearPOST
 			$endDate = date('Y-m-d', strtotime($yearsArr[$i]['end_date'])); //get the rotation end date from academicYearPOST
 
-			if (($date> $startDate) && ($date<$endDate)){ // find the date range that fits today
+			if (($date > $startDate) && ($date < $endDate)) { // find the date range that fits today
 				break; // break so we can save the rotationSetID
 			}
 		}
 		$schedule = self::schedulePOST($programID, $rotationsetID)->getBody(); // call schedule post
 		$scheduleArr = json_decode($schedule, true);
 		$scheduleID = $scheduleArr[0]['scheduleID']; // get the scheduleID from the schedule post
-		$request = json_encode(array('scheduleID' => $scheduleID,"rotationsetID" =>$rotationsetID)); // setup the arguments properly
+		$request = json_encode(array('scheduleID' => $scheduleID, "rotationsetID" => $rotationsetID)); // setup the arguments properly
 		return self::medhubPOST($callPath, $request);
 	}
 
@@ -265,7 +188,4 @@ class MedhubController extends Controller
 	{
 		return self::medhubPOST('info/test');
 	}
-
-
-
 }

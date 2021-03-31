@@ -3,13 +3,10 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MedhubController;
-use App\EvaluationParser;
-use App\Resident;
+use App\Models\Resident;
 
 class AdminAddUserTest extends TestCase
 {
@@ -56,10 +53,4 @@ class AdminAddUserTest extends TestCase
         $this->assertTrue($response == "success");
     }
 
-    public function testAddUserFindPeople()
-    {
-        $mhc = new MedhubController();
-        $result = $mhc->findPeopleOSU("Michael", "Bragalone");
-        $this->assertNotNull($result);
-    }
 }
