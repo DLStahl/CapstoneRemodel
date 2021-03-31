@@ -205,7 +205,7 @@ class PushSchedule extends Command
         }
 
         $column_name = strrev($column_name);
-        $row_number = count($all_assns);
+        $row_number = count($all_assns) + 1;
 
         $range = $title.'A1:'.$column_name.$row_number;
 
