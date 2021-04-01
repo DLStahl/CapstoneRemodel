@@ -6,13 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class ScheduleDataStatic extends Model
 {
-    
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'schedule_data_static';
+    protected $table = "schedule_data_static";
 
     /**
      * Indicates if the model should be timestamped.
@@ -20,8 +19,11 @@ class ScheduleDataStatic extends Model
      * @var bool
      */
     public $timestamps = true;
-	
-	public function getTableColumns() {
-        return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
+
+    public function getTableColumns()
+    {
+        return $this->getConnection()
+            ->getSchemaBuilder()
+            ->getColumnListing($this->getTable());
     }
 }

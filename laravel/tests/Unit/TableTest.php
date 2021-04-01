@@ -51,11 +51,7 @@ class ExampleTest extends TestCase
     {
         $response = $this->get("/");
         $id = Attending::where("id", "1864656")->exists();
-        $attending = Option::where(
-            "attending",
-            ">",
-            "133300023400000"
-        )->exists();
+        $attending = Option::where("attending", ">", "133300023400000")->exists();
         $this->assertFalse($id);
         // $this->assertFalse($attending);
         $this->assertTrue(true);
@@ -150,11 +146,7 @@ class ExampleTest extends TestCase
     {
         $response = $this->get("/");
         $id = Attending::where("email", "null")->exists();
-        $attending = Option::where(
-            "resident",
-            ">",
-            "1012000003242300"
-        )->exists();
+        $attending = Option::where("resident", ">", "1012000003242300")->exists();
         $this->assertFalse($id);
         $this->assertFalse($attending);
         $this->assertTrue(true);

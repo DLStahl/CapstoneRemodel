@@ -11,27 +11,24 @@ class FilterRotationTableSeeder extends Seeder
      */
     public function run()
     {
-        if (file_exists( __DIR__."/../../../resources/database/SurgeonRotations.csv")) {
-          /**
-           * Read data from the backup file and add into database
-           */
-          $fp = fopen(__DIR__."/../../../resources/database/SurgeonRotations.csv", 'r');
+        if (file_exists(__DIR__ . "/../../../resources/database/SurgeonRotations.csv")) {
+            /**
+             * Read data from the backup file and add into database
+             */
+            $fp = fopen(__DIR__ . "/../../../resources/database/SurgeonRotations.csv", "r");
 
-          // Read the first row
-          fgetcsv($fp);
+            // Read the first row
+            fgetcsv($fp);
 
-          // Read rows until null
-          while (($line = fgetcsv($fp)) !== false)
-          {
-              $surgeon = $line[0];
-              $rotation = $line[2];
-              DB::table('filter_rotation')->insert(
-                  ['surgeon' => $surgeon, 'rotation' => $rotation]
-              );
-          }
+            // Read rows until null
+            while (($line = fgetcsv($fp)) !== false) {
+                $surgeon = $line[0];
+                $rotation = $line[2];
+                DB::table("filter_rotation")->insert(["surgeon" => $surgeon, "rotation" => $rotation]);
+            }
 
-          // Close file
-          fclose($fp);
-      }
+            // Close file
+            fclose($fp);
+        }
     }
 }

@@ -14,31 +14,29 @@ class CreateAssignmentTable extends Migration
      */
     private function initialize()
     {
-        if (file_exists ( __DIR__.$_ENV["BACKUP_PATH"]."assignment.csv" )) {
-
+        if (file_exists(__DIR__ . $_ENV["BACKUP_PATH"] . "assignment.csv")) {
             /**
              * Read data from the backup file and add into database
              */
-            $fp = fopen(__DIR__.$_ENV["BACKUP_PATH"]."assignment.csv", 'r');
-            
+            $fp = fopen(__DIR__ . $_ENV["BACKUP_PATH"] . "assignment.csv", "r");
+
             // Read the first row
             fgetcsv($fp);
 
             // Read rows until null
-            while (($line = fgetcsv($fp)) !== false)
-            {
+            while (($line = fgetcsv($fp)) !== false) {
                 $id = $line[0];
                 $date = $line[1];
                 $resident = $line[2];
                 $schedule = $line[3];
                 $attending = $line[4];
-                
-                DB::table('assignment')->insert([
-                    'id' => $id, 
-                    'date' => $date,
-                    'resident' => $resident,
-                    'schedule' => $schedule,
-                    'attending' => $attending
+
+                DB::table("assignment")->insert([
+                    "id" => $id,
+                    "date" => $date,
+                    "resident" => $resident,
+                    "schedule" => $schedule,
+                    "attending" => $attending,
                 ]);
             }
 
@@ -56,41 +54,27 @@ class CreateAssignmentTable extends Migration
      */
     private function backup()
     {
-        /** 
+        /**
          * Save data sets into a csv file
-         */        
-        $filename = __DIR__.$_ENV["BACKUP_PATH"]."assignment.csv";
-        $data = DB::table('assignment')->get();
-        
+         */
+        $filename = __DIR__ . $_ENV["BACKUP_PATH"] . "assignment.csv";
+        $data = DB::table("assignment")->get();
+
         // Erase existing file
-        if (file_exists ( $filename )) {
-            $output = fopen($filename, 'w');
-        }
-        else {
-            $output = fopen($filename, 'x');
+        if (file_exists($filename)) {
+            $output = fopen($filename, "w");
+        } else {
+            $output = fopen($filename, "x");
         }
         // Set up the first row
-        fputcsv($output, array(
-            'id', 
-            'date',
-            'resident',
-            'schedule',
-            'attending'
-        ));
+        fputcsv($output, ["id", "date", "resident", "schedule", "attending"]);
         // Add all rows
         foreach ($data as $info) {
-            fputcsv($output, array(
-                $info['id'],
-                $info['date'],
-                $info['resident'],
-                $info['schedule'],
-                $info['attending']
-            ));
+            fputcsv($output, [$info["id"], $info["date"], $info["resident"], $info["schedule"], $info["attending"]]);
         }
 
         // Close file
         fclose($output);
-    
     }
 
     /**
@@ -100,16 +84,15 @@ class CreateAssignmentTable extends Migration
      */
     public function up()
     {
-        Schema::create('assignment', function (Blueprint $table) {
-            
+        Schema::create("assignment", function (Blueprint $table) {
             // Primary Key
-            $table->increments('id');
+            $table->increments("id");
 
-            $table->date('date'); // Date
-            $table->unsignedInteger('resident'); // ID of the resident
-            $table->unsignedInteger('schedule')->unique(); // ID of the schedule           
-            $table->string('attending');     // ID of the attending
-            
+            $table->date("date"); // Date
+            $table->unsignedInteger("resident"); // ID of the resident
+            $table->unsignedInteger("schedule")->unique(); // ID of the schedule
+            $table->string("attending"); // ID of the attending
+
             // Add for future extension
             $table->timestamps();
         });
@@ -126,6 +109,6 @@ class CreateAssignmentTable extends Migration
     {
         self::backup();
 
-        Schema::dropIfExists('assignment');
+        Schema::dropIfExists("assignment");
     }
 }

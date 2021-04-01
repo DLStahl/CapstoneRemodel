@@ -13,12 +13,12 @@ class CreateTaskAbbreviationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('task_abbreviations', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('abbreviation');
+        Schema::create("task_abbreviations", function (Blueprint $table) {
+            $table->increments("id");
+            $table->string("abbreviation");
             $table->timestamps();
 
-            $table->unique('abbreviation');
+            $table->unique("abbreviation");
         });
     }
 
@@ -29,6 +29,6 @@ class CreateTaskAbbreviationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('task_abbreviations');
+        Schema::dropIfExists("task_abbreviations");
     }
 }

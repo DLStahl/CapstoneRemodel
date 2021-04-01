@@ -14,26 +14,22 @@ class CreateAdminTable extends Migration
      */
     private function initialize()
     {
-        if (file_exists ( __DIR__.$_ENV["BACKUP_PATH"]."admin.csv" )) {
-
+        if (file_exists(__DIR__ . $_ENV["BACKUP_PATH"] . "admin.csv")) {
             /**
              * Read data from the backup file and add into database
              */
-            $fp = fopen(__DIR__.$_ENV["BACKUP_PATH"]."admin.csv", 'r');
-            
+            $fp = fopen(__DIR__ . $_ENV["BACKUP_PATH"] . "admin.csv", "r");
+
             // Read the first row
             fgetcsv($fp);
 
             // Read rows until null
-            while (($line = fgetcsv($fp)) !== false)
-            {
+            while (($line = fgetcsv($fp)) !== false) {
                 $id = $line[0];
                 $name = $line[1];
                 $email = $line[2];
-                $exists = $line[3];    
-                DB::table('admin')->insert(
-                    ['id' => $id, 'name' => $name, 'email' => $email, 'exists' => $exists]
-                );
+                $exists = $line[3];
+                DB::table("admin")->insert(["id" => $id, "name" => $name, "email" => $email, "exists" => $exists]);
             }
 
             // Close file
@@ -43,9 +39,9 @@ class CreateAdminTable extends Migration
         }
 
         // Insert the primary admin if backup file does not exist
-        DB::table('admin')->insert([
-            'email' => $_ENV["ADMIN_PRIMARY_EMAIL"], 
-            'name' => $_ENV["ADMIN_PRIMARY_NAME"]   
+        DB::table("admin")->insert([
+            "email" => $_ENV["ADMIN_PRIMARY_EMAIL"],
+            "name" => $_ENV["ADMIN_PRIMARY_NAME"],
         ]);
     }
 
@@ -56,39 +52,27 @@ class CreateAdminTable extends Migration
      */
     private function backup()
     {
-        /** 
+        /**
          * Save data sets into a csv file
-         */        
-        $filename = __DIR__.$_ENV["BACKUP_PATH"]."admin.csv";
-        $data = DB::table('admin')->get();
-        
+         */
+        $filename = __DIR__ . $_ENV["BACKUP_PATH"] . "admin.csv";
+        $data = DB::table("admin")->get();
+
         // Erase existing file
-        if (file_exists ( $filename )) {
-            $output = fopen($filename, 'w');
-        }
-        else {
-            $output = fopen($filename, 'x');
+        if (file_exists($filename)) {
+            $output = fopen($filename, "w");
+        } else {
+            $output = fopen($filename, "x");
         }
         // Set up the first row
-        fputcsv($output, array(
-            'id',
-            'name', 
-            'email',
-            'exists'
-        ));
+        fputcsv($output, ["id", "name", "email", "exists"]);
         // Add all rows
         foreach ($data as $info) {
-            fputcsv($output, array(
-                $info['id'],
-                $info['name'],
-                $info['email'],
-                $info['exists']
-            ));
+            fputcsv($output, [$info["id"], $info["name"], $info["email"], $info["exists"]]);
         }
 
         // Close file
         fclose($output);
-    
     }
 
     /**
@@ -98,21 +82,19 @@ class CreateAdminTable extends Migration
      */
     public function up()
     {
-        Schema::create('admin', function (Blueprint $table) {
-            
+        Schema::create("admin", function (Blueprint $table) {
             // Primary Key
-            $table->increments('id');
+            $table->increments("id");
 
-            $table->string('name'); // Name of the admin
-            $table->string('email')->unique(); // Email of the admin
-            $table->boolean('exists')->default(1); // Whether the resident exists
+            $table->string("name"); // Name of the admin
+            $table->string("email")->unique(); // Email of the admin
+            $table->boolean("exists")->default(1); // Whether the resident exists
 
             // Add for future extension
             $table->timestamps();
         });
 
         self::initialize();
-
     }
 
     /**
@@ -122,9 +104,8 @@ class CreateAdminTable extends Migration
      */
     public function down()
     {
-
         self::backup();
 
-        Schema::dropIfExists('admin');
+        Schema::dropIfExists("admin");
     }
 }

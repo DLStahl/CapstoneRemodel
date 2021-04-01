@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Constant extends Model
 {
     // Path used to open .csv files
-    const WEB_PATH = __DIR__."/../../resources/Resident_Education_Report.";
-    const CONSOLE_PATH = __DIR__."/../../resources/Resident_Education_Report.";
+    const WEB_PATH = __DIR__ . "/../../resources/Resident_Education_Report.";
+    const CONSOLE_PATH = __DIR__ . "/../../resources/Resident_Education_Report.";
     const EXTENSION = ".csv";
 
-    const EVAL_REPORT_PATH=__DIR__."/../../../evaluation/Resident_Evaluation_Report.";
+    const EVAL_REPORT_PATH = __DIR__ . "/../../../evaluation/Resident_Evaluation_Report.";
 
     /**
      * .csv Columns Index
@@ -29,5 +29,4 @@ class Constant extends Model
      * Output offset
      */
     const OFFSET_PROCEDURE = 9;
-
 }

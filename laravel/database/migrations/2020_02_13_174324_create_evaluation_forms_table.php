@@ -13,11 +13,11 @@ class CreateEvaluationFormsTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluation_forms', function (Blueprint $table) {
-            $table->increments('id');
-	    $table->text('form_type');
-	    $table->text('medhub_form_name');
-	    $table->integer('medhub_form_id');
+        Schema::create("evaluation_forms", function (Blueprint $table) {
+            $table->increments("id");
+            $table->text("form_type");
+            $table->text("medhub_form_name");
+            $table->integer("medhub_form_id");
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateEvaluationFormsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluation_forms');
+        Schema::dropIfExists("evaluation_forms");
     }
 }

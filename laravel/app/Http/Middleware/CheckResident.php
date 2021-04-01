@@ -20,10 +20,15 @@ class CheckResident
     {
         // If the user is not a resident or an admin
         $email = $_SERVER["HTTP_EMAIL"];
-        if (Admin::where('email', $email)->where('exists', '1')->doesntExist() && 
-            Resident::where('email', $email)->where('exists', '1')->doesntExist()) {
-           
-            return response('Unauthorized!', 401);            
+        if (
+            Admin::where("email", $email)
+                ->where("exists", "1")
+                ->doesntExist() &&
+            Resident::where("email", $email)
+                ->where("exists", "1")
+                ->doesntExist()
+        ) {
+            return response("Unauthorized!", 401);
         }
 
         return $next($request);

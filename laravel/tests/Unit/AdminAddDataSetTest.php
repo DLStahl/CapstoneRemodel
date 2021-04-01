@@ -22,14 +22,7 @@ class AdminAddDataSetTest extends TestCase
     public function testAdminAddDataSetDataTableHasData()
     {
         $AC = new AdminController();
-        $AC->getUpdateMilestone(
-            "add",
-            "true",
-            null,
-            "FakeAbbreviation",
-            "FakeFullName",
-            "FakeDetail"
-        );
+        $AC->getUpdateMilestone("add", "true", null, "FakeAbbreviation", "FakeFullName", "FakeDetail");
         $this->assertDatabaseHas("milestone", ["detail" => "FakeDetail"]);
         $fakeData = Milestone::where("detail", "FakeDetail")->first();
         $fakeData->delete();

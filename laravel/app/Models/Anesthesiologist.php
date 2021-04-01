@@ -11,7 +11,7 @@ class Anesthesiologist extends Model
      *
      * @var array
      */
-    protected $fillable = ['first_name', 'last_name', 'staff_key'];
+    protected $fillable = ["first_name", "last_name", "staff_key"];
 
     /**
      * https://laravel.com/docs/8.x/eloquent-relationships#one-to-many-inverse

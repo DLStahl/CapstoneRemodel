@@ -14,19 +14,17 @@ class CreateOptionTable extends Migration
      */
     private function initialize()
     {
-        if (file_exists ( __DIR__.$_ENV["BACKUP_PATH"]."option.csv" )) {
-
+        if (file_exists(__DIR__ . $_ENV["BACKUP_PATH"] . "option.csv")) {
             /**
              * Read data from the backup file and add into database
              */
-            $fp = fopen(__DIR__.$_ENV["BACKUP_PATH"]."option.csv", 'r');
-            
+            $fp = fopen(__DIR__ . $_ENV["BACKUP_PATH"] . "option.csv", "r");
+
             // Read the first row
             fgetcsv($fp);
 
             // Read rows until null
-            while (($line = fgetcsv($fp)) !== false)
-            {
+            while (($line = fgetcsv($fp)) !== false) {
                 $id = $line[0];
                 $date = $line[1];
                 $resident = $line[2];
@@ -35,16 +33,16 @@ class CreateOptionTable extends Migration
                 $option = $line[5];
                 $milestones = $line[6];
                 $objectives = $line[7];
-                
-                DB::table('option')->insert([
-                    'id' => $id, 
-                    'date' => $date,
-                    'resident' => $resident,
-                    'schedule' => $schedule,
-                    'attending' => $attending,
-                    'option' => $option,
-                    'milestones' => $milestones,
-                    'objectives' => $objectives
+
+                DB::table("option")->insert([
+                    "id" => $id,
+                    "date" => $date,
+                    "resident" => $resident,
+                    "schedule" => $schedule,
+                    "attending" => $attending,
+                    "option" => $option,
+                    "milestones" => $milestones,
+                    "objectives" => $objectives,
                 ]);
             }
 
@@ -62,47 +60,36 @@ class CreateOptionTable extends Migration
      */
     private function backup()
     {
-        /** 
+        /**
          * Save data sets into a csv file
-         */        
-        $filename = __DIR__.$_ENV["BACKUP_PATH"]."option.csv";
-        $data = DB::table('option')->get();
-        
+         */
+        $filename = __DIR__ . $_ENV["BACKUP_PATH"] . "option.csv";
+        $data = DB::table("option")->get();
+
         // Erase existing file
-        if (file_exists ( $filename )) {
-            $output = fopen($filename, 'w');
-        }
-        else {
-            $output = fopen($filename, 'x');
+        if (file_exists($filename)) {
+            $output = fopen($filename, "w");
+        } else {
+            $output = fopen($filename, "x");
         }
         // Set up the first row
-        fputcsv($output, array(
-            'id', 
-            'date',
-            'resident',
-            'schedule',
-            'attending',
-            'option',
-            'milestones',
-            'objectives'
-        ));
+        fputcsv($output, ["id", "date", "resident", "schedule", "attending", "option", "milestones", "objectives"]);
         // Add all rows
         foreach ($data as $info) {
-            fputcsv($output, array(
-                $info['id'],
-                $info['date'],
-                $info['resident'],
-                $info['schedule'],
-                $info['attending'],
-                $info['option'],
-                $info['milestones'],
-                $info['objectives']
-            ));
+            fputcsv($output, [
+                $info["id"],
+                $info["date"],
+                $info["resident"],
+                $info["schedule"],
+                $info["attending"],
+                $info["option"],
+                $info["milestones"],
+                $info["objectives"],
+            ]);
         }
 
         // Close file
         fclose($output);
-    
     }
 
     /**
@@ -112,15 +99,15 @@ class CreateOptionTable extends Migration
      */
     public function up()
     {
-        Schema::create('option', function (Blueprint $table) {
-            $table->increments('id');
-            $table->date('date');
-            $table->unsignedInteger('resident');
-            $table->unsignedInteger('schedule');            
-            $table->string('attending');
-            $table->unsignedInteger('option');
-            $table->longText('milestones')->nullable();
-            $table->longText('objectives')->nullable();          
+        Schema::create("option", function (Blueprint $table) {
+            $table->increments("id");
+            $table->date("date");
+            $table->unsignedInteger("resident");
+            $table->unsignedInteger("schedule");
+            $table->string("attending");
+            $table->unsignedInteger("option");
+            $table->longText("milestones")->nullable();
+            $table->longText("objectives")->nullable();
             $table->timestamps();
         });
 
@@ -136,6 +123,6 @@ class CreateOptionTable extends Migration
     {
         self::backup();
 
-        Schema::dropIfExists('option');
+        Schema::dropIfExists("option");
     }
 }
