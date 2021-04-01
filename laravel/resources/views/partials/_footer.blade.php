@@ -3,7 +3,7 @@
     <div id="footer">
         <div class="container">
             <div id="footer_left">
-                <p>&copy; @php echo date('Y');@endphp OSU Anesthesiology</p>
+                <p>&copy; {{ date('Y') }} OSU Anesthesiology</p>
             </div>
         </div>
     </div>
@@ -12,7 +12,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         if ((window.location.href.indexOf("secondday") > -1) || (window.location.href.indexOf("thirdday") > -
-            1)) {
+                1)) {
             $('#page_footer').css('position', 'fixed');
             $('#page_footer').css('bottom', '-15px');
             $('#page_footer').css('z-index', '5');

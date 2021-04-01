@@ -7,7 +7,6 @@
         if (strpos($_SERVER['REQUEST_URI'], 'secondday') !== false) {
             $url = '/laravel/public/resident/schedule/secondday';
         }
-        
     @endphp
     <meta http-equiv="refresh" content="0; URL={{ $url }}">
     <meta name="keywords" content="automatic redirection">

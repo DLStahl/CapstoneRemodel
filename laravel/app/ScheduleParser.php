@@ -100,14 +100,10 @@ class ScheduleParser extends Model
         ScheduleData::where("date", date("Y-m-d", strtotime($datefile . "+4 day")))->delete();
         Log::info("delete succ");
 
-        /**
-         * Open file
-         */
+        // Open file
         $fp = fopen($this->filepath, "r");
 
-        /**
-         * Read the first row
-         */
+        // Read the first row
         fgetcsv($fp);
 
         // store dates that updated schedule
@@ -173,9 +169,7 @@ class ScheduleParser extends Model
                 }
             }
         }
-        /**
-         * Close file
-         */
+        // Close file
         fclose($fp);
 
         return true;
@@ -218,9 +212,7 @@ class ScheduleParser extends Model
 
         Log::info($datefile);
 
-        /**
-         * Assign value to date
-         */
+        // Assign value to date
         $year = intval(substr($datefile, 0, 4));
         $month = intval(substr($datefile, 4, 2));
         $day = intval(substr($datefile, 6));

@@ -92,68 +92,51 @@ class AdminController extends Controller
             "name" => $name,
         ];
 
-        /**
-         * If the data input has not been confirmed, route user to a confirmation page.
-         */
+        // If the data input has not been confirmed, route user to a confirmation page.
         if (strcmp($flag, "false") == 0) {
             return view("schedules.admin.users_confirm", compact("data"));
         }
 
-        /**
-         * Update admin
-         */
+        // Update admin
         if (strcmp($role, "Admin") == 0) {
-            /**
-             * Delete admin, switch 'exists' to false
-             */
+            // Delete admin, switch 'exists' to false
             if (strcmp($op, "deleteUser") == 0) {
                 Admin::where("email", $email)->update(["exists" => "0"]);
             }
-            /**
-             * Add a new admin
-             */ elseif (strcmp($op, "addUser") == 0 && Admin::where("email", $email)->doesntExist()) {
+            // Add a new admin
+            elseif (strcmp($op, "addUser") == 0 && Admin::where("email", $email)->doesntExist()) {
                 Admin::insert(["name" => $name, "email" => $email]);
             }
-            /**
-             * Add an old admin, switch 'exists' to true
-             */ elseif (strcmp($op, "addUser") == 0 && Admin::where("email", $email)->exists()) {
+            // Add an old admin, switch 'exists' to true
+            elseif (strcmp($op, "addUser") == 0 && Admin::where("email", $email)->exists()) {
                 Admin::where("email", $email)->update(["exists" => "1"]);
             }
         }
-        /**
-         * Update attending
-         */ elseif (strcmp($role, "Attending") == 0) {
-            /**
-             * Delete attending, switch 'exists' to false
-             */
+        // Update attending
+        elseif (strcmp($role, "Attending") == 0) {
+            // Delete attending, switch 'exists' to false
             if (strcmp($op, "deleteUser") == 0) {
                 Attending::where("email", $email)->update(["exists" => "0"]);
             }
-            /**
-             * Add a new attending
-             */ elseif (strcmp($op, "addUser") == 0 && Attending::where("email", $email)->doesntExist()) {
+            // Add a new attending
+            elseif (strcmp($op, "addUser") == 0 && Attending::where("email", $email)->doesntExist()) {
                 $id = substr($name, strpos($name, "<") + 1, strpos($name, ">") - strpos($name, "<") - 1);
                 $name_ = substr($name, 0, strpos($name, "<"));
                 Attending::insert(["name" => $name_, "email" => $email, "id" => $id]);
             }
-            /**
-             * Add an old attending, switch 'exists' to true
-             */ elseif (strcmp($op, "addUser") == 0 && Attending::where("email", $email)->exists()) {
+            // Add an old attending, switch 'exists' to true
+            elseif (strcmp($op, "addUser") == 0 && Attending::where("email", $email)->exists()) {
                 Attending::where("email", $email)->update(["exists" => "1"]);
             }
         }
-        /**
-         * Update resident
-         */ elseif (strcmp($role, "Resident") == 0) {
-            /**
-             * Delete resident, switch 'exists' to false
-             */
+        // Update resident
+        elseif (strcmp($role, "Resident") == 0) {
+            // Delete resident, switch 'exists' to false
             if (strcmp($op, "deleteUser") == 0) {
                 Resident::where("email", $email)->update(["exists" => "0"]);
             }
-            /**
-             * Add a new resident
-             */ elseif (strcmp($op, "addUser") == 0 && Resident::where("email", $email)->doesntExist()) {
+            // Add a new resident
+            elseif (strcmp($op, "addUser") == 0 && Resident::where("email", $email)->doesntExist()) {
                 if (strpos($name, "<") === false) {
                     Resident::insert(["name" => $name, "email" => $email, "exists" => 1]);
                 } else {
@@ -162,9 +145,8 @@ class AdminController extends Controller
                     Resident::insert(["name" => $name_, "email" => $email, "exists" => 1, "medhubId" => $id]);
                 }
             }
-            /**
-             * Add an old admin, switch 'exists' to true
-             */ elseif (strcmp($op, "addUser") == 0 && Resident::where("email", $email)->exists()) {
+            // Add an old admin, switch 'exists' to true
+            elseif (strcmp($op, "addUser") == 0 && Resident::where("email", $email)->exists()) {
                 Resident::where("email", $email)->update(["exists" => "1"]);
             }
         }
@@ -351,9 +333,7 @@ class AdminController extends Controller
             "old_detail" => $old_detail,
         ];
 
-        /**
-         * If the data input has not been confirmed, route user to a confirmation page.
-         */
+        // If the data input has not been confirmed, route user to a confirmation page.
         if (strcmp($flag, "false") == 0) {
             return view("schedules.admin.milestones_confirm", compact("data"));
         }
@@ -383,16 +363,12 @@ class AdminController extends Controller
             $date = $_POST["date"];
             return view("schedules.admin.addDB", compact("date"));
         } elseif (strcmp($_POST["op"], "delete") == 0) {
-            /**
-             * Back up data sheets
-             */
+            // Back up data sheets
             AdminDownload::updateAccess();
             $urls = AdminDownload::updateURL($_POST["date"]);
 
             if ($urls !== null) {
-                /**
-                 * Delete selected data sets
-                 */
+                // Delete selected data sets
                 Assignment::where("date", $_POST["date"])->delete();
                 Option::where("date", $_POST["date"])->delete();
                 ScheduleData::where("date", $_POST["date"])->delete();

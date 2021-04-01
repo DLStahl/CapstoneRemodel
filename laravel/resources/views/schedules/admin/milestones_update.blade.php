@@ -4,7 +4,6 @@
     <title>REMODEL</title>
     @php
         $url = '/laravel/public/admin/milestones';
-        
     @endphp
     <meta http-equiv="refresh" content="0; URL={{ $url }}">
     <meta name="keywords" content="automatic redirection">

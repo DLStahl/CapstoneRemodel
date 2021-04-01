@@ -15,9 +15,7 @@ class CreateAdminTable extends Migration
     private function initialize()
     {
         if (file_exists(__DIR__ . $_ENV["BACKUP_PATH"] . "admin.csv")) {
-            /**
-             * Read data from the backup file and add into database
-             */
+            // Read data from the backup file and add into database
             $fp = fopen(__DIR__ . $_ENV["BACKUP_PATH"] . "admin.csv", "r");
 
             // Read the first row
@@ -52,9 +50,7 @@ class CreateAdminTable extends Migration
      */
     private function backup()
     {
-        /**
-         * Save data sets into a csv file
-         */
+        // Save data sets into a csv file
         $filename = __DIR__ . $_ENV["BACKUP_PATH"] . "admin.csv";
         $data = DB::table("admin")->get();
 

@@ -33,9 +33,7 @@ class ScheduleDataController extends Controller
      */
     private static function updateData(array $args = [])
     {
-        /**
-         * Set up default input values.
-         */
+        // Set up default input values.
         $date = $args["date"];
         $leadSurgeon = !isset($args["lead_surgeon"]) ? "TBD" : $args["lead_surgeon"];
         $start_time = !isset($args["start_time"]) ? "00:00:00" : $args["start_time"];
@@ -131,9 +129,7 @@ class ScheduleDataController extends Controller
             return;
         }
 
-        /**
-         * Get times
-         */
+        // Get times
         $tp = stripos($start_time_end_time, "_");
         $this->start_time = substr($start_time_end_time, 0, $tp);
         $this->end_time = substr($start_time_end_time, $tp + 1);

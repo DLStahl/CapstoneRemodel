@@ -38,10 +38,6 @@ class UpdateEvaluateData extends Command
      */
     public function handle()
     {
-        //
-        $parser = new EvaluationParser(
-            date("o", strtotime("today")) . date("m", strtotime("today")) . date("d", strtotime("today")),
-            true
-        );
+        $parser = new EvaluationParser(date("omd", strtotime("today")), true);
     }
 }

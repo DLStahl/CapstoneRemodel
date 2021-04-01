@@ -1,6 +1,6 @@
 @extends('main')
 @section('content')
-    <h3>Hello, @php echo $_SERVER["HTTP_DISPLAYNAME"]; @endphp,</h3>
+    <h3>Hello, {{ $_SERVER['HTTP_DISPLAYNAME'] }},</h3>
 
     <p>REMODEL (REsident MilestOne-baseD Educational Learning) is a system designed by David Stahl, MD (Associate Residency
         Program Director) in collaboration
@@ -39,11 +39,6 @@
 
     <br>
 
-    <!-- <br><br>
-     <a class="btn btn-primary" href="resident">Resident Page</a>
-     <br><br>
-     <a class="btn btn-primary" href="admin">Admin Page</a> -->
-
     <script type="text/javascript">
         function resident(access) {
             if (access) {
@@ -51,7 +46,7 @@
 
             } else alert(
                 'You must be a resident registered with this site to access this feature, please use the contact us link if you believe you should have access'
-                );
+            );
 
 
         }
@@ -64,7 +59,7 @@
 
             } else alert(
                 'You must be a site administrator to access this feature, please use the contact us link if you believe you should have access'
-                );
+            );
 
 
         }

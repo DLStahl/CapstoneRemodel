@@ -101,19 +101,19 @@
             console.log(filter_options);
 
             // Set initial filter options
-            var room = "@php echo $room @endphp";
+            var room = "{{ $room }}";
             $('#room').val(room);
 
-            var leadSurgeon = "@php echo $leadSurgeon @endphp";
+            var leadSurgeon = "{{ $leadSurgeon }}";
             $('#leadSurgeon').val(leadSurgeon);
 
-            var rotation = "@php echo $rotation @endphp";
+            var rotation = "{{ $rotation }}";
             $('#rotation').val(rotation);
 
-            var start_after = "@php echo $start_after @endphp";
+            var start_after = "{{ $start_after }}";
             $('#start_after').val(start_after);
 
-            var end_before = "@php echo $end_before @endphp";
+            var end_before = "{{ $end_before }}";
             $('#end_before').val(end_before);
 
         });
@@ -490,11 +490,11 @@
                 return today(startHour, startMinutes);
             }
 
-            var minTime = "@php echo $minTime @endphp";
+            var minTime = "{{ $minTime }}";
             console.log(minTime);
             var startTime = createTime(minTime);
 
-            var maxTime = "@php echo $maxTime @endphp";
+            var maxTime = "{{ $maxTime }}";
             console.log(maxTime);
             var endTime = createTime(maxTime);
 
@@ -671,9 +671,7 @@
                     $(selector).collapse(show ? "show" : "hide");
                 });
 
-                /**
-                 * Update url. - OLD method of doing filtering server side. That's fixed now.
-                 */
+                // Update url. - OLD method of doing filtering server side. That's fixed now.
                 //var current_url = window.location.href;
                 //var url = current_url.search('/filter/') > -1 ? current_url.substr(0, current_url.search('/filter/')) : current_url;
                 //url = url + "/filter/" + room_selected + "/" + leadSurgeon_selected + "/" + rotation_selected + "/" + start_after_selected + "_" + end_before_selected;
@@ -685,4 +683,4 @@
     @else
         <h2>No schedule found.</h2>
     @endif
-@endsection('content')
+@endsection

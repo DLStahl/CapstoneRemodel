@@ -142,11 +142,11 @@
     </style>
     <!--[if !IE]><!-->
     <style>
-        /* 
-    Max width before this PARTICULAR table gets nasty
-    This query will take effect for any screen smaller than 760px
-    and also iPads specifically.
-    */
+        /*
+        Max width before this PARTICULAR table gets nasty
+        This query will take effect for any screen smaller than 760px
+        and also iPads specifically.
+        */
         @media only screen and (max-width: 760px),
         (min-device-width: 768px) and (max-device-width: 1024px) {
             .btn {
@@ -198,9 +198,7 @@
                 white-space: nowrap;
             }
 
-            /*
-        Label the data
-        */
+            /* Label the data */
             td:nth-of-type(1):before {
                 content: "Name";
             }

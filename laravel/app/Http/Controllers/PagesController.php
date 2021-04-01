@@ -384,10 +384,7 @@ class PagesController extends Controller
 
     public function test()
     {
-        $parser = new EvaluationParser(
-            date("o", strtotime("today")) . date("m", strtotime("today")) . date("d", strtotime("today")),
-            true
-        );
+        $parser = new EvaluationParser(date("omd", strtotime("today")), true);
         return "test1";
     }
 }

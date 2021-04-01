@@ -31,11 +31,11 @@
 
     <script type="text/javascript">
         function confirmUpdate() {
-            var op = "@php echo $data['op'] @endphp";
-            var id = "@php echo $data['id'] @endphp";
-            var abbr_name = "@php echo $data['abbr_name'] @endphp";
-            var full_name = "@php echo $data['full_name'] @endphp";
-            var detail = "@php echo $data['detail'] @endphp";
+            var op = "{{ $data['op'] }}";
+            var id = "{{ $data['id'] }}";
+            var abbr_name = "{{ $data['abbr_name'] }}";
+            var full_name = "{{ $data['full_name'] }}";
+            var detail = "{{ $data['detail'] }}";
 
             // Update url to the update milstone datatable
             var current_url = window.location.href;

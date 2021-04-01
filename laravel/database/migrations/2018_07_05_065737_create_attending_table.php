@@ -15,9 +15,7 @@ class CreateAttendingTable extends Migration
     private function initialize()
     {
         if (file_exists(__DIR__ . $_ENV["BACKUP_PATH"] . "attending.csv")) {
-            /**
-             * Read data from the backup file and add into database
-             */
+            // Read data from the backup file and add into database
             $fp = fopen(__DIR__ . $_ENV["BACKUP_PATH"] . "attending.csv", "r");
 
             // Read the first row
@@ -46,9 +44,7 @@ class CreateAttendingTable extends Migration
      */
     private function backup()
     {
-        /**
-         * Save data sets into a csv file
-         */
+        // Save data sets into a csv file
         $filename = __DIR__ . $_ENV["BACKUP_PATH"] . "attending.csv";
         $data = DB::table("attending")->get();
 

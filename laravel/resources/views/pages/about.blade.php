@@ -26,15 +26,17 @@
                     @endif
                 </tr>
                 <tr>
-                    <td align="left">@php
-                        if (date('l', strtotime('today')) == 'Friday') {
-                            echo date('l', strtotime('+3 day')), ' ', date('F', strtotime('+3 day')), ' ', date('j', strtotime('+3 day'));
-                        } elseif (date('l', strtotime('today')) == 'Saturday') {
-                            echo date('l', strtotime('+2 day')), ' ', date('F', strtotime('+2 day')), ' ', date('j', strtotime('+2 day'));
-                        } else {
-                            echo date('l', strtotime('+1 day')), ' ', date('F', strtotime('+1 day')), ' ', date('j', strtotime('+1 day'));
-                        }
-                    @endphp</td>
+                    <td align="left">
+                        @php
+                            if (date('l', strtotime('today')) == 'Friday') {
+                                echo date('l', strtotime('+3 day')), ' ', date('F', strtotime('+3 day')), ' ', date('j', strtotime('+3 day'));
+                            } elseif (date('l', strtotime('today')) == 'Saturday') {
+                                echo date('l', strtotime('+2 day')), ' ', date('F', strtotime('+2 day')), ' ', date('j', strtotime('+2 day'));
+                            } else {
+                                echo date('l', strtotime('+1 day')), ' ', date('F', strtotime('+1 day')), ' ', date('j', strtotime('+1 day'));
+                            }
+                        @endphp
+                    </td>
                     <td align="left">
                         @if (!is_null($data['firstday']))
                             {!! nl2br($data['firstday']) !!}
@@ -42,18 +44,18 @@
                     </td>
                 </tr>
                 <tr>
-                    <td align="left">@php
-                        
-                        if (date('l', strtotime('today')) == 'Thursday') {
-                            echo date('l', strtotime('+4 day')), ' ', date('F', strtotime('+4 day')), ' ', date('j', strtotime('+4 day'));
-                        } elseif (date('l', strtotime('today')) == 'Friday') {
-                            echo date('l', strtotime('+4 day')), ' ', date('F', strtotime('+4 day')), ' ', date('j', strtotime('+4 day'));
-                        } elseif (date('l', strtotime('today')) == 'Saturday') {
-                            echo date('l', strtotime('+3 day')), ' ', date('F', strtotime('+3 day')), ' ', date('j', strtotime('+3 day'));
-                        } else {
-                            echo date('l', strtotime('+2 day')), ' ', date('F', strtotime('+2 day')), ' ', date('j', strtotime('+2 day'));
-                        }
-                    @endphp
+                    <td align="left">
+                        @php
+                            if (date('l', strtotime('today')) == 'Thursday') {
+                                echo date('l', strtotime('+4 day')), ' ', date('F', strtotime('+4 day')), ' ', date('j', strtotime('+4 day'));
+                            } elseif (date('l', strtotime('today')) == 'Friday') {
+                                echo date('l', strtotime('+4 day')), ' ', date('F', strtotime('+4 day')), ' ', date('j', strtotime('+4 day'));
+                            } elseif (date('l', strtotime('today')) == 'Saturday') {
+                                echo date('l', strtotime('+3 day')), ' ', date('F', strtotime('+3 day')), ' ', date('j', strtotime('+3 day'));
+                            } else {
+                                echo date('l', strtotime('+2 day')), ' ', date('F', strtotime('+2 day')), ' ', date('j', strtotime('+2 day'));
+                            }
+                        @endphp
                         @if (!is_null($data['secondday']['first']))
                             <br><button class="btn btn-md btn-success" onclick="milestones()">Edit <br>Milestones
                                 Objectives</button>
@@ -115,7 +117,7 @@
 
             <script>
                 function milestones() {
-                    var ids = "@php echo $data['ids'] @endphp";
+                    var ids = "{{ $data['ids'] }}";
                     var current_url = window.location.href;
                     var url = current_url.substr(0, current_url.search('/resident/'));
                     url = url + "/resident/schedule/milestonesEdit/" + ids + "/";

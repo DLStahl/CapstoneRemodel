@@ -49,10 +49,7 @@ class UpdateScheduleData extends Command
         }
 
         if ((int) Status::where("date", $date)->value("schedule") < 1) {
-            $parser = new ScheduleParser(
-                date("o", strtotime("today")) . date("m", strtotime("today")) . date("d", strtotime("today")),
-                true
-            );
+            $parser = new ScheduleParser(date("omd", strtotime("today")), true);
 
             // insert static options
             $staticDate = date("Y-m-d", strtotime("+2 Weekday"));

@@ -36,12 +36,9 @@
         </thead>
 
         <tbody>
-            @php
-                $count = 1;
-            @endphp
             @foreach ($evaluate_data as $row)
                 <tr>
-                    <td align="left">{{ $count }}</td>
+                    <td align="left">{{ $loop->iteration }}</td>
                     @if ($row['location'] != null)
                         <td align="left">{{ $row['location'] }}</td>
                     @else
@@ -54,9 +51,8 @@
                     @endif
                     @if ($row['procedure'] != null)
                         <td align="left"> -
-                            @php
-                                $procedure = preg_replace("/\n/", "\n- ", $row['procedure']);
-                            echo nl2br($procedure); @endphp</td>
+                            {{ nl2br(preg_replace("/\n/", "\n- ", $row['procedure'])) }}
+                        </td>
                     @else
                         <td align="left"><br></td>
                     @endif
@@ -86,19 +82,12 @@
                     @else
                         <td align="left">TBD</td>
                     @endif
-
-                    @php
-                        $count = $count + 1;
-                    @endphp
-
                 </tr>
             @endforeach
         </tbody>
     </table>
 
-
     <br><br><br>
-
 
     <style>
         table {
@@ -142,11 +131,11 @@
 
     <!--[if !IE]><!-->
     <style>
-        /* 
-    Max width before this PARTICULAR table gets nasty
-    This query will take effect for any screen smaller than 760px
-    and also iPads specifically.
-    */
+        /*
+        Max width before this PARTICULAR table gets nasty
+        This query will take effect for any screen smaller than 760px
+        and also iPads specifically.
+        */
         @media only screen and (max-width: 1200px) {
 
             /* Force table to not be like tables anymore */
@@ -193,9 +182,7 @@
                 white-space: normal;
             }
 
-            /*
-        Label the data
-        */
+            /* Label the data */
             #sched_table td:nth-of-type(1):before {
                 content: "No.";
             }
@@ -236,4 +223,4 @@
     </style>
     <!--<![endif]-->
 
-@endsection('content')
+@endsection

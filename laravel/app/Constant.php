@@ -13,9 +13,7 @@ class Constant extends Model
 
     const EVAL_REPORT_PATH = __DIR__ . "/../../../evaluation/Resident_Evaluation_Report.";
 
-    /**
-     * .csv Columns Index
-     */
+    // .csv Columns Index
     const DATE = 0;
     const LOCATION = 1;
     const ROOM = 2;
@@ -25,8 +23,6 @@ class Constant extends Model
     const START_TIME = 6;
     const END_TIME = 7;
 
-    /**
-     * Output offset
-     */
+    // Output offset
     const OFFSET_PROCEDURE = 9;
 }

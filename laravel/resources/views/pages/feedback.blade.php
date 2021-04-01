@@ -7,9 +7,7 @@
     use App\Models\Resident;
     use App\Models\Attending;
 
-    /**
-     * Determine the role of the current user
-     */
+    // Determine the role of the current user
     $email = $_SERVER['HTTP_EMAIL'];
     $role = null;
     $data = null;
