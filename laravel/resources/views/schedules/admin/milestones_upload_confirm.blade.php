@@ -5,9 +5,9 @@
     @elseif (sizeof($data['new']) > 0 || sizeof($data['update']) > 0 ||sizeof($data['invalid']) > 0)
         <br>
         <form id="uploadFileForm" action="./uploadUpdate" method="post">
-            <input hidden type="text" value="{{$filepath}}" name="filepath">
+            <input hidden type="text" value="{{ $filepath }}" name="filepath">
 
-            @if(sizeof($data['new'])>0)
+            @if (sizeof($data['new']) > 0)
                 <h4>These milestones will be added:</h4>
                 <table class="table table-striped table-bordered" id="modify_table">
                     <tr>
@@ -17,15 +17,15 @@
                     </tr>
                     @foreach ($data['new'] as $mile)
                         <tr>
-                            <td> {{$mile['abbr_name']}} </td>
-                            <td> {{$mile['full_name']}} </td>
-                            <td> {{$mile['detail']}} </td>
+                            <td> {{ $mile['abbr_name'] }} </td>
+                            <td> {{ $mile['full_name'] }} </td>
+                            <td> {{ $mile['detail'] }} </td>
                         </tr>
                     @endforeach
                 </table>
                 <br>
             @endif
-            @if(sizeof($data['update'])>0)
+            @if (sizeof($data['update']) > 0)
                 <h4>These milestones will be updated:</h4>
                 <table class="table table-striped table-bordered" id="modify_table">
                     <tr>
@@ -35,15 +35,15 @@
                     </tr>
                     @foreach ($data['update'] as $mile)
                         <tr>
-                            <td> {{$mile['abbr_name']}} </td>
-                            <td> {{$mile['full_name']}} </td>
-                            <td> {{$mile['detail']}} </td>
+                            <td> {{ $mile['abbr_name'] }} </td>
+                            <td> {{ $mile['full_name'] }} </td>
+                            <td> {{ $mile['detail'] }} </td>
                         </tr>
                     @endforeach
                 </table>
                 <br>
             @endif
-            @if(sizeof($data['invalid'])>0)
+            @if (sizeof($data['invalid']) > 0)
                 <h4>These milestones will not be updated because they don't have complete information:</h4>
                 <table class="table table-striped table-bordered" id="modify_table">
                     <tr>
@@ -53,15 +53,15 @@
                     </tr>
                     @foreach ($data['invalid'] as $mile)
                         <tr>
-                            <td> {{$mile['abbr_name']}} </td>
-                            <td> {{$mile['full_name']}} </td>
-                            <td> {{$mile['detail']}} </td>
+                            <td> {{ $mile['abbr_name'] }} </td>
+                            <td> {{ $mile['full_name'] }} </td>
+                            <td> {{ $mile['detail'] }} </td>
                         </tr>
                     @endforeach
                 </table>
                 <br>
             @endif
-            @if(sizeof($data['new'])>0 || sizeof($data['update'])>0)
+            @if (sizeof($data['new']) > 0 || sizeof($data['update']) > 0)
                 <button type="submit" class="btn btn-success">Confirm</button>
             @endif
         </form>

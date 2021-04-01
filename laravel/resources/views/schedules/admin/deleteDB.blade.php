@@ -3,10 +3,7 @@
 
     <h4>Successfully Deleted Data Sets!</h4>
 
-    <?php
-        foreach ($urls as $url)
-        {
-            echo "<script>window.open('".$url."', '_blank')</script>";
-        }  
-    ?>
+    @foreach (urls as url)
+        <script>window.open("{{ $url}}", "_blank");</script>
+    @endforeach
 @endsection
