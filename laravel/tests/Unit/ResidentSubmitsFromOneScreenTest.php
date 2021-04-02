@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\ScheduleDataController;
 
-class ResidentSubmitsFromOneScreen extends TestCase
+class ResidentSubmitsFromOneScreenTest extends TestCase
 {
     /**
      * Test to check a certain user exists

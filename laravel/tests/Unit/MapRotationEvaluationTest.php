@@ -6,7 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class MapRotationEvaluation extends TestCase
+class MapRotationEvaluationTest extends TestCase
 {
     /**
      * A basic test to check that the residents table has values

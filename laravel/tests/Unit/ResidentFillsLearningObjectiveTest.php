@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\ScheduleDataController;
 
-class ResidentFillsLearningObjective extends TestCase
+class ResidentFillsLearningObjectiveTest extends TestCase
 {
     /**
      * Test to check a certain user exists

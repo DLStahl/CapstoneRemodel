@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\ScheduleDataController;
 
-class ResidentViewTable extends TestCase
+class ResidentViewTableTest extends TestCase
 {
     public function testViewScheduleDataHasStartTime()
     {

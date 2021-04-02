@@ -9,7 +9,7 @@ use App\ScheduleParser;
 use App\Option;
 use App\Http\Controllers\ScheduleDataController;
 
-class GenerateSendNotificationForOverwrite extends TestCase
+class GenerateSendNotificationForOverwriteTest extends TestCase
 {
     public function testOption1ForTestResidentHasOneValue()
     {

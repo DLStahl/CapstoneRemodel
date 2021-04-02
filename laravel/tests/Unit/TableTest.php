@@ -1,12 +1,9 @@
 <?php
 
-namespace Tests;
+namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 
 use App\Resident;
 use App\ScheduleData;
@@ -14,7 +11,7 @@ use App\Attending;
 use App\Admin;
 use App\Option;
 
-class ExampleTest extends TestCase
+class TableTest extends TestCase
 {
     public function testDBAdminXY()
     {

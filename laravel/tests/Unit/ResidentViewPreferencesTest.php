@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\ScheduleDataController;
 
-class ResidentViewPreferences extends TestCase
+class ResidentViewPreferencesTest extends TestCase
 {
     /**
      * Test to check a certain user exists

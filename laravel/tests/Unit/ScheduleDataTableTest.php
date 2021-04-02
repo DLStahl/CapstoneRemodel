@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\ScheduleDataController;
 
-class ScheduleDataControllerTestForScheduleTable extends TestCase
+class ScheduleDataTableTest extends TestCase
 {
     public function testScheduleDataHasStartTime()
     {

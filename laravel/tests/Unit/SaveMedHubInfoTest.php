@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\MedhubController;
 
-class SaveMedHubInfo extends TestCase
+class SaveMedHubInfoTest extends TestCase
 {
     /**
      * A basic test example.

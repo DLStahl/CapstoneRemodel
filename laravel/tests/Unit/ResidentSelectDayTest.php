@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\ScheduleDataController;
 
-class ResidentConfirmationFlow extends TestCase
+class ResidentSelectDayTest extends TestCase
 {
     public function testFlow()
     {
