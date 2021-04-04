@@ -37,9 +37,6 @@ class EvaluationParser extends Model
             return false;
         }
         Log::info("Parse evaluation data for " . $this->date);
-        $date = date('Y-m-d'); //delete
-		$date = strtotime('-1 day', strtotime($date));
-		$yesterday = date('Y-m-d', $date);
         $fp = fopen($this->filepath, 'r');
         // amount of minutes that resident and attending need to overlap to have an evaluation
         $time_difference = DB::table('variables')->where('name', 'time_before_attending_evaluates_resident')->value('value');
@@ -57,12 +54,13 @@ class EvaluationParser extends Model
             $residentsInFile = $participants['residentsInFile'];
             $attendingsInFile = $participants['attendingsInFile'];
             foreach ($participants['residentsInLine'] as $resident) {
-                if ($resident['diff'] >= $time_difference) {
+                if ($resident['diff'] > 0) {
                     foreach ($participants['attendingsInLine'] as $attending) {
-                        if ($attending['diff'] >= $time_difference) {
+                        if ($attending['diff'] > 0) {
                             // get the minimum amount of time resident and attending spent together 
                             $minutesOverlapped = (min(strtotime($resident['endTime']), strtotime($attending['endTime'])) - max(strtotime($resident['startTime']), strtotime($attending['startTime'])))/60;
-                            if ($minutesOverlapped >= $time_difference) {
+                            if ($minutesOverlapped > 0) {
+                                $date=self::getDate($line[0]);
                                 $diagnosis = $line[1];
                                 $procedure = $line[2];
                                 $location = $line[3];
@@ -73,7 +71,7 @@ class EvaluationParser extends Model
                                 $aId = $attending['id'];
                                 $aName = $attending['dbName'];
                                 EvaluateData::insert([
-                                    'date' => $yesterday, 
+                                    'date' => $date, 
                                     'location' => $location,
                                     'diagnosis' => $diagnosis,
                                     'procedure' => $procedure,
