@@ -14,15 +14,13 @@ use Illuminate\Support\Facades\Mail;
 use GuzzleHttp\Client;
 use Carbon\Carbon;
 
-class EvaluationParser extends Model {
+class EvaluationParser extends Model
+{
     protected $filepath;
     protected $date;
-    public $residentsFailedAdding = array(); // residents failed to add to DB
-    public $attendingsFailedAdding = array(); // attendings failed to add to DB
-    public $residentsInFile = array(); // all residents that appear in csv file
-    public $attendingsInFile = array(); // all attendings that appear in csv file
 
-    public function __construct($datefile) {
+    public function __construct($datefile)
+    {
         $this->filepath = Constant::EVAL_REPORT_PATH . $datefile . Constant::EXTENSION;
         // get date in yyyy-mm-dd format
         $year = intval(substr($datefile, 0, 4));
@@ -32,24 +30,32 @@ class EvaluationParser extends Model {
         self::insertEvaluateData();
     }
 
-    public function insertEvaluateData() {
+    public function insertEvaluateData()
+    {
         if (!file_exists($this->filepath)) {
             Log::info("no evaluation file: " . $this->date);
             return false;
         }
         Log::info("Parse evaluation data for " . $this->date);
-        $insertionDate = date('Y-m-d');
-		$yesterday = strtotime ( '-1 day' , strtotime ( $insertionDate ) ) ;
-		$dateInDB = date ( 'Y-m-d' , $yesterday );
+        $date = date('Y-m-d'); //delete
+		$date = strtotime('-1 day', strtotime($date));
+		$yesterday = date('Y-m-d', $date);
         $fp = fopen($this->filepath, 'r');
         // amount of minutes that resident and attending need to overlap to have an evaluation
         $time_difference = DB::table('variables')->where('name', 'time_before_attending_evaluates_resident')->value('value');
         $time_difference = (int)$time_difference;
-
+        $residentsFailedAdding = array();
+        $attendingsFailedAdding = array();
+        $residentsInFile = array();
+        $attendingsInFile = array();
         fgetcsv($fp);
         while (($line = fgetcsv($fp)) !== false) {
             // extract participants from Attending/Resident Times col
-            $participants = self::getParticipants($line[7]);
+            $participants = self::getParticipants($line[7], $residentsFailedAdding, $attendingsFailedAdding, $residentsInFile, $attendingsInFile);
+            $residentsFailedAdding = $participants['residentsFailedAdding'];
+            $attendingsFailedAdding = $participants['attendingsFailedAdding'];
+            $residentsInFile = $participants['residentsInFile'];
+            $attendingsInFile = $participants['attendingsInFile'];
             foreach ($participants['residentsInLine'] as $resident) {
                 if ($resident['diff'] >= $time_difference) {
                     foreach ($participants['attendingsInLine'] as $attending) {
@@ -66,24 +72,19 @@ class EvaluationParser extends Model {
                                 $rName = $resident['dbName'];
                                 $aId = $attending['id'];
                                 $aName = $attending['dbName'];
-                                
-                                //echo "\nEvaluation Data: " . $dateInDB . ": Diagnosis(" . $diagnosis . ") Resident(" . $rName . ") Attending(" . $aName . ") Diff(". $minutesOverlapped . ")";
-                                if (EvaluateData::where(['date' => $dateInDB, 'location' => $location, 'resident' => $rName, 'attending' => $aName])->doesntExist()) {
-                                    Log::info("Adding Evaluation Data: " . $dateInDB . ": Diagnosis(" . $diagnosis . ") Resident(" . $rName . ") Attending(" . $aName . ") Diff(". $minutesOverlapped . ")");
-                                    EvaluateData::insert([
-                                        'date' => $dateInDB, 
-                                        'location' => $location, 
-                                        'diagnosis' => $diagnosis, 
-                                        'procedure' => $procedure, 
-                                        'asa' => $asa, 
-                                        'rId' => $rId, 
-                                        'resident' => $rName, 
-                                        'aId' => $aId, 
-                                        'attending' => $aName, 
-                                        'diff' => $minutesOverlapped,
-                                        'created_at'=>Carbon::now()
-                                    ]);
-                                }
+                                EvaluateData::insert([
+                                    'date' => $yesterday, 
+                                    'location' => $location,
+                                    'diagnosis' => $diagnosis,
+                                    'procedure' => $procedure,
+                                    'asa' => $asa, 
+                                    'rId' => $rId,
+                                    'resident' => $rName,
+                                    'aId' => $aId,
+                                    'attending' => $aName,
+                                    'diff' => $minutesOverlapped,
+                                    'created_at' => Carbon::now()
+                                ]);
                             }
                         }
                     }
@@ -91,11 +92,12 @@ class EvaluationParser extends Model {
             }
         }
         //send emails for all users not added 
-        self::notifyForAllFailedUsers($this->residentsFailedAdding, $this->attendingsFailedAdding, "Melanie", "ferguson.881@osu.edu");
+        self::notifyForAllFailedUsers($residentsFailedAdding, $attendingsFailedAdding, "Melanie", "ferguson.881@osu.edu");
         fclose($fp);
     }
 
-    private function getParticipants($line) {
+    private function getParticipants($line, $residentsFailedAdding, $attendingsFailedAdding, $residentsInFile, $attendingsInFile)
+    {
         $residentsInLine = array();
         $attendingsInLine = array();
         $line = $line . "\n";
@@ -119,14 +121,14 @@ class EvaluationParser extends Model {
                 $endTime = self::getTime($match[1], $this->date);
                 // get # of minutes between start and end time
                 $diff = self::getMinutesDiff($startTime, $endTime);
-                
-                if($occupation == 0){
+
+                if ($occupation == 0) {
                     // if resident hasn't been encountered in file, get info
-                    if(!array_key_exists($name, $this->residentsInFile)){
+                    if (!array_key_exists($name, $residentsInFile)) {
                         $residentInfo = self::getParticipantInfo('Resident', $name);
                         // if not found in DB or added and not already encountered- store to send email later
-                        if(!$residentInfo['found'] && !array_key_exists($residentInfo['name'],$this->residentsFailedAdding)){
-                            $this->residentsFailedAdding[$residentInfo['name']] = $residentInfo['emailMessage'];
+                        if (!$residentInfo['found'] && !array_key_exists($residentInfo['name'], $residentsFailedAdding)) {
+                            $residentsFailedAdding[$residentInfo['name']] = $residentInfo['emailMessage'];
                         }
                         $rId = $residentInfo['id'];
                         $rName = $residentInfo['name'];
@@ -139,9 +141,9 @@ class EvaluationParser extends Model {
                             'id' => $rId,
                             'dbName' => $rName
                         );
-                        $this->residentsInFile[$name] = $resident;  
-                    }else{
-                        $resident = $this->residentsInFile[$name];
+                        $residentsInFile[$name] = $resident;
+                    } else {
+                        $resident = $residentsInFile[$name];
                         $resident = array(
                             'fullName' => $name,
                             'occupation' => $occupation,
@@ -151,16 +153,16 @@ class EvaluationParser extends Model {
                             'id' => $resident['id'],
                             'dbName' => $resident['dbName']
                         );
-                        $this->residentsInFile[$name] = $resident;
+                        $residentsInFile[$name] = $resident;
                     }
                     array_push($residentsInLine, $resident);
-                }else{
+                } else {
                     // if attending hasn't been encountered in file, get info
-                    if(!array_key_exists($name, $this->attendingsInFile)){
+                    if (!array_key_exists($name, $attendingsInFile)) {
                         $attendingInfo = self::getParticipantInfo('Attending', $name);
                         // if not found in DB or added - store to send email later
-                        if(!$attendingInfo['found'] && !array_key_exists($attendingInfo['name'], $this->attendingsFailedAdding)){
-                            $this->attendingFailedAdding[$attendingInfo['name']] = $attendingInfo['emailMessage'];
+                        if (!$attendingInfo['found'] && !array_key_exists($attendingInfo['name'], $attendingsFailedAdding)) {
+                            $attendingFailedAdding[$attendingInfo['name']] = $attendingInfo['emailMessage'];
                         }
                         $aId = $attendingInfo['id'];
                         $aName = $attendingInfo['name'];
@@ -173,9 +175,9 @@ class EvaluationParser extends Model {
                             'id' => $aId,
                             'dbName' => $aName
                         );
-                        $this->attendingsInFile[$name] = $attending;
-                    }else{
-                        $attending = $this->attendingsInFile[$name];
+                        $attendingsInFile[$name] = $attending;
+                    } else {
+                        $attending = $attendingsInFile[$name];
                         $attending = array(
                             'fullName' => $name,
                             'occupation' => $occupation,
@@ -185,7 +187,7 @@ class EvaluationParser extends Model {
                             'id' => $attending['id'],
                             'dbName' => $attending['dbName']
                         );
-                        $this->attendingsInFile[$name] = $attending;
+                        $attendingsInFile[$name] = $attending;
                     }
                     array_push($attendingsInLine, $attending);
                 }
@@ -194,17 +196,23 @@ class EvaluationParser extends Model {
         }
         return array(
             'residentsInLine' => $residentsInLine,
-            'attendingsInLine' =>$attendingsInLine
+            'attendingsInLine' => $attendingsInLine,
+            'residentsFailedAdding' => $residentsFailedAdding,
+            'attendingsFailedAdding' => $attendingsFailedAdding,
+            'residentsInFile' => $residentsInFile,
+            'attendingsInFile' => $attendingsInFile,
         );
     }
 
-    private static function getOccupation($line) {
+    private static function getOccupation($line)
+    {
         if ($line == "Anesthesiologist") return 1;
         else return 0;
     }
 
-    public static function getTime($line, $date) {
-        if ($line == "Now" || $line == "now"  ) return $date . " " . "05:00";
+    public static function getTime($line, $date)
+    {
+        if ($line == "Now" || $line == "now") return $date . " " . "05:00";
         $date = null;
         $hourInt = null;
         $minuteInt = null;
@@ -220,28 +228,31 @@ class EvaluationParser extends Model {
         return $date . " " . $hourInt . ":" . $minuteInt;
     }
 
-    public static function getDate($line) {
+    public static function getDate($line)
+    {
         $month = intval(substr($line, 0, 2));
         $day = intval(substr($line, 3, 2));
         $year = intval(substr($line, 6));
         return ($year . "-" . $month . "-" . $day);
     }
 
-    public static function getMinutesDiff($startTime, $endTime) {
+    public static function getMinutesDiff($startTime, $endTime)
+    {
         return (strtotime($endTime) - strtotime($startTime)) / 60;
     }
-    
+
     // get id and name for participant 
     //check DB first, if it doesn't exist use Find People OSU and Medhub calls and insert in DB
-    public function getParticipantInfo($userType, $name){
+    public function getParticipantInfo($userType, $name)
+    {
         $possibleNames = self::getNamePossibilities($name);
         $foundParticipant = false;
         $participantInfo = array();
-        foreach($possibleNames as $possibleName){
+        foreach ($possibleNames as $possibleName) {
             $namefl = $possibleName[0] . " " . $possibleName[1];
-            if(strcmp($userType, 'Resident') == 0) {
+            if (strcmp($userType, 'Resident') == 0) {
                 $resident = Resident::where('name', $namefl)->first();
-                if(!is_null($resident)){
+                if (!is_null($resident)) {
                     $foundParticipant = true;
                     $participantInfo = array(
                         'found' => $foundParticipant,
@@ -251,22 +262,22 @@ class EvaluationParser extends Model {
                     );
                     break;
                 }
-            }else{
+            } else {
                 $attending = Attending::where('name', $namefl)->first();
-                if(!is_null($attending)){   
+                if (!is_null($attending)) {
                     $foundParticipant = true;
                     $participantInfo = array(
                         'found' => $foundParticipant,
                         'id' => $attending->id,
                         'name' => $attending->name,
-                        'emailMessage' => '' 
+                        'emailMessage' => ''
                     );
                     break;
                 }
             }
         }
         // if not in DB - get info and add to DB
-        if(!$foundParticipant){
+        if (!$foundParticipant) {
             $participantInfo = self::findAndInsertParticipantInDB($userType, $possibleNames);
         }
         return $participantInfo;
@@ -275,40 +286,40 @@ class EvaluationParser extends Model {
     // use Find People OSU to find participant name and email
     // use Medhub to get participant medhubId
     // insert into DB if successful and return id and name 
-    public function findAndInsertParticipantInDB($userType, $possibleNames){
+    public function findAndInsertParticipantInDB($userType, $possibleNames)
+    {
         $MHC = new MedhubController();
         $participantID = NULL;
         $foundParticipant = true;
-        $emailMessage ='';
-        $oSUFindPeopleResults =self::getParticipantNameAndEmail($userType, $possibleNames);
+        $emailMessage = '';
+        $oSUFindPeopleResults = self::getParticipantNameAndEmail($userType, $possibleNames);
         $medhubResults = $MHC->getMedhubId($userType, $oSUFindPeopleResults['name']);
         // if osu find people or medhub search failed - send message
-        if(!$oSUFindPeopleResults['foundNameAndEmail'] || is_null($medhubResults['medhubId'])){
+        if (!$oSUFindPeopleResults['foundNameAndEmail'] || is_null($medhubResults['medhubId'])) {
             $emailMessage = $medhubResults['emailMessage'] . $oSUFindPeopleResults['emailMessage'];
             $foundParticipant = false;
-        }else{
-            if(strcmp($userType, 'Resident') == 0){
+        } else {
+            if (strcmp($userType, 'Resident') == 0) {
                 $participantID = Resident::insertGetId([
                     'name' => $oSUFindPeopleResults['name'],
                     'email' => $oSUFindPeopleResults['email'],
                     'exists' => 1,
                     'medhubId' => $medhubResults['medhubId'],
-                    'created_at'=>Carbon::now()
+                    'created_at' => Carbon::now()
                 ]);
-            }else {
+            } else {
                 Attending::insert([
                     'name' => $oSUFindPeopleResults['name'],
                     'email' => $oSUFindPeopleResults['email'],
                     'exists' => 1,
                     'id' => $medhubResults['medhubId'],
-                    'created_at'=>Carbon::now()
+                    'created_at' => Carbon::now()
                 ]);
                 $participantID = $medhubResults['medhubId'];
-
             }
         }
         return array(
-            'found' =>$foundParticipant,
+            'found' => $foundParticipant,
             'id' => $participantID,
             'name' => $oSUFindPeopleResults['name'],
             'emailMessage' => $emailMessage
@@ -319,16 +330,17 @@ class EvaluationParser extends Model {
     // possibleNames = array of name arrays with 
     // [0] = first name
     // [1] = last name
-	public function getParticipantNameAndEmail($userType, $possibleNames) {
+    public function getParticipantNameAndEmail($userType, $possibleNames)
+    {
         // if only one name possible
-        if(count($possibleNames) == 1) {
+        if (count($possibleNames) == 1) {
             $results = self::findParticipantWithFindPeopleOSU($possibleNames[0][0], $possibleNames[0][1], $userType);
-        }else {
-            foreach($possibleNames as $possibleName){
-                $results = self::findParticipantWithFindPeopleOSU($possibleName[0], $possibleName[1],$userType);
-                if ($results['found']){
+        } else {
+            foreach ($possibleNames as $possibleName) {
+                $results = self::findParticipantWithFindPeopleOSU($possibleName[0], $possibleName[1], $userType);
+                if ($results['found']) {
                     break;
-                } 
+                }
             }
         }
         return array(
@@ -337,30 +349,31 @@ class EvaluationParser extends Model {
             'email' => $results['osuEmail'],
             'emailMessage' => $results['emailMessage']
         );
-	}
+    }
 
-    public function findParticipantWithFindPeopleOSU($firstName, $lastName, $userType){
+    public function findParticipantWithFindPeopleOSU($firstName, $lastName, $userType)
+    {
         $participantFound = false;
         $osuEmail = NULL;
         $name = $firstName . ' ' . $lastName;
         $peopleFound = array();
-        try{
+        try {
             $peopleFound = json_decode(self::findPeopleOSU($firstName, $lastName)->getBody(), true);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             Log::debug('Exception: Error in Find People OSU request for name (' . $name . '). Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
         }
         if (sizeof($peopleFound) == 0) {
-            $emailMessage = 'No matches for ' . $userType . ' ' . $name. ' were found by OSU Find People. The ' . $userType . ' may be using a preffered name at OSU. Please check the information and add user to database manually.';
-        } else if (sizeof($peopleFound) == 1){
+            $emailMessage = 'No matches for ' . $userType . ' ' . $name . ' were found by OSU Find People. The ' . $userType . ' may be using a preffered name at OSU. Please check the information and add user to database manually.';
+        } else if (sizeof($peopleFound) == 1) {
             $osuEmail = $peopleFound[0]['email'];
             // check if person has Anesthesiology as part of their organization field
-            if (sizeof($peopleFound[0]['appointments']) > 0 && strpos($peopleFound[0]['appointments'][0]['organization'],'Anesthesiology') !== false) {
+            if (sizeof($peopleFound[0]['appointments']) > 0 && strpos($peopleFound[0]['appointments'][0]['organization'], 'Anesthesiology') !== false) {
                 $participantFound = true;
                 $emailMessage = $userType . ' ' . $name . ' was found by OSU Find People with email address (' . $osuEmail . ').';
-            }else{
-                $emailMessage = $userType . ' ' . $name . ' with email ('. $osuEmail .') was found by OSU Find People but is not an Anesthesiology ' . $userType . '. Please check the information and add user to database manually.';
+            } else {
+                $emailMessage = $userType . ' ' . $name . ' with email (' . $osuEmail . ') was found by OSU Find People but is not an Anesthesiology ' . $userType . '. Please check the information and add user to database manually.';
             }
-        } else{
+        } else {
             $emailMessage = 'Multiple matches for ' . $userType . ' ' . $name . ' were found by OSU Find People. Please check the information and add user to database manually. ';
         }
         return array(
@@ -371,78 +384,94 @@ class EvaluationParser extends Model {
         );
     }
 
-    public static function findPeopleOSU($firstName, $lastName) {
-		$client = new Client([
-			'base_uri' => 'http://directory.osu.edu/'
-		]);
-		$callPath = 'fpjson.php?';
+    public static function findPeopleOSU($firstName, $lastName)
+    {
+        $client = new Client([
+            'base_uri' => 'http://directory.osu.edu/'
+        ]);
+        $callPath = 'fpjson.php?';
         $query = "firstname=$firstName&lastname=$lastName";
-		//echo 'find people OSU: http://directory.osu.edu/fpjson.php?' . $query . "\n";
-		return $client->request('GET', $callPath, ['query' => $query]);
-	}
+        //echo 'find people OSU: http://directory.osu.edu/fpjson.php?' . $query . "\n";
+        return $client->request('GET', $callPath, ['query' => $query]);
+    }
 
     // Given a full name, return all possible first and last name combos
-	// - returns an array of possible name arrays
-	// - where a name array: [0] = first name string and [1] = last name string
-    public static function getNamePossibilities($name){
-		$nameParts = explode(" ", $name);
+    // - returns an array of possible name arrays
+    // - where a name array: [0] = first name string and [1] = last name string
+    public static function getNamePossibilities($name)
+    {
+        $nameParts = explode(" ", $name);
         $listOfSuffixes = ["II", "III", "IV", "V", "Jr", "Sr", "MD", "PhD", "DO", "RN"];
         $nameParts = array_diff($nameParts, $listOfSuffixes);
-		// array of name arrays where name array[0] = first name and [1] = last name
-		$nameOptions = []; 
-		if (count($nameParts) == 2){
-			$flname[0] = $nameParts[0];
-			$flname[1] = $nameParts[1];
-			array_push($nameOptions, $flname);
-		} else {
-			$middleName = NULL;
-			for($i = 0; $i<count($nameParts) ; $i++){
-				if(strlen($nameParts[$i]) == 1){
-					$middleName = $i;
-					break;
-				}
-			}
-			// if middle initial exists split first and last name by its position
-			if(!is_null($middleName)){
-				$first = array_slice($nameParts, 0, $middleName);
-				$flname[0] = implode(" ", $first);
-				$last = array_slice($nameParts, $middleName + 1);
-				$flname[1] = implode(" ", $last);
-				array_push($nameOptions, $flname);
-			}else{
-				// find all first last name combinations
-				for($i = 1; $i<count($nameParts); $i++){
-					$first = array_slice($nameParts, 0 , $i);
-					$flname[0] = implode(" ", $first);
-					$last = array_slice($nameParts, $i);
-					$flname[1] = implode(" ", $last);
-					array_push($nameOptions, $flname);
-				}
-			}
-		}
-		return $nameOptions;
-	}
-
-    public function notifyForAllFailedUsers($residentsFailedAdding, $attendingsFailedAdding, $toName, $toEmail){
-        $residentNames = array_keys($residentsFailedAdding);
-        foreach($residentNames as $residentName){
-            self::notifyForFailedUser('Resident', $toName, $toEmail, $residentName, $residentsFailedAdding[$residentName]);
+        // array of name arrays where name array[0] = first name and [1] = last name
+        $nameOptions = [];
+        if (count($nameParts) == 2) {
+            $flname[0] = $nameParts[0];
+            $flname[1] = $nameParts[1];
+            array_push($nameOptions, $flname);
+        } else {
+            $middleName = NULL;
+            for ($i = 0; $i < count($nameParts); $i++) {
+                if (strlen($nameParts[$i]) == 1) {
+                    $middleName = $i;
+                    break;
+                }
+            }
+            // if middle initial exists split first and last name by its position
+            if (!is_null($middleName)) {
+                $first = array_slice($nameParts, 0, $middleName);
+                $flname[0] = implode(" ", $first);
+                $last = array_slice($nameParts, $middleName + 1);
+                $flname[1] = implode(" ", $last);
+                array_push($nameOptions, $flname);
+            } else {
+                // find all first last name combinations
+                for ($i = 1; $i < count($nameParts); $i++) {
+                    $first = array_slice($nameParts, 0, $i);
+                    $flname[0] = implode(" ", $first);
+                    $last = array_slice($nameParts, $i);
+                    $flname[1] = implode(" ", $last);
+                    array_push($nameOptions, $flname);
+                }
+            }
         }
-        $attendingNames = array_keys( $attendingsFailedAdding);
-        foreach($attendingNames as $attendingName){
-            self::notifyForFailedUser('Attending', $toName, $toEmail, $attendingName,  $attendingsFailedAdding[$attendingName]);
+        return $nameOptions;
+    }
+
+    public function notifyForAllFailedUsers($residentsFailedAdding, $attendingsFailedAdding, $toName, $toEmail)
+    {
+        $dataRows = array();
+        $residentNames = array_keys($residentsFailedAdding);
+        foreach ($residentNames as $residentName) {
+            $data = self::getMailData('Resident', $residentName, $residentsFailedAdding[$residentName]);
+            array_push($dataRows, $data);
+        }
+        $attendingNames = array_keys($attendingsFailedAdding);
+        foreach ($attendingNames as $attendingName) {
+            $data = self::getMailData('Attending', $attendingName, $attendingsFailedAdding[$attendingName]);
+            array_push($dataRows, $data);
+        }
+        if (!empty($dataRows)) {
+            self::sendEmailForFailedUsers($toName, $toEmail, $dataRows);
         }
     }
-    
-    public function notifyForFailedUser($userType, $toName, $toEmail, $userName, $body) {
-		//REMODEL Alert: Resident Needs to be Added
+
+    public function getMailData($userType, $userName, $body)
+    {
+        $heading = $userType . " " . $userName . ' needs to be added.';
+        return array(
+            'heading' => $heading,
+            'body' => $body
+        );
+    }
+
+    public function sendEmailForFailedUsers($toName, $toEmail, $dataRows)
+    {
         $subject = 'REMODEL: Resident/Attending Needs to be Added';
-		$heading = $userType . " " . $userName . ' needs to be added.';
-		$data = array('name' => $toName, 'heading' => $heading, 'body' => $body);
-        Log::info("Resident/Attending Needs to be Added Email: Sending to: " . $toEmail . " Email Message: " . $body);
-		Mail::send('emails.mail', $data, function ($message) use ($toName, $toEmail, $subject) {
-			$message->to($toEmail, $toName)->subject($subject);
-			$message->from('OhioStateAnesthesiology@gmail.com');
-		});
-	}
+        $data = array('name' => $toName, 'dataRows' => $dataRows);
+        Mail::send('emails.mail_table', $data, function ($message) use ($toName, $toEmail, $subject) {
+            $message->to($toEmail, $toName)->subject($subject);
+            $message->from('OhioStateAnesthesiology@gmail.com');
+        });
+    }
 }
