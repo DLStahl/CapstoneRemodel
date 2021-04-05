@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class ResidentConfirmationFlow extends TestCase
+class ResidentSelectDayTest extends TestCase
 {
     public function testFlow()
     {

@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\Models\Option;
 
-class GenerateSendNotificationForOverwrite extends TestCase
+class GenerateSendNotificationForOverwriteTest extends TestCase
 {
     public function testOption1ForTestResidentHasOneValue()
     {

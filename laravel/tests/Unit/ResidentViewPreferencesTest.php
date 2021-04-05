@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class ResidentViewPreferences extends TestCase
+class ResidentViewPreferencesTest extends TestCase
 {
     /**
      * Test to check a certain user exists

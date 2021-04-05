@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class ResidentFillsLearningObjective extends TestCase
+class ResidentFillsLearningObjectiveTest extends TestCase
 {
     /**
      * Test to check a certain user exists

@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class ScheduleDataControllerTestForScheduleTable extends TestCase
+class ScheduleDataTableTest extends TestCase
 {
     public function testScheduleDataHasStartTime()
     {

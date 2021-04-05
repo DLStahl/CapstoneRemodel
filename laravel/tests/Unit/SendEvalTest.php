@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class SendEval extends TestCase
+class SendEvalTest extends TestCase
 {
     /**
      * A basic test example.

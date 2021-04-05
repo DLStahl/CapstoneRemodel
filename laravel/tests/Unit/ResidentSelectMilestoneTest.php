@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class ResidentSelectMilestone extends TestCase
+class ResidentSelectMilestoneTest extends TestCase
 {
     /**
      * Test to check a certain user exists

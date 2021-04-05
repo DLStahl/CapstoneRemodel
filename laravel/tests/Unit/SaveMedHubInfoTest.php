@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\Http\Controllers\MedhubController;
 
-class SaveMedHubInfo extends TestCase
+class SaveMedHubInfoTest extends TestCase
 {
     /**
      * A basic test example.

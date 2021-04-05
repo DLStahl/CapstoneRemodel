@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class ResidentViewTable extends TestCase
+class ResidentViewTableTest extends TestCase
 {
     public function testViewScheduleDataHasStartTime()
     {

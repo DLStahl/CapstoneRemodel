@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class MapRotationEvaluation extends TestCase
+class MapRotationEvaluationTest extends TestCase
 {
     /**
      * A basic test to check that the residents table has values

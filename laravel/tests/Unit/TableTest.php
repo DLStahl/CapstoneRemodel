@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\Unit;
 
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Attending;
 use App\Models\Option;
 
-class ExampleTest extends TestCase
+class TableTest extends TestCase
 {
     public function testDBAdminXY()
     {

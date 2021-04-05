@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class EvaluateGenerateTimeIntervals extends TestCase
+class EvaluateGenerateTimeIntervalsTest extends TestCase
 {
     /**
      * A basic test example.

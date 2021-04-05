@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class ResidentSubmitsSelectionText extends TestCase
+class ResidentSubmitsSelectionTextTest extends TestCase
 {
     public function testOptionTableHasSubmissionOfPref1()
     {

@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class TablePhoneTest extends TestCase
+class TabletPhoneTest extends TestCase
 {
     // Resize the screen size and check if the navigation bar become a dropdown menu
     public function testResizeNavigationToDropDown()

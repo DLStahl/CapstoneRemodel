@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class ScheduleFileExistsandIsTxt extends TestCase
+class ScheduleFileExistsandIsTxtTest extends TestCase
 {
     /**
      * Test if the schedule file exists

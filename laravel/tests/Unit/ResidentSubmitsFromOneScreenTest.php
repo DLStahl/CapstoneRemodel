@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class ResidentSubmitsFromOneScreen extends TestCase
+class ResidentSubmitsFromOneScreenTest extends TestCase
 {
     /**
      * Test to check a certain user exists
