@@ -90,7 +90,7 @@ class EvaluationParser extends Model
             }
         }
         //send emails for all users not added 
-        self::notifyForAllFailedUsers($residentsFailedAdding, $attendingsFailedAdding, "Melanie", "ferguson.881@osu.edu");
+        self::notifyForAllFailedUsers($residentsFailedAdding, $attendingsFailedAdding, config('mail.admin.name'), config('mail.admin.email'));
         fclose($fp);
     }
 
@@ -465,11 +465,11 @@ class EvaluationParser extends Model
 
     public function sendEmailForFailedUsers($toName, $toEmail, $dataRows)
     {
-        $subject = 'REMODEL: Resident/Attending Needs to be Added';
+        $subject = '(' . config('app.env'). ') REMODEL: Resident/Attending Needs to be Added';
         $data = array('name' => $toName, 'dataRows' => $dataRows);
         Mail::send('emails.mail_table', $data, function ($message) use ($toName, $toEmail, $subject) {
             $message->to($toEmail, $toName)->subject($subject);
-            $message->from('OhioStateAnesthesiology@gmail.com');
+            $message->from(config('mail.username'));
         });
     }
 }

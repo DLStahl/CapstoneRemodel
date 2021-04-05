@@ -490,14 +490,14 @@ class ScheduleDataController extends Controller
 			$choice = $choice." 3";
 		}
 
-		$subject = 'REMODEL: Resident Preference '.$choice.' Overwritten for '.$date;
+		$subject = '(' . config('app.env'). ') REMODEL: Resident Preference '.$choice.' Overwritten for '.$date;
 		$body = "Resident $residentName has overwritten OR preferences  ".$choice." for ".$date.". New preferences are now viewable on REMODEL website.";
 		$heading = "Resident $residentName has overwritten OR preference ".$choice;
         $data = array('name'=>$toName, 'heading'=>$heading, 'body'=>$body);
 
         Mail::send('emails.mail', $data, function($message) use ($toName, $toEmail, $subject) {
             $message->to($toEmail, $toName)->subject($subject);
-            $message->from('OhioStateAnesthesiology@gmail.com');
+            $message->from(config('mail.username'));
         });
 		return true;
     }
