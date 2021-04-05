@@ -3,16 +3,10 @@
 namespace Tests;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 
-use App\Resident;
-use App\ScheduleData;
-use App\Attending;
-use App\Admin;
-use App\Option;
+use App\Models\Attending;
+use App\Models\Option;
 
 class ExampleTest extends TestCase
 {

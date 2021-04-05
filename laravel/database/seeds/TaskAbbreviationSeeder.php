@@ -1,6 +1,6 @@
 <?php
 
-use App\TaskAbbreviation;
+use App\Models\TaskAbbreviation;
 use Illuminate\Database\Seeder;
 
 class TaskAbbreviationSeeder extends Seeder
