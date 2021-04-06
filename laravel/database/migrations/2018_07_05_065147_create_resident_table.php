@@ -14,26 +14,20 @@ class CreateResidentTable extends Migration
      */
     private function initialize()
     {
-        if (file_exists ( __DIR__.$_ENV["BACKUP_PATH"]."resident.csv" )) {
+        if (file_exists(__DIR__ . $_ENV["BACKUP_PATH"] . "resident.csv")) {
+            // Read data from the backup file and add into database
+            $fp = fopen(__DIR__ . $_ENV["BACKUP_PATH"] . "resident.csv", "r");
 
-            /**
-             * Read data from the backup file and add into database
-             */
-            $fp = fopen(__DIR__.$_ENV["BACKUP_PATH"]."resident.csv", 'r');
-            
             // Read the first row
             fgetcsv($fp);
 
             // Read rows until null
-            while (($line = fgetcsv($fp)) !== false)
-            {
+            while (($line = fgetcsv($fp)) !== false) {
                 $id = $line[0];
                 $name = $line[1];
                 $email = $line[2];
-                $exists = $line[3];    
-                DB::table('resident')->insert(
-                    ['id' => $id, 'name' => $name, 'email' => $email, 'exists' => $exists]
-                );
+                $exists = $line[3];
+                DB::table("resident")->insert(["id" => $id, "name" => $name, "email" => $email, "exists" => $exists]);
             }
 
             // Close file
@@ -42,22 +36,18 @@ class CreateResidentTable extends Migration
             return;
         }
 
-        if (file_exists ( __DIR__.$_ENV["RESIDENT_PATH"] ))
-        {
-            $fp = fopen( __DIR__.$_ENV["RESIDENT_PATH"], 'r');
+        if (file_exists(__DIR__ . $_ENV["RESIDENT_PATH"])) {
+            $fp = fopen(__DIR__ . $_ENV["RESIDENT_PATH"], "r");
             // Read rows until null
-            while (($line = fgetcsv($fp)) !== false)
-            {
+            while (($line = fgetcsv($fp)) !== false) {
                 $id = $line[0];
                 $name = $line[2];
                 $email = $line[1];
-                $exists = $line[3];    
-                DB::table('resident')->insert(
-                    ['id' => $id, 'name' => $name, 'email' => $email, 'exists' => $exists]
-                );
+                $exists = $line[3];
+                DB::table("resident")->insert(["id" => $id, "name" => $name, "email" => $email, "exists" => $exists]);
             }
             // Close file
-            fclose($fp);            
+            fclose($fp);
         }
     }
 
@@ -68,39 +58,25 @@ class CreateResidentTable extends Migration
      */
     private function backup()
     {
-        /** 
-         * Save data sets into a csv file
-         */        
-        $filename = __DIR__.$_ENV["BACKUP_PATH"]."resident.csv";
-        $data = DB::table('resident')->get();
-        
+        // Save data sets into a csv file
+        $filename = __DIR__ . $_ENV["BACKUP_PATH"] . "resident.csv";
+        $data = DB::table("resident")->get();
+
         // Erase existing file
-        if (file_exists ( $filename )) {
-            $output = fopen($filename, 'w');
-        }
-        else {
-            $output = fopen($filename, 'x');
+        if (file_exists($filename)) {
+            $output = fopen($filename, "w");
+        } else {
+            $output = fopen($filename, "x");
         }
         // Set up the first row
-        fputcsv($output, array(
-            'id',
-            'name', 
-            'email',
-            'exists'
-        ));
+        fputcsv($output, ["id", "name", "email", "exists"]);
         // Add all rows
         foreach ($data as $info) {
-            fputcsv($output, array(
-                $info['id'],
-                $info['name'],
-                $info['email'],
-                $info['exists']
-            ));
+            fputcsv($output, [$info["id"], $info["name"], $info["email"], $info["exists"]]);
         }
 
         // Close file
         fclose($output);
-    
     }
 
     /**
@@ -110,15 +86,14 @@ class CreateResidentTable extends Migration
      */
     public function up()
     {
-        Schema::create('resident', function (Blueprint $table) {
-
+        Schema::create("resident", function (Blueprint $table) {
             // Primary Key
-            $table->increments('id');
+            $table->increments("id");
 
-            $table->string('name'); // Name of the resident
-            $table->string('email')->unique();  // Email address of the resident
-            $table->boolean('exists')->default(1); // Whether the resident exists
-            
+            $table->string("name"); // Name of the resident
+            $table->string("email")->unique(); // Email address of the resident
+            $table->boolean("exists")->default(1); // Whether the resident exists
+
             $table->timestamps();
         });
 
@@ -134,6 +109,6 @@ class CreateResidentTable extends Migration
     {
         self::backup();
 
-        Schema::dropIfExists('resident');
+        Schema::dropIfExists("resident");
     }
 }

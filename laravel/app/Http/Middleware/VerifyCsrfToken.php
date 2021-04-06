@@ -11,8 +11,5 @@ class VerifyCsrfToken extends Middleware
      *
      * @var array
      */
-    protected $except = [
-        '/laravel/public/resident/schedule/thirdday',
-        '/laravel/public/resident/schedule/secondday',
-    ];
+    protected $except = ["/laravel/public/resident/schedule/thirdday", "/laravel/public/resident/schedule/secondday"];
 }

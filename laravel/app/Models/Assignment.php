@@ -11,7 +11,7 @@ class Assignment extends Model
      *
      * @var string
      */
-    protected $table = 'assignment';
+    protected $table = "assignment";
 
     /**
      * Indicates if the model should be timestamped.

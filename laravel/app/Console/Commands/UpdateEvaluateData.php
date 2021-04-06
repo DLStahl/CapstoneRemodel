@@ -12,14 +12,14 @@ class UpdateEvaluateData extends Command
      *
      * @var string
      */
-    protected $signature = 'update:evaluate_data';
+    protected $signature = "update:evaluate_data";
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = "Command description";
 
     /**
      * Create a new command instance.
@@ -38,10 +38,6 @@ class UpdateEvaluateData extends Command
      */
     public function handle()
     {
-        //
-        $parser = new EvaluationParser(date("o", strtotime('today')).date("m", strtotime('today')).date("d", strtotime('today')), true);
-
-
-
+        $parser = new EvaluationParser(date("omd", strtotime("today")), true);
     }
 }

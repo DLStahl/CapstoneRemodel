@@ -33,9 +33,9 @@ class SendNotificationTest extends TestCase
     //   }
 
     // public function testNotificationSent()
-    //   {
-    // 	$ep = new EvaluationParser(date("o", strtotime('today')).date("m", strtotime('today')).date("d", strtotime('today')), true);
-    // 	$result = $ep->notifyAddResident('Test', 'p1353818@nwytg.net', "Test Resident");
-    // 	$this->assertNotNull($result);
-    //   }
+    // {
+    //     $ep = new EvaluationParser(date("omd", strtotime('today')), true);
+    //     $result = $ep->notifyAddResident('Test', 'p1353818@nwytg.net', "Test Resident");
+    //     $this->assertNotNull($result);
+    // }
 }

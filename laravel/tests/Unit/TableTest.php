@@ -36,8 +36,6 @@ class TableTest extends TestCase
         $id = Attending::where("name", "null")->exists();
         $attending = Option::where("attending", ">", "6004350000")->exists();
         $this->assertFalse($id);
-        // $this->assertFalse($attending);
-        $this->assertTrue(true);
         $this->assertDatabaseHas("admin", ["email" => "yue.137@osu.edu"]);
     }
 
@@ -45,14 +43,8 @@ class TableTest extends TestCase
     {
         $response = $this->get("/");
         $id = Attending::where("id", "1864656")->exists();
-        $attending = Option::where(
-            "attending",
-            ">",
-            "133300023400000"
-        )->exists();
+        $attending = Option::where("attending", ">", "133300023400000")->exists();
         $this->assertFalse($id);
-        // $this->assertFalse($attending);
-        $this->assertTrue(true);
         $this->assertDatabaseHas("admin", ["email" => "yue.137@osu.edu"]);
     }
 
@@ -62,8 +54,6 @@ class TableTest extends TestCase
         $id = Attending::where("email", "gao.1153@osu.edu")->exists();
         $attending = Option::where("attending", ">", "100000000")->exists();
         $this->assertFalse($id);
-        // $this->assertFalse($attending);
-        $this->assertTrue(true);
         $this->assertDatabaseHas("admin", ["email" => "yue.137@osu.edu"]);
     }
     public function testDBSetup()
@@ -91,7 +81,6 @@ class TableTest extends TestCase
         $attending = Option::where("resident", ">", "100000000")->exists();
         $this->assertFalse($id);
         $this->assertFalse($attending);
-        $this->assertTrue(true);
         $this->assertDatabaseHas("admin", ["email" => "stahl.182@osu.edu"]);
     }
 
@@ -102,7 +91,6 @@ class TableTest extends TestCase
         $attending = Option::where("resident", ">", "100000000")->exists();
         $this->assertFalse($id);
         $this->assertFalse($attending);
-        $this->assertTrue(true);
         $this->assertDatabaseHas("admin", ["email" => "stahl.182@osu.edu"]);
     }
 
@@ -113,7 +101,6 @@ class TableTest extends TestCase
         $attending = Option::where("resident", ">", "100000000")->exists();
         $this->assertFalse($id);
         $this->assertFalse($attending);
-        $this->assertTrue(true);
         $this->assertTrue(DB::connection()->getDatabaseName() != null);
     }
 
@@ -136,7 +123,6 @@ class TableTest extends TestCase
         $this->assertFalse($id);
         $this->assertFalse($attending);
 
-        $this->assertTrue(true);
         $this->assertDatabaseHas("resident", ["email" => "chow.140@osu.edu"]);
     }
 
@@ -144,14 +130,9 @@ class TableTest extends TestCase
     {
         $response = $this->get("/");
         $id = Attending::where("email", "null")->exists();
-        $attending = Option::where(
-            "resident",
-            ">",
-            "1012000003242300"
-        )->exists();
+        $attending = Option::where("resident", ">", "1012000003242300")->exists();
         $this->assertFalse($id);
         $this->assertFalse($attending);
-        $this->assertTrue(true);
         $this->assertDatabaseHas("resident", ["email" => "chow.140@osu.edu"]);
     }
 
@@ -162,7 +143,6 @@ class TableTest extends TestCase
         $attending = Option::where("resident", "=", "100000000")->exists();
         $this->assertFalse($id);
         $this->assertFalse($attending);
-        $this->assertTrue(true);
         $this->assertDatabaseHas("admin", ["email" => "chow.140@osu.edu"]);
     }
 

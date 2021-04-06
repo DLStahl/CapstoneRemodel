@@ -11,7 +11,7 @@ class Milestone extends Model
      *
      * @var string
      */
-    protected $table = 'milestone';
+    protected $table = "milestone";
 
     /**
      * Indicates if the model should be timestamped.
