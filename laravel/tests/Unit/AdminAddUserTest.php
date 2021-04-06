@@ -3,13 +3,10 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MedhubController;
-use App\EvaluationParser;
-use App\Resident;
+use App\Models\Resident;
 
 class AdminAddUserTest extends TestCase
 {

@@ -3,10 +3,8 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use App\Milestone;
+use App\Models\Milestone;
 use App\Http\Controllers\AdminController;
 
 class AdminDeleteDataSetTest extends TestCase
