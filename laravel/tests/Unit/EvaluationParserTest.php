@@ -3,10 +3,7 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\EvaluationParser;
-use App\EvaluateData;
 
 class EvaluationParserTest extends TestCase
 {
