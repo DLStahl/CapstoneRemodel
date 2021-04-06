@@ -190,7 +190,7 @@ class PushSchedule extends Command
     	        $column_name .= "Z";
                 $count = ($count/26) - 1;
             } else {
-    	        $column_name .= chr($rem + 833); //chr(833) returns 'A', counts up the alphabet from there
+    	        $column_name .= chr($rem + ord('A')); // starts at A and counts up the alphabet from there
                 $count = $count/26;
                 if ($count < 1) {
                     $count = 0;
