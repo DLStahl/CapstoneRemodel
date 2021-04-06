@@ -3,12 +3,9 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-use App\Milestone;
+use App\Models\Milestone;
 use App\Http\Controllers\AdminController;
 
 class AdminAddUpdateMilestoneTest extends TestCase

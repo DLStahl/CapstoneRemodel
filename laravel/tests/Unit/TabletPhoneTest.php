@@ -3,15 +3,8 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use App\ScheduleParser;
-use App\Option;
-use App\EvaluationParser;
-use App\Http\Controllers\MedhubController;
-
-class TablePhoneTest extends TestCase
+class TabletPhoneTest extends TestCase
 {
     // Resize the screen size and check if the navigation bar become a dropdown menu
     public function testResizeNavigationToDropDown()

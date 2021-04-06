@@ -4,9 +4,9 @@ namespace Tests\Unit;
 
 use App\AutoAssignment;
 use Tests\TestCase;
-use App\Option;
-use App\Assignment;
-use App\Probability;
+use App\Models\Option;
+use App\Models\Assignment;
+use App\Models\Probability;
 
 class AutoAssignmentTest extends TestCase
 {
