@@ -155,7 +155,6 @@ class PushSchedule extends Command
         // setup today's sheet to be ready to be added to
         $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
         $title = '\''.$title.'\'!';
-        $range = $title.'A1:M15';
 
         $date = date("Y-m-d", strtotime('+1 day'));
 
@@ -179,6 +178,30 @@ class PushSchedule extends Command
         }
 
         fclose($fp);
+
+        $column_name = "";
+
+        $count = count($all_assns) > 0 ? count($all_assns[0]) : 0;
+
+        //Algorithm link https://www.geeksforgeeks.org/find-excel-column-name-given-number/
+        while($count > 0){
+	        $rem = $count % 26;
+            if ($rem == 0) {
+    	        $column_name .= "Z";
+                $count = ($count/26) - 1;
+            } else {
+    	        $column_name .= chr($rem + ord('A')); // starts at A and counts up the alphabet from there
+                $count = $count/26;
+                if ($count < 1) {
+                    $count = 0;
+                }
+        	}
+        }
+
+        $column_name = strrev($column_name);
+        $row_number = count($all_assns) + 1;
+
+        $range = $title.'A1:'.$column_name.$row_number;
 
 
         // get the values from the assignment file and save them to an array
