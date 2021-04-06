@@ -6,7 +6,9 @@
     <div class="row">
         <div class="col-md-12">
             <p>
-                <a href="https://remodel-anesthesiology.osu.edu/">REMODEL (REsident MilestOne-baseD Educational Learning)</a>
+                <a href="https://remodel-anesthesiology.osu.edu/">
+                    REMODEL (REsident MilestOne-baseD Educational Learning)
+                </a>
                 is a system designed by David Stahl, MD (Associate Residency Program Director) in collaboration with the
                 CAPSTONE Teams from The Ohio State University
                 <a href="https://cse.osu.edu/">Department of Computer Science and Engineering</a>,
