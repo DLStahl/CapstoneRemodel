@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\EvaluationParser;
 
-
 class EvaluationParserTest extends TestCase
 {
     /**

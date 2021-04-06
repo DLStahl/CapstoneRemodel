@@ -3,10 +3,6 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-use GuzzleHttp\Client;
 use App\Console\Commands\InitiateEval;
 
 class InitiateEvalTest extends TestCase

@@ -3,12 +3,9 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
 use App\Http\Controllers\MedhubController;
 
-class RetrieveScheduleRotation extends TestCase
+class RetrieveScheduleRotationTest extends TestCase
 {
     /**
      * A basic test to check the connection to medhub api with TestPOST call
