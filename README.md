@@ -7,6 +7,15 @@
 - [Composer](https://getcomposer.org/download/) - Updated Composer
 - [Shibboleth@OSU](https://webauth.service.ohio-state.edu/~shibboleth/) - OSU Shibboleth
 
+## Code Format
+
+Use [Prettier](https://github.com/prettier/prettier) and
+[Prettier PHP Plugin](https://github.com/prettier/plugin-php)
+to format PHP
+
+Use [blade-formatter](https://www.npmjs.com/package/blade-formatter)
+to format Blade Templates.
+
 ## Useful Commands
 
 ### Test
@@ -62,8 +71,7 @@ url = url + "/filter/" + doctor_selected + "_" + start_after_selected + "_" + en
 - Google API: https://developers.google.com/sheets/api/quickstart/php
 - The above link provides the Google sheets API setup. The project now could access the google account(google sheets), but you need the private key updating from your personal google account.
 - Scheduling task on server: Refer to Crontab in linux tutorial.
-- Survey page: The "static survey page" represents the page that residents and attendings can add their feedback after completing the
-  surgery. Currently, the url of this page is: https://remodel.anesthesiology_dev.org.ohio-state.edu/laravel/public/survey/YYYYMMDD. e.g.
-  Suppose "resident" "Test Resident" visits https://remodel.anesthesiology_dev.org.ohio-state.edu/laravel/public/survey/20180710 after
-  07/10/2018. He will view the summary of the surgery conducted on 07/10/2018 and is able to submit his comments for that surgery (or the
-  attending).
+- Survey page: The "static survey page" represents the page that residents and attendings can add their feedback after completing the surgery.
+  Currently, the url of this page is: https://remodel.anesthesiology_dev.org.ohio-state.edu/laravel/public/survey/YYYYMMDD.
+  e.g. Suppose "resident" "Test Resident" visits https://remodel.anesthesiology_dev.org.ohio-state.edu/laravel/public/survey/20180710 after 07/10/2018.
+  He will view the summary of the surgery conducted on 07/10/2018 and is able to submit his comments for that surgery (or the attending).
