@@ -117,7 +117,7 @@ class ScheduleDataController extends Controller
             "minTime" => $minTime,
             "maxTime" => $maxTime,
             "schedule" => $schedule,
-        ];
+        );
         return $result;
     }
 
