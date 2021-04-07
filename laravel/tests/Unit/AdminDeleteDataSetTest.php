@@ -3,10 +3,8 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use App\Milestone;
+use App\Models\Milestone;
 use App\Http\Controllers\AdminController;
 
 class AdminDeleteDataSetTest extends TestCase
@@ -19,14 +17,7 @@ class AdminDeleteDataSetTest extends TestCase
     public function testAdminDeleteDataSetDataTableHasData()
     {
         $AC = new AdminController();
-        $AC->getUpdateMilestone(
-            "delete",
-            "true",
-            198,
-            "FakeAbbreviation",
-            "FakeFullName",
-            "FakeDetail"
-        );
+        $AC->getUpdateMilestone("delete", "true", 198, "FakeAbbreviation", "FakeFullName", "FakeDetail");
         $this->assertDatabaseHas("milestone", ["exists" => "0"]);
         Milestone::where("id", 198)->update(["exists" => 1]);
     }

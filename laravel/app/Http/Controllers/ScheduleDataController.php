@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Mail;
 
 class ScheduleDataController extends Controller
 {
-
     /**
      * Protected members
      */
@@ -25,7 +24,6 @@ class ScheduleDataController extends Controller
     protected $start_time = null;
     protected $end_time = null;
 
-
     /**
      * Private functions.
      */
@@ -33,7 +31,7 @@ class ScheduleDataController extends Controller
     /**
      * Filter data to output.
      */
-    private static function updateData(array $args = array())
+    private static function updateData(array $args = [])
     {
         /**
          * Set up default input values.
@@ -88,9 +86,10 @@ class ScheduleDataController extends Controller
         if (strcmp($end_time, "23:59:59") != 0) {
             $schedule_data = $schedule_data->whereTime('end_time', '<=', $end_time);
         }
-        $minTime = $schedule_data->min('start_time');
-        $maxTime = $schedule_data->max('end_time');
-        $schedule_data = $schedule_data->orderBy('room', 'asc')->get();
+        $minTime = $schedule_data->min("start_time");
+        $maxTime = $schedule_data->max("end_time");
+        $schedule_data = $schedule_data->orderBy("room", "asc")->get();
+
 
         $schedule = array();
         foreach ($schedule_data as $data) {
@@ -117,19 +116,19 @@ class ScheduleDataController extends Controller
         $result = array(
             "minTime" => $minTime,
             "maxTime" => $maxTime,
-            "schedule" => $schedule
-        );
+            "schedule" => $schedule,
+        ];
         return $result;
     }
 
     private function processInput($room, $leadSurgeon, $rotation, $start_time_end_time)
     {
-        if ($room == null && $leadSurgeon == null && $rotation == null && $start_time_end_time == null) return;
+        if ($room == null && $leadSurgeon == null && $rotation == null && $start_time_end_time == null) {
+            return;
+        }
 
-        /**
-         * Get times
-         */
-        $tp = stripos($start_time_end_time, '_');
+        // Get times
+        $tp = stripos($start_time_end_time, "_");
         $this->start_time = substr($start_time_end_time, 0, $tp);
         $this->end_time = substr($start_time_end_time, $tp + 1);
 
@@ -168,7 +167,7 @@ class ScheduleDataController extends Controller
         sort($rooms);
 
         // lead surgeons with duplicates
-        $allLeadSurgeons = $schedule->select('lead_surgeon')->get();
+        $allLeadSurgeons = $schedule->select("lead_surgeon")->get();
         // lead surgeons without duplicates
         $noDuplicateSurgeons = array();
         foreach ($allLeadSurgeons as $surgeons) {
@@ -190,32 +189,29 @@ class ScheduleDataController extends Controller
         }
         sort($noDuplicateSurgeons);
 
-        $rotations = array();
+        $rotations = [];
 
-        $filterOptions = array(
+        $filterOptions = [
             "rooms" => $rooms,
             "leadSurgeons" => $noDuplicateSurgeons,
-            "rotations" => $rotations
-        );
+            "rotations" => $rotations,
+        ];
 
         return $filterOptions;
     }
 
-
     /**
      * Public functions
      */
-
     public function getDay($day = null, $room = null, $leadSurgeon = null, $rotation = null, $start_time_end_time = null)
     {
         date_default_timezone_set('America/New_York');
-
-        $day_translation_array = array(
+        $day_translation_array = [
             "firstday" => 1,
             "secondday" => 2,
-            "thirdday" => 3
-        );
-
+            "thirdday" => 3,
+        ];
+      
         if (!array_key_exists($day, $day_translation_array)) {
             abort(404);
         }
@@ -223,10 +219,17 @@ class ScheduleDataController extends Controller
         $date = date("Y-m-d", strtotime("+" . $day_translation_array[$day] . " Weekday"));
 
         $this->processInput($room, $leadSurgeon, $rotation, $start_time_end_time);
-        $TimeRange_ScheduleData = self::updateData(array('date' => $date, 'lead_surgeon' => $this->leadSurgeon, 'room' => $this->room, 'rotation' => $this->rotation, 'start_time' => $this->start_time, 'end_time' => $this->end_time));
-        $minTime = $TimeRange_ScheduleData['minTime'];
-        $maxTime = $TimeRange_ScheduleData['maxTime'];
-        $schedule_data = $TimeRange_ScheduleData['schedule'];
+        $TimeRange_ScheduleData = self::updateData([
+            "date" => $date,
+            "lead_surgeon" => $this->leadSurgeon,
+            "room" => $this->room,
+            "rotation" => $this->rotation,
+            "start_time" => $this->start_time,
+            "end_time" => $this->end_time,
+        ]);
+        $minTime = $TimeRange_ScheduleData["minTime"];
+        $maxTime = $TimeRange_ScheduleData["maxTime"];
+        $schedule_data = $TimeRange_ScheduleData["schedule"];
         $filter_options = self::getFilterOptions($date);
         $rotation_options = FilterRotation::select('rotation')->distinct()->get();
         return view('schedules.resident.schedule_table', compact('minTime', 'maxTime', 'schedule_data', 'filter_options', 'rotation_options'));
@@ -237,8 +240,8 @@ class ScheduleDataController extends Controller
     public function getChoice()
     {
         // Exclude Admin from selecting preferences
-        if (!Resident::where('email', $_SERVER["HTTP_EMAIL"])->exists()) {
-            return view('nonpermit');
+        if (!Resident::where("email", $_SERVER["HTTP_EMAIL"])->exists()) {
+            return view("nonpermit");
         }
         // get the id from the form
         $id = $_REQUEST['schedule_id'];
@@ -257,7 +260,7 @@ class ScheduleDataController extends Controller
                     'anesthesiologist_pref' => Anesthesiologist::where('id', $_REQUEST["pref_anest" . ($i + 1)])->get()
                 );
             } else {
-                $currentChoices[$i] = NULL;
+                $currentChoices[$i] = null;
             }
         }
         // Get previous preferences of the same date
@@ -276,10 +279,13 @@ class ScheduleDataController extends Controller
                     'anesthesiologist_pref' => Anesthesiologist::where('id', $previousOption[0]['anesthesiologist_id'])->get()
                 );
             } else {
-                $previousChoices[$i] = NULL;
+                $previousChoices[$i] = null;
             }
         }
-        return view('schedules.resident.schedule_confirm', compact('id', 'currentChoices', 'previousChoices', 'choiceTypes'));
+        return view(
+            "schedules.resident.schedule_confirm",
+            compact("id", "currentChoices", "previousChoices", "choiceTypes")
+        );
     }
     // parse case_procedure by removing time and case number 
     public function parseCaseProcedure($case)
@@ -318,8 +324,8 @@ class ScheduleDataController extends Controller
 
         $milestones = Milestone::where('exists', 1)->get();
 
-        $anesthesiologists = Anesthesiologist::where('updated_at', '>', Carbon::today())
-            ->orderBy('last_name')
+        $anesthesiologists = Anesthesiologist::where("updated_at", ">", Carbon::today())
+            ->orderBy("last_name")
             ->get();
 
         $resident_choices = $resident_data;
@@ -334,10 +340,8 @@ class ScheduleDataController extends Controller
         // Get resident data
         $current_resident = Resident::where('email', $_SERVER["HTTP_EMAIL"])->get();
         $resident = $current_resident[0]['id'];
-
         // id is stored as id1_id2_id3, need to split it to get the individual ids
         $split = explode("_", $id);
-
         for ($i = 0; $i < 3; $i++) {
                 $resident_data[$i] = array(
                     'schedule' => null,
@@ -369,8 +373,8 @@ class ScheduleDataController extends Controller
 
         $milestones = Milestone::all();
 
-        $anesthesiologists = Anesthesiologist::where('updated_at', '>', Carbon::today())
-            ->orderBy('last_name')
+        $anesthesiologists = Anesthesiologist::where("updated_at", ">", Carbon::today())
+            ->orderBy("last_name")
             ->get();
 
         $resident_choices = $resident_data;
@@ -390,13 +394,14 @@ class ScheduleDataController extends Controller
 
         Mail::send('emails.mail', $data, function ($message) use ($toName, $toEmail, $subject) {
             $message->to($toEmail, $toName)->subject($subject);
-            $message->from('OhioStateAnesthesiology@gmail.com');
+            $message->from("OhioStateAnesthesiology@gmail.com");
         });
     }
 
     // Insert options if no preference exists.
     private function insertOption()
     {
+
 
         // variables to track if the use has overwritten a preference
         $notify = false;
@@ -409,9 +414,9 @@ class ScheduleDataController extends Controller
         $split = explode("_", $id);
 
         // Get resident
-        $resident_data = Resident::where('email', $_SERVER["HTTP_EMAIL"])->get();
-        $resident = $resident_data[0]['id'];
-        $residentName = $resident_data[0]['name'];
+        $resident_data = Resident::where("email", $_SERVER["HTTP_EMAIL"])->get();
+        $resident = $resident_data[0]["id"];
+        $residentName = $resident_data[0]["name"];
 
         $schedule_data[0] = ScheduleData::where('id', $split[0])->get();
         $attending_string = $schedule_data[0][0]['lead_surgeon'];
@@ -488,6 +493,6 @@ class ScheduleDataController extends Controller
     public function postSubmit($day = null)
     {
         self::insertOption();
-        return view('schedules.resident.schedule_update');
+        return view("schedules.resident.schedule_update");
     }
 }

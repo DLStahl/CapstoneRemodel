@@ -13,13 +13,14 @@ class AddAnesthesiologistIdToOptionTable extends Migration
      */
     public function up()
     {
-        Schema::table('option', function (Blueprint $table) {
-            $table->unsignedInteger('anesthesiologist_id')->nullable();
+        Schema::table("option", function (Blueprint $table) {
+            $table->unsignedInteger("anesthesiologist_id")->nullable();
 
-            $table->foreign('anesthesiologist_id')
-                ->references('id')
-                ->on('anesthesiologists')
-                ->onDelete('cascade');
+            $table
+                ->foreign("anesthesiologist_id")
+                ->references("id")
+                ->on("anesthesiologists")
+                ->onDelete("cascade");
         });
     }
 
@@ -30,9 +31,9 @@ class AddAnesthesiologistIdToOptionTable extends Migration
      */
     public function down()
     {
-        Schema::table('option', function (Blueprint $table) {
-            $table->dropForeign('option_anesthesiologist_id_foreign');
-            $table->dropColumn('anesthesiologist_id');
+        Schema::table("option", function (Blueprint $table) {
+            $table->dropForeign("option_anesthesiologist_id_foreign");
+            $table->dropColumn("anesthesiologist_id");
         });
     }
 }

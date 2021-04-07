@@ -3,13 +3,10 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MedhubController;
-use App\EvaluationParser;
-use App\Resident;
+use App\Models\Resident;
 
 class AdminAddUserTest extends TestCase
 {
@@ -21,13 +18,7 @@ class AdminAddUserTest extends TestCase
     public function testAddUserResidentTableHasData()
     {
         $AC = new AdminController();
-        $AC->getUpdateUsers(
-            "addUser",
-            "Resident",
-            "fakeRes@fak.com",
-            "true",
-            "FakeName"
-        );
+        $AC->getUpdateUsers("addUser", "Resident", "fakeRes@fak.com", "true", "FakeName");
         $this->assertDatabaseHas("resident", ["email" => "fakeRes@fak.com"]);
         $fakeData = Resident::where("email", "fakeRes@fak.com")->first();
         $fakeData->delete();

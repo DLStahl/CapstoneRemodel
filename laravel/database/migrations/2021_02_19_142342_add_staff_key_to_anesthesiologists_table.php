@@ -13,8 +13,8 @@ class AddStaffKeyToAnesthesiologistsTable extends Migration
      */
     public function up()
     {
-        Schema::table('anesthesiologists', function (Blueprint $table) {
-            $table->string('staff_key')->unique();
+        Schema::table("anesthesiologists", function (Blueprint $table) {
+            $table->string("staff_key")->unique();
         });
     }
 
@@ -25,8 +25,8 @@ class AddStaffKeyToAnesthesiologistsTable extends Migration
      */
     public function down()
     {
-        Schema::table('anesthesiologists', function (Blueprint $table) {
-            $table->dropColumn('staff_key');
+        Schema::table("anesthesiologists", function (Blueprint $table) {
+            $table->dropColumn("staff_key");
         });
     }
 }

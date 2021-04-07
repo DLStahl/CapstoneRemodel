@@ -3,12 +3,9 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
-use App\Console\Commands\InitiateEval;
-use Artisan;
+use Illuminate\Support\Facades\Artisan;
 
 class SendEvaluations extends TestCase
 {

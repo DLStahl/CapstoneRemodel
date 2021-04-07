@@ -11,7 +11,7 @@ class Rotations extends Model
      *
      * @var string
      */
-    protected $table = 'rotations';
+    protected $table = "rotations";
 
     /**
      * Indicates if the model should be timestamped.
@@ -19,5 +19,4 @@ class Rotations extends Model
      * @var bool
      */
     public $timestamps = false;
-
 }

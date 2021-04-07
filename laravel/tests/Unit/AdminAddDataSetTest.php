@@ -3,12 +3,10 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\AdminController;
-use App\Milestone;
-use App\Announcements;
+use App\Models\Milestone;
+use App\Models\Announcements;
 use Carbon\Carbon;
 
 class AdminAddDataSetTest extends TestCase
@@ -22,14 +20,7 @@ class AdminAddDataSetTest extends TestCase
     public function testAdminAddDataSetDataTableHasData()
     {
         $AC = new AdminController();
-        $AC->getUpdateMilestone(
-            "add",
-            "true",
-            null,
-            "FakeAbbreviation",
-            "FakeFullName",
-            "FakeDetail"
-        );
+        $AC->getUpdateMilestone("add", "true", null, "FakeAbbreviation", "FakeFullName", "FakeDetail");
         $this->assertDatabaseHas("milestone", ["detail" => "FakeDetail"]);
         $fakeData = Milestone::where("detail", "FakeDetail")->first();
         $fakeData->delete();

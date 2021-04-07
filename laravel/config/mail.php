@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Mail Driver
@@ -17,7 +16,7 @@ return [
     */
 
     //'driver' => env('MAIL_DRIVER', 'smtp'),
-    'driver' => 'sendmail',
+    "driver" => "sendmail",
 
     /*
     |--------------------------------------------------------------------------
@@ -30,7 +29,7 @@ return [
     |
     */
 
-    'host' => env('MAIL_HOST', 'smtp.gmail.com'),
+    "host" => env("MAIL_HOST", "smtp.gmail.com"),
 
     /*
     |--------------------------------------------------------------------------
@@ -43,7 +42,7 @@ return [
     |
     */
 
-    'port' => env('MAIL_PORT', 587),
+    "port" => env("MAIL_PORT", 587),
 
     /*
     |--------------------------------------------------------------------------
@@ -56,9 +55,9 @@ return [
     |
     */
 
-    'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'noreply@remodel.com'),
-        'name' => env('MAIL_FROM_NAME', 'Laravel_Remodel'),
+    "from" => [
+        "address" => env("MAIL_FROM_ADDRESS", "noreply@remodel.com"),
+        "name" => env("MAIL_FROM_NAME", "Laravel_Remodel"),
     ],
 
     /*
@@ -72,7 +71,7 @@ return [
     |
     */
 
-    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+    "encryption" => env("MAIL_ENCRYPTION", "tls"),
 
     /*
     |--------------------------------------------------------------------------
@@ -85,9 +84,9 @@ return [
     |
     */
 
-    'username' => env('MAIL_USERNAME'),
+    "username" => env("MAIL_USERNAME"),
 
-    'password' => env('MAIL_PASSWORD'),
+    "password" => env("MAIL_PASSWORD"),
 
     /*
     |--------------------------------------------------------------------------
@@ -100,7 +99,7 @@ return [
     |
     */
 
-    'sendmail' => '/usr/sbin/sendmail -bs',
+    "sendmail" => "/usr/sbin/sendmail -bs",
 
     /*
     |--------------------------------------------------------------------------
@@ -113,12 +112,9 @@ return [
     |
     */
 
-    'markdown' => [
-        'theme' => 'default',
+    "markdown" => [
+        "theme" => "default",
 
-        'paths' => [
-            resource_path('views/vendor/mail'),
-        ],
+        "paths" => [resource_path("views/vendor/mail")],
     ],
-
 ];

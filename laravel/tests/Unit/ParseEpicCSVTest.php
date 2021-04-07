@@ -3,11 +3,6 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-use App\ScheduleParser;
-use App\EvaluationParser;
 
 class ParseEpicCSVTest extends TestCase
 {
@@ -34,10 +29,7 @@ class ParseEpicCSVTest extends TestCase
     public function testEpicCSVReadSheet()
     {
         $relative_path = "/../../../../evaluation/Resident_Evaluation_Report.20190228.csv";
-        $file = fopen(
-            __DIR__ . $relative_path,
-            "r"
-        );
+        $file = fopen(__DIR__ . $relative_path, "r");
         $csv = [];
         while (($line = fgetcsv($file)) !== false) {
             //$line is an array of the csv elements

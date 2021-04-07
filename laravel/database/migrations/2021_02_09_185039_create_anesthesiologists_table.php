@@ -13,13 +13,13 @@ class CreateAnesthesiologistsTable extends Migration
      */
     public function up()
     {
-        Schema::create('anesthesiologists', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('first_name');
-            $table->string('last_name');
+        Schema::create("anesthesiologists", function (Blueprint $table) {
+            $table->increments("id");
+            $table->string("first_name");
+            $table->string("last_name");
             $table->timestamps();
 
-            $table->unique(['first_name', 'last_name']);
+            $table->unique(["first_name", "last_name"]);
         });
     }
 
@@ -30,6 +30,6 @@ class CreateAnesthesiologistsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('anesthesiologists');
+        Schema::dropIfExists("anesthesiologists");
     }
 }
