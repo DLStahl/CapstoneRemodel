@@ -33,14 +33,14 @@ class MedhubController extends Controller
         $facArr = json_decode($fac, true); //turn json into an array
         // echo var_dump($facArr);
 
-        $message = 'MedHub Active Residents';
+        $message = "MedHub Active Residents";
 
         $form = self::evaluationFormsPOST()->getBody(); //get string JSON
         $formArr = json_decode($form, true); //turn json into an array
         $types = self::evaluationTypesPOST()->getBody(); //get string JSON
         $typesArr = json_decode($types, true); //turn json into an array
 
-        return view('schedules.admin.medhubTestPage', compact('message', 'usersArr', 'facArr', 'formArr', 'typesArr'));
+        return view("schedules.admin.medhubTestPage", compact("message", "usersArr", "facArr", "formArr", "typesArr"));
     }
 
 
@@ -49,20 +49,20 @@ class MedhubController extends Controller
     public function medhubPOST($callPath, $request = '{"programID":73}')
     {
         $client = new Client([
-            'base_uri' => 'https://osu.medhub.com/functions/api/'
+            "base_uri" => "https://osu.medhub.com/functions/api/"
         ]);
-        $clientID = '5006';
-        $privateKey = '331xyg1hl65o';
+        $clientID = "5006";
+        $privateKey = "331xyg1hl65o";
 
-        return $client->request('POST', $callPath, [
-            'form_params' => [
-                $time = time(),
-                'clientID' => $clientID,
-                'ts' => $time,
-                'type' => 'json',
-                'request' => $request,
-                'verify' => hash('sha256', "$clientID|$time|$privateKey|$request")
-            ]
+        return $client->request("POST", $callPath, [
+            "form_params" => [
+                ($time = time()),
+                "clientID" => $clientID,
+                "ts" => $time,
+                "type" => "json",
+                "request" => $request,
+                "verify" => hash("sha256", "$clientID|$time|$privateKey|$request"),
+            ],
         ]);
     }
 
@@ -71,31 +71,31 @@ class MedhubController extends Controller
     {
         $medhubId = null;
         $medhubMatches = array();
-        if (strcmp($userType, 'Attending') == 0) {
+        if (strcmp($userType, "Attending") == 0) {
             try {
-                $medhubMatches = json_decode(self::medhubPOST("users/facultySearch", json_encode(array('name' => $name)))->getBody(), true);
+                $medhubMatches = json_decode(self::medhubPOST("users/facultySearch", json_encode(array("name" => $name)))->getBody(), true);
             } catch (\Exception $e) {
-                Log::debug('Exception: Error in Medhub request users/facultySearch for name (' . $name . '). Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
+                Log::debug("Exception: Error in Medhub request users/facultySearch for name (" . $name . "). Exception code: " . $e->getCode() . " Exception Message: " . $e->getMessage());
             }
         } else {
             try {
-                $medhubMatches = json_decode(self::medhubPOST("users/residentSearch", json_encode(array('name' => $name)))->getBody(), true);
+                $medhubMatches = json_decode(self::medhubPOST("users/residentSearch", json_encode(array("name" => $name)))->getBody(), true);
             } catch (\Exception $e) {
-                Log::debug('Exception: Error in Medhub request users/residentSearch for name (' . $name . '). Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
+                Log::debug("Exception: Error in Medhub request users/residentSearch for name (" . $name . "). Exception code: " . $e->getCode() . " Exception Message: " . $e->getMessage());
             }
         }
-        $emailMessage = '';
+        $emailMessage = "";
         if (sizeof($medhubMatches) == 1) {
-            $medhubId = $medhubMatches[0]['userID'];
-            $emailMessage = $emailMessage . $userType . " " . $name . ' with MedHubID ' . $medhubId . ' was found on MedHub. ';
+            $medhubId = $medhubMatches[0]["userID"];
+            $emailMessage = $emailMessage . $userType . " " . $name . " with MedHubID " . $medhubId . " was found on MedHub. ";
         } elseif (sizeof($medhubMatches) == 0) {
-            $emailMessage = $emailMessage . 'No matches for ' . $userType . " " . $name . ' were found on MedHub. ';
+            $emailMessage = $emailMessage . "No matches for " . $userType . " " . $name . " were found on MedHub. ";
         } else {
-            $emailMessage = $emailMessage . 'Multiple matches for ' . $userType . " " . $name . ' were found on MedHub. ';
+            $emailMessage = $emailMessage . "Multiple matches for " . $userType . " " . $name . " were found on MedHub. ";
         }
         return array(
-            'medhubId' => $medhubId,
-            'emailMessage' => $emailMessage
+            "medhubId" => $medhubId,
+            "emailMessage" => $emailMessage
         );
     }
 
@@ -103,24 +103,24 @@ class MedhubController extends Controller
     //post call for schedule (requires programID & rotationSetID from academicYearPOST)
     public function schedulePOST()
     {
-        $callPath = 'schedules/view';
+        $callPath = "schedules/view";
         $programID = 73;
 
         $rotationsetID = 0; //temporarily set the rotationSetID to 0
         $years = self::academicYearPOST()->getBody(); //call academicYearPOST to get the rotationSetID argument
         $yearsArr = json_decode($years, true); //turn json into an array
-        $date = date('Y-m-d');
-        $date = date('Y-m-d', strtotime($date)); // get todays date
+        $date = date("Y-m-d");
+        $date = date("Y-m-d", strtotime($date)); // get todays date
         for ($i = 0; $i < count($yearsArr); $i++) {
-            $rotationsetID = $yearsArr[$i]['rotationsetID'];
-            $startDate = date('Y-m-d', strtotime($yearsArr[$i]['start_date'])); //get the rotation start date from academicYearPOST
-            $endDate = date('Y-m-d', strtotime($yearsArr[$i]['end_date'])); //get the rotation end date from academicYearPOST
+            $rotationsetID = $yearsArr[$i]["rotationsetID"];
+            $startDate = date("Y-m-d", strtotime($yearsArr[$i]["start_date"])); //get the rotation start date from academicYearPOST
+            $endDate = date("Y-m-d", strtotime($yearsArr[$i]["end_date"])); //get the rotation end date from academicYearPOST
 
             if (($date > $startDate) && ($date < $endDate)) { // find the date range that fits today
                 break; // break so we can save the rotationSetID
             }
         }
-        $request = json_encode(array('programID' => $programID, "rotationsetID" => $rotationsetID)); // setup the arguments properly
+        $request = json_encode(array("programID" => $programID, "rotationsetID" => $rotationsetID)); // setup the arguments properly
         return self::medhubPOST($callPath, $request);
     }
 
@@ -128,18 +128,18 @@ class MedhubController extends Controller
     //post call for rotations (requires scheduleID & rotationSetID from schedulePOST, academicYearPOST)
     public function rotationsPOST()
     {
-        $callPath = 'schedules/rotations';
+        $callPath = "schedules/rotations";
         $programID = 73;
 
         $rotationsetID = 0; //temporarily set the rotationSetID to 0
         $years = self::academicYearPOST()->getBody(); //call academicYearPOST to get the rotationSetID argument
         $yearsArr = json_decode($years, true); //turn json into an array
-        $date = date('Y-m-d');
-        $date = date('Y-m-d', strtotime($date)); // get todays date
+        $date = date("Y-m-d");
+        $date = date("Y-m-d", strtotime($date)); // get todays date
         for ($i = 0; $i < count($yearsArr); $i++) {
-            $rotationsetID = $yearsArr[$i]['rotationsetID'];
-            $startDate = date('Y-m-d', strtotime($yearsArr[$i]['start_date'])); //get the rotation start date from academicYearPOST
-            $endDate = date('Y-m-d', strtotime($yearsArr[$i]['end_date'])); //get the rotation end date from academicYearPOST
+            $rotationsetID = $yearsArr[$i]["rotationsetID"];
+            $startDate = date("Y-m-d", strtotime($yearsArr[$i]["start_date"])); //get the rotation start date from academicYearPOST
+            $endDate = date("Y-m-d", strtotime($yearsArr[$i]["end_date"])); //get the rotation end date from academicYearPOST
 
             if (($date > $startDate) && ($date < $endDate)) { // find the date range that fits today
                 break; // break so we can save the rotationSetID
@@ -147,44 +147,44 @@ class MedhubController extends Controller
         }
         $schedule = self::schedulePOST($programID, $rotationsetID)->getBody(); // call schedule post
         $scheduleArr = json_decode($schedule, true);
-        $scheduleID = $scheduleArr[0]['scheduleID']; // get the scheduleID from the schedule post
-        $request = json_encode(array('scheduleID' => $scheduleID, "rotationsetID" => $rotationsetID)); // setup the arguments properly
+        $scheduleID = $scheduleArr[0]["scheduleID"]; // get the scheduleID from the schedule post
+        $request = json_encode(array("scheduleID" => $scheduleID, "rotationsetID" => $rotationsetID)); // setup the arguments properly
         return self::medhubPOST($callPath, $request);
     }
 
     //post call for active residents
     public function activeResidentsPOST()
     {
-        return self::medhubPOST('users/residents');
+        return self::medhubPOST("users/residents");
     }
 
     //post call for active faculty (not sure if needed since most numbers seem to match up already)
     public function activeFacultyPOST()
     {
-        return self::medhubPOST('users/faculty');
+        return self::medhubPOST("users/faculty");
     }
 
     // post call for academic year
     public function academicYearPOST()
     {
-        return self::medhubPOST('schedules/years');
+        return self::medhubPOST("schedules/years");
     }
 
     //post call for evaluationForms
     public function evaluationFormsPOST()
     {
-        return self::medhubPOST('evals/forms');
+        return self::medhubPOST("evals/forms");
     }
 
     //post call for evaluationTypes
     public function evaluationTypesPOST()
     {
-        return self::medhubPOST('evals/types');
+        return self::medhubPOST("evals/types");
     }
 
     // API Test
     public function testPOST()
     {
-        return self::medhubPOST('info/test');
+        return self::medhubPOST("info/test");
     }
 }
