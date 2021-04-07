@@ -324,9 +324,9 @@ class ScheduleDataController extends Controller
             ->orderBy('last_name')
             ->get();
 
-        $datas = $resident_data;
+        $resident_choices = $resident_data;
 
-        return view('schedules.resident.milestone', compact('id', 'milestones', 'datas', 'anesthesiologists'));
+        return view('schedules.resident.milestone', compact('id', 'milestones', 'resident_choices', 'anesthesiologists'));
     }
 
     /* Affects Milestone blade
@@ -375,20 +375,15 @@ class ScheduleDataController extends Controller
             ->orderBy('last_name')
             ->get();
 
-        $datas = $resident_data;
+        $resident_choices = $resident_data;
 
-        return view('schedules.resident.milestone', compact('id', 'milestones', 'datas', 'anesthesiologists'));
+        return view('schedules.resident.milestone', compact('id', 'milestones', 'resident_choices', 'anesthesiologists'));
     } 
 
     public function notifyResidentOverwrittenPreferences($toName, $toEmail, $residentName, $date, $overwrittenChoices)
     {
-
-        $choice = "";
-        for ($i = 1; $i <= 3; $i++){
-            if ($overwrittenChoices[$i - 1] != 0) {
-                $choice = $choice . $i . " ";
-            }
-        }
+        $choice = implode(", ", $overwrittenChoices);
+        $choice .= " ";
 
         $subject = 'REMODEL: Resident Preference ' . $choice . ' Overwritten for ' . $date;
         $body = "Resident $residentName has overwritten OR preferences  " . $choice . "for " . $date . ". New preferences are now viewable on REMODEL website.";
@@ -399,7 +394,6 @@ class ScheduleDataController extends Controller
             $message->to($toEmail, $toName)->subject($subject);
             $message->from('OhioStateAnesthesiology@gmail.com');
         });
-        return true;
     }
 
     // Insert options if no preference exists.
@@ -408,7 +402,7 @@ class ScheduleDataController extends Controller
 
         // variables to track if the use has overwritten a preference
         $notify = false;
-        $overwrittenChoices = array(0,0,0);
+        $overwrittenChoices = array();
 
         // get the id from the form
         $id = $_REQUEST['schedule_id'];
@@ -438,10 +432,8 @@ class ScheduleDataController extends Controller
                     strpos($attending_string, "]") - (strpos($attending_string, "[") + 1)
                 );
 
-                if (isset($_REQUEST['pref_anest' . $choice])) { // if they chose an anesthesiologist, add their ID to the DB, if not, add NULL
-                    if ($_REQUEST['pref_anest' . $choice] != 0) {
-                        $pref_anest[$i] = $_REQUEST['pref_anest' . $choice];
-                    }
+                if (isset($_REQUEST['pref_anest' . $choice]) && $_REQUEST['pref_anest' . $choice] != 0) { // if they chose an anesthesiologist, add their ID to the DB, if not, add NULL
+                    $pref_anest[$i] = $_REQUEST['pref_anest' . $choice];   
                 }
 
                 if (Option::where('date', $date)
@@ -450,7 +442,7 @@ class ScheduleDataController extends Controller
                     ->count() != 0
                 ) {
                     $notify = true;
-                    $overwrittenChoices[$i] = $choice;
+                    array_push($overwrittenChoices, $i + 1);
 
                     Option::where('date', $date)
                         ->where('resident', $resident)
@@ -489,7 +481,7 @@ class ScheduleDataController extends Controller
 
         // if data was overwritten, send a notification
         if ($notify == true) {
-            self::notifyResidentOverwrittenPreferences('', $_SERVER["HTTP_EMAIL"], $residentName, $date, $overwrittenChoices);
+            self::notifyResidentOverwrittenPreferences($residentName, $_SERVER["HTTP_EMAIL"], $residentName, $date, $overwrittenChoices);
         }
 
         return view('schedules.resident.schedule_update');
