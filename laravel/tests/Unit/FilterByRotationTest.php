@@ -7,6 +7,7 @@ use App\ScheduleParser;
 
 class FilterByRotationTest extends TestCase
 {
+    //TODO: rewrite - testing for SchedulerParser
     public function testFilterByRotation1()
     {
         $parser = new ScheduleParser("20200101", true);

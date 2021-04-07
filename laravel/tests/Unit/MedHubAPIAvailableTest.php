@@ -12,6 +12,7 @@ class MedHubAPIAvailableTest extends TestCase
      *
      * @return void
      */
+    
     public function testMedHubAPIConnection()
     {
         $MHC = new MedhubController();

@@ -15,6 +15,7 @@ class AdminAddUserTest extends TestCase
      *
      * @return void
      */
+    // TODO: move into Admin Controller Test file
     public function testAddUserResidentTableHasData()
     {
         $AC = new AdminController();
@@ -24,33 +25,4 @@ class AdminAddUserTest extends TestCase
         $fakeData->delete();
     }
 
-    public function testAddUserResidentTableHasCorrectNameData()
-    {
-        $this->assertDatabaseHas("resident", ["name" => "Amy Baumann"]);
-    }
-
-    public function testAddUserResidentTableHasCorrectIDData()
-    {
-        $this->assertDatabaseHas("resident", ["medhubId" => "113643"]);
-    }
-
-    /**
-     * A test of the medhub api connection.
-     *
-     * @return void
-     */
-    public function testAddUserMedHubAPIConnection()
-    {
-        $MHC = new MedhubController();
-        $testPOST = json_decode($MHC->testPOST()->getBody(), true);
-        $response = $testPOST["response"];
-        $this->assertTrue($response == "success");
-    }
-
-    public function testAddUserFindPeople()
-    {
-        $mhc = new MedhubController();
-        $result = $mhc->findPeopleOSU("Michael", "Bragalone");
-        $this->assertNotNull($result);
-    }
 }

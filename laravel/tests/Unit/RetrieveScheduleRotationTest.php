@@ -7,18 +7,7 @@ use App\Http\Controllers\MedhubController;
 
 class RetrieveScheduleRotationTest extends TestCase
 {
-    /**
-     * A basic test to check the connection to medhub api with TestPOST call
-     *
-     * @return void
-     */
-    public function testMedHubAPIConnection()
-    {
-        $MHC = new MedhubController();
-        $testPOST = json_decode($MHC->testPOST()->getBody(), true);
-        $response = $testPOST["response"];
-        $this->assertTrue($response == "success");
-    }
+    //TODO: Move methods into Medhub Controller Testing file
 
     /**
      * A basic test to check the academicYearPOST call returns values

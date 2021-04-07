@@ -17,6 +17,7 @@ class AdminAddDataSetTest extends TestCase
      *
      * @return void
      */
+    // TODO: move to Admin Controller Testing file
     public function testAdminAddDataSetDataTableHasData()
     {
         $AC = new AdminController();
@@ -25,7 +26,7 @@ class AdminAddDataSetTest extends TestCase
         $fakeData = Milestone::where("detail", "FakeDetail")->first();
         $fakeData->delete();
     }
-
+    // TODO: update to use refresh db
     public function testPostAnnouncement()
     {
         Announcements::insert([
@@ -41,7 +42,7 @@ class AdminAddDataSetTest extends TestCase
         $fakeData = Announcements::where("message", "testcaseMessage")->first();
         $fakeData->delete();
     }
-
+    // TODO: update to use refresh db
     public function testDeleteAnnouncement()
     {
         Announcements::insert([
@@ -57,7 +58,7 @@ class AdminAddDataSetTest extends TestCase
         $fakeData = Announcements::where("message", "testcaseMessage")->first();
         $fakeData->delete();
     }
-
+    // TODO: update to use refresh db
     public function testPostReply()
     {
         Announcements::insert([
@@ -73,7 +74,7 @@ class AdminAddDataSetTest extends TestCase
         $fakeData = Announcements::where("message", "testcaseMessage")->first();
         $fakeData->delete();
     }
-
+    // TODO: update to use refresh db
     public function testDeleteReply()
     {
         Announcements::insert([

@@ -15,6 +15,7 @@ class AdminAddUpdateMilestoneTest extends TestCase
      *
      * @return void
      */
+    // TODO: move into Admin Controller Test file
     public function testAdminDeleteMilestone()
     {
         $AC = new AdminController();

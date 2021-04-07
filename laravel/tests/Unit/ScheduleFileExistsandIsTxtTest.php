@@ -47,8 +47,4 @@ class ScheduleFileExistsandIsTxtTest extends TestCase
         $this->assertEquals($result, $actual);
     }
 
-    public function testRotationTableHasData()
-    {
-        $this->assertDatabaseHas("rotations", ["id" => "1"]);
-    }
 }
