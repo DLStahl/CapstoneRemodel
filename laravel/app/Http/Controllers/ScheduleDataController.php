@@ -160,7 +160,6 @@ class ScheduleDataController extends Controller
         $schedule = ScheduleData::where('date', $date)
             ->whereNotNull('start_time')
             ->whereNotNull('end_time');
-        // [{room: 'Room name'}, {room: 'Room name'}, {room: 'Room name'}, ...]
         $roomsData = $schedule->select('room')->get();
         $rooms = array();
         foreach ($roomsData as $room) {
@@ -217,7 +216,6 @@ class ScheduleDataController extends Controller
             "thirdday" => 3
         );
 
-        // TODO: refactor all the firstday secondday thirdday stuff out
         if (!array_key_exists($day, $day_translation_array)) {
             abort(404);
         }
@@ -311,7 +309,7 @@ class ScheduleDataController extends Controller
                 $choice = $i + 1;
                 $schedule_data[$i] = ScheduleData::where('id', $split[$i])->get();
                 $attending_string = $schedule_data[$i][0]['lead_surgeon'];
-                $attending = substr($attending_string, 0, strpos($attending_string, "["));
+                $attending = substr($attending_string, 0, strpos($attending_string, "[")); // get rid of [number] after the surgeon name
                 $date = $schedule_data[$i][0]['date'];
                 $resident_data[$i]['schedule'] = $schedule_data[$i][0];
                 $resident_data[$i]['attending'] = $attending;
@@ -352,7 +350,7 @@ class ScheduleDataController extends Controller
                 $choice = $i + 1;
                 $schedule_data[$i] = ScheduleData::where('id', $split[$i])->get();
                 $attending_string = $schedule_data[$i][0]['lead_surgeon'];
-                $attending = substr($attending_string, 0, strpos($attending_string, "["));
+                $attending = substr($attending_string, 0, strpos($attending_string, "[")); // get rid of [number] after the surgeon name
                 $date = $schedule_data[$i][0]['date'];
                 $resident_data[$i]['schedule'] = $schedule_data[$i][0];
                 $resident_data[$i]['attending'] = $attending;
@@ -426,7 +424,7 @@ class ScheduleDataController extends Controller
                 $schedule_data[$i] = ScheduleData::where('id', $split[$i])->get();
                 $attending_string = $schedule_data[$i][0]['lead_surgeon'];
                 $date = $schedule_data[$i][0]['date'];
-                $attending = substr(
+                $attending = substr( // get rid of [number] after the surgeon name
                     $attending_string,
                     strpos($attending_string, "[") + 1,
                     strpos($attending_string, "]") - (strpos($attending_string, "[") + 1)
