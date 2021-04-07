@@ -19,4 +19,19 @@ class Resident extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    public function options()
+    {
+        return $this->hasMany(Option::class);
+    }
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
+
+    public function evaluatedatas()
+    {
+        return $this->hasMany(EvaluateData::class);
+    }
 }

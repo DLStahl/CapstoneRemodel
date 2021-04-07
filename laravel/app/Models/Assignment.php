@@ -19,4 +19,29 @@ class Assignment extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    public function residents()
+    {
+        return $this->belongsTo(Resident::class);
+    }
+
+    public function options()
+    {
+        return $this->belongsTo(Option::class);
+    }
+
+    public function scheduledatas()
+    {
+        return $this->belongsTo(ScheduleData::class);
+    }
+
+    public function attendings()
+    {
+        return $this->belongsTo(Attending::class);
+    }
+
+    public function anesthesiologist()
+    {
+        return $this->belongsTo(Anesthesiologist::class);
+    }
 }

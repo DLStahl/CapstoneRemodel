@@ -19,4 +19,9 @@ class Probability extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    public function residents()
+    {
+        return $this->belongsTo(Resident::class);
+    }
 }
