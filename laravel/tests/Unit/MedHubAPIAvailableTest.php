@@ -28,10 +28,7 @@ class MedHubAPIAvailableTest extends TestCase
     public function testMedHubAPIEvalForms()
     {
         $MHC = new MedhubController();
-        $evalsFormsPOST = json_decode(
-            $MHC->evaluationFormsPOST()->getBody(),
-            true
-        );
+        $evalsFormsPOST = json_decode($MHC->evaluationFormsPOST()->getBody(), true);
         $this->assertTrue(sizeof($evalsFormsPOST) > 0);
     }
 }

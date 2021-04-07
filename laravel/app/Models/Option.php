@@ -11,7 +11,7 @@ class Option extends Model
      *
      * @var string
      */
-    protected $table = 'option';
+    protected $table = "option";
 
     /**
      * Indicates if the model should be timestamped.

@@ -13,8 +13,8 @@ class AddExistsToMilestoneTable extends Migration
      */
     public function up()
     {
-        Schema::table('milestone', function (Blueprint $table) {
-            $table->boolean('exists')->default(1);
+        Schema::table("milestone", function (Blueprint $table) {
+            $table->boolean("exists")->default(1);
         });
     }
 
@@ -25,8 +25,8 @@ class AddExistsToMilestoneTable extends Migration
      */
     public function down()
     {
-        Schema::table('milestone', function (Blueprint $table) {
-            $table->dropColumn('exists');
+        Schema::table("milestone", function (Blueprint $table) {
+            $table->dropColumn("exists");
         });
     }
 }

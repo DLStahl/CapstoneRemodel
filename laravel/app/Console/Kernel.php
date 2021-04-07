@@ -16,9 +16,9 @@ class Kernel extends ConsoleKernel
         Commands\UpdateScheduleData::class,
         Commands\AutoAssign::class,
         Commands\PushSchedule::class,
-		Commands\UpdateEvaluateData::class,
-		Commands\InitiateEval::class,
-        Commands\UpdateAnesthesiologistsData::class
+        Commands\UpdateEvaluateData::class,
+        Commands\InitiateEval::class,
+        Commands\UpdateAnesthesiologistsData::class,
     ];
 
     /**
@@ -29,12 +29,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('autoassign')->dailyAt('5:00');
-        $schedule->command('update:anesthesiologists_data')->dailyAt('5:05');
-        $schedule->command('update:schedule_data')->dailyAt('5:15');
-		$schedule->command('update:evaluate_data')->dailyAt('5:30');
-        $schedule->command('pushAPI')->dailyAt('5:45');
-		$schedule->command('initiateEvals')->dailyAt('6:00');
+        $schedule->command("autoassign")->dailyAt("5:00");
+        $schedule->command("update:anesthesiologists_data")->dailyAt("5:05");
+        $schedule->command("update:schedule_data")->dailyAt("5:15");
+        $schedule->command("update:evaluate_data")->dailyAt("5:30");
+        $schedule->command("pushAPI")->dailyAt("5:45");
+        $schedule->command("initiateEvals")->dailyAt("6:00");
     }
 
     /**
@@ -44,8 +44,8 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . "/Commands");
 
-        require base_path('routes/console.php');
+        require base_path("routes/console.php");
     }
 }

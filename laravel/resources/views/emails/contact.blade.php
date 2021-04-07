@@ -1,7 +1,7 @@
-<h3>Subject: {{$subject}}</h3>
+<h3>Subject: {{ $subject }}</h3>
 
-<div>    
-	{{$bodyMessage}}
+<div>
+    {{ $bodyMessage }}
 </div>
 
-<p> Sent from: {{$email}}</p>
+<p> Sent from: {{ $email }}</p>

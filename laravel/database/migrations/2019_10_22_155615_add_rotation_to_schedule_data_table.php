@@ -13,8 +13,8 @@ class AddRotationToScheduleDataTable extends Migration
      */
     public function up()
     {
-        Schema::table('schedule_data', function (Blueprint $table) {
-            $table->longText('rotation')->nullable();
+        Schema::table("schedule_data", function (Blueprint $table) {
+            $table->longText("rotation")->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddRotationToScheduleDataTable extends Migration
      */
     public function down()
     {
-        Schema::table('schedule_data', function (Blueprint $table) {
-            $table->dropColumn('rotation');
+        Schema::table("schedule_data", function (Blueprint $table) {
+            $table->dropColumn("rotation");
         });
     }
 }

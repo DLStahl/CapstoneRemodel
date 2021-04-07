@@ -12,14 +12,14 @@ class AddEducationReportToDB extends Command
      *
      * @var string
      */
-    protected $signature = 'educationReport:add {date} {--process=*}';
+    protected $signature = "educationReport:add {date} {--process=*}";
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Test data insertion from .csv file into database table.';
+    protected $description = "Test data insertion from .csv file into database table.";
 
     /**
      * Create a new command instance.
@@ -38,10 +38,9 @@ class AddEducationReportToDB extends Command
      */
     public function handle()
     {
-        $parser = new ScheduleParser($this->argument('date'), true);
-        $process_date = $this->option('process');
-        foreach($process_date as $date)
-        {
+        $parser = new ScheduleParser($this->argument("date"), true);
+        $process_date = $this->option("process");
+        foreach ($process_date as $date) {
             $parser->processScheduleData($date);
         }
     }

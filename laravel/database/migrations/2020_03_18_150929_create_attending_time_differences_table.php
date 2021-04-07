@@ -13,11 +13,11 @@ class CreateAttendingTimeDifferencesTable extends Migration
      */
     public function up()
     {
-        Schema::create('variables', function (Blueprint $table) {
-            $table->increments('id');
-						$table->text('name');
-						$table->text('description');
-						$table->integer('value');
+        Schema::create("variables", function (Blueprint $table) {
+            $table->increments("id");
+            $table->text("name");
+            $table->text("description");
+            $table->integer("value");
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateAttendingTimeDifferencesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('variables');
+        Schema::dropIfExists("variables");
     }
 }

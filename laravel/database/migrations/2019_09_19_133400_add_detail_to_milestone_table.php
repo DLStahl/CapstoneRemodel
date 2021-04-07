@@ -13,8 +13,8 @@ class AddDetailToMilestoneTable extends Migration
      */
     public function up()
     {
-        Schema::table('milestone', function($table) {
-            $table->longText('detail')->nullable();
+        Schema::table("milestone", function ($table) {
+            $table->longText("detail")->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddDetailToMilestoneTable extends Migration
      */
     public function down()
     {
-        Schema::table('assignment', function (Blueprint $table) {
-            $table->dropColumn('detail');
+        Schema::table("assignment", function (Blueprint $table) {
+            $table->dropColumn("detail");
         });
     }
 }

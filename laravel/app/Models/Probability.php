@@ -11,7 +11,7 @@ class Probability extends Model
      *
      * @var string
      */
-    protected $table = 'probability';
+    protected $table = "probability";
 
     /**
      * Indicates if the model should be timestamped.
