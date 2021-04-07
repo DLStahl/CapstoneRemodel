@@ -25,6 +25,9 @@ class DropProbabilityColumns extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('probability', function (Blueprint $table) {
+            $table->unsignedInteger('selected');
+            $table->double('probability', 15, 11);
+        });
     }
 }
