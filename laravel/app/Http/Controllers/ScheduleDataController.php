@@ -607,9 +607,9 @@ class ScheduleDataController extends Controller
         // Update or insert option 1 data
         if (
             Option::where("date", $date)
-            ->where("resident", $resident)
-            ->where("option", $choice)
-            ->count() != 0
+                ->where("resident", $resident)
+                ->where("option", $choice)
+                ->count() != 0
         ) {
             // generate notification and delete data
             $notify = true;
@@ -668,9 +668,9 @@ class ScheduleDataController extends Controller
         // Update/Insert option 2 data
         if (
             Option::where("date", $date)
-            ->where("resident", $resident)
-            ->where("option", $choice)
-            ->count() != 0
+                ->where("resident", $resident)
+                ->where("option", $choice)
+                ->count() != 0
         ) {
             // generate notification and update/delete data
             $nofity = true;
@@ -737,9 +737,9 @@ class ScheduleDataController extends Controller
         //Insert/Update old option 3 data
         if (
             Option::where("date", $date)
-            ->where("resident", $resident)
-            ->where("option", $choice)
-            ->count() != 0
+                ->where("resident", $resident)
+                ->where("option", $choice)
+                ->count() != 0
         ) {
             // generate notification and delete data
             $nofity = true;
@@ -805,9 +805,9 @@ class ScheduleDataController extends Controller
         $choice = 1;
         if (
             Option::where("date", $date)
-            ->where("resident", $resident)
-            ->where("option", $choice)
-            ->count() != 0
+                ->where("resident", $resident)
+                ->where("option", $choice)
+                ->count() != 0
         ) {
             Option::where("date", $date)
                 ->where("resident", $resident)
@@ -831,9 +831,9 @@ class ScheduleDataController extends Controller
         $choice++;
         if (
             Option::where("date", $date)
-            ->where("resident", $resident)
-            ->where("option", $choice)
-            ->count() != 0
+                ->where("resident", $resident)
+                ->where("option", $choice)
+                ->count() != 0
         ) {
             Option::where("date", $date)
                 ->where("resident", $resident)

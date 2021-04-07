@@ -43,13 +43,12 @@ class MedhubController extends Controller
         return view("schedules.admin.medhubTestPage", compact("message", "usersArr", "facArr", "formArr", "typesArr"));
     }
 
-
     // request format: json_encode(array('programID' => 73));
     // or just a JSON encoded string: '{"programID":73}'
     public function medhubPOST($callPath, $request = '{"programID":73}')
     {
         $client = new Client([
-            "base_uri" => "https://osu.medhub.com/functions/api/"
+            "base_uri" => "https://osu.medhub.com/functions/api/",
         ]);
         $clientID = "5006";
         $privateKey = "331xyg1hl65o";
@@ -116,11 +115,12 @@ class MedhubController extends Controller
             $startDate = date("Y-m-d", strtotime($yearsArr[$i]["start_date"])); //get the rotation start date from academicYearPOST
             $endDate = date("Y-m-d", strtotime($yearsArr[$i]["end_date"])); //get the rotation end date from academicYearPOST
 
-            if (($date > $startDate) && ($date < $endDate)) { // find the date range that fits today
+            if (($date > $startDate) && ($date < $endDate)) { 
+                // find the date range that fits today
                 break; // break so we can save the rotationSetID
             }
         }
-        $request = json_encode(array("programID" => $programID, "rotationsetID" => $rotationsetID)); // setup the arguments properly
+        $request = json_encode(["programID" => $programID, "rotationsetID" => $rotationsetID]); // setup the arguments properly
         return self::medhubPOST($callPath, $request);
     }
 
@@ -141,14 +141,15 @@ class MedhubController extends Controller
             $startDate = date("Y-m-d", strtotime($yearsArr[$i]["start_date"])); //get the rotation start date from academicYearPOST
             $endDate = date("Y-m-d", strtotime($yearsArr[$i]["end_date"])); //get the rotation end date from academicYearPOST
 
-            if (($date > $startDate) && ($date < $endDate)) { // find the date range that fits today
+            if (($date > $startDate) && ($date < $endDate)) { 
+                // find the date range that fits today
                 break; // break so we can save the rotationSetID
             }
         }
         $schedule = self::schedulePOST($programID, $rotationsetID)->getBody(); // call schedule post
         $scheduleArr = json_decode($schedule, true);
         $scheduleID = $scheduleArr[0]["scheduleID"]; // get the scheduleID from the schedule post
-        $request = json_encode(array("scheduleID" => $scheduleID, "rotationsetID" => $rotationsetID)); // setup the arguments properly
+        $request = json_encode(["scheduleID" => $scheduleID, "rotationsetID" => $rotationsetID]); // setup the arguments properly
         return self::medhubPOST($callPath, $request);
     }
 

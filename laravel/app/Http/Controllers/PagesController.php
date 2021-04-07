@@ -231,15 +231,15 @@ class PagesController extends Controller
         $roles = [];
         if (
             Admin::where("email", $email)
-            ->where("exists", "1")
-            ->exists()
+                ->where("exists", "1")
+                ->exists()
         ) {
             array_push($roles, "Admin");
         }
         if (
             Resident::where("email", $email)
-            ->where("exists", "1")
-            ->exists()
+                ->where("exists", "1")
+                ->exists()
         ) {
             array_push($roles, "Resident");
         }
@@ -295,22 +295,22 @@ class PagesController extends Controller
         if (strlen($message) > 0) {
             if (
                 Admin::where("email", $_SERVER["HTTP_EMAIL"])
-                ->where("exists", "1")
-                ->exists()
+                    ->where("exists", "1")
+                    ->exists()
             ) {
                 $user_type = 1;
                 $user_id = Admin::where("email", $_SERVER["HTTP_EMAIL"])->value("id");
             } elseif (
                 Attending::where("email", $_SERVER["HTTP_EMAIL"])
-                ->where("exists", "1")
-                ->exists()
+                    ->where("exists", "1")
+                    ->exists()
             ) {
                 $user_type = 2;
                 $user_id = Attending::where("email", $_SERVER["HTTP_EMAIL"])->value("id");
             } elseif (
                 Resident::where("email", $_SERVER["HTTP_EMAIL"])
-                ->where("exists", "1")
-                ->exists()
+                    ->where("exists", "1")
+                    ->exists()
             ) {
                 $user_type = 3;
                 $user_id = Resident::where("email", $_SERVER["HTTP_EMAIL"])->value("id");
@@ -345,21 +345,21 @@ class PagesController extends Controller
     public function postContact(Request $request)
     {
         $this->validate($request, [
-            'email' => 'required|email',
-            'subject' => 'min:1',
-            'body' => 'min:'
+            "email" => "required|email",
+            "subject" => "min:1",
+            "body" => "min:"
         ]);
 
         $data = array(
-            'email' => $request->email,
-            'subject' => $request->subject,
-            'bodyMessage' => $request->body
+            "email" => $request->email,
+            "subject" => $request->subject,
+            "bodyMessage" => $request->body
         );
 
-        Mail::send('emails.contact', $data, function ($message) use ($data) {
-            $message->from($data['email']);
-            $message->to(config('mail.admin.email'));
-            $message->subject($data['subject']);
+        Mail::send("emails.contact", $data, function ($message) use ($data) {
+            $message->from($data["email"]);
+            $message->to(config("mail.admin.email"));
+            $message->subject($data["subject"]);
         });
 
         $request->session()->flash("success", "Your message was sent!");

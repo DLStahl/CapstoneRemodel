@@ -49,7 +49,7 @@ class InitiateEval extends Command
     public function medhubPOST($callPath, $request = '{"programID":73}')
     {
         $client = new Client([
-            "base_uri" => "https://osu.medhub.com/functions/api/"
+            "base_uri" => "https://osu.medhub.com/functions/api/",
         ]);
         $clientID = "5006";
         $privateKey = "331xyg1hl65o";
@@ -64,7 +64,7 @@ class InitiateEval extends Command
                 "request" => $request,
                 "verify" => hash("sha256", "$clientID|$time|$privateKey|$request"),
             ],
-        ]); 
+        ]);
     }
 
     // initiate evaluation for attending to eval resident
@@ -76,12 +76,12 @@ class InitiateEval extends Command
         $programID = 73;
         $notify = true;
         $request = json_encode([
-            "evaluationID" => $evalID, 
-            "eval_type" => $evalType, 
-            "evaluator_userID" => $evaluatorID, 
-            "programID" => $programID, 
-            "evaluatee_userID" => intval($evaluateeID), 
-            "notify" => $notify
+            "evaluationID" => $evalID,
+            "eval_type" => $evalType,
+            "evaluator_userID" => $evaluatorID,
+            "programID" => $programID,
+            "evaluatee_userID" => intval($evaluateeID),
+            "notify" => $notify,
         ]);
         return self::medhubPOST($callPath, $request);
     }
@@ -96,12 +96,12 @@ class InitiateEval extends Command
         $programID = 73;
         $notify = true;
         $request = json_encode([
-            "evaluationID" => $evalID, 
-            "eval_type" => $evalType, 
-            "evaluator_userID" => intval($evaluatorID), 
-            "programID" => $programID, 
-            "evaluatee_userID" => $evaluateeID, 
-            "notify" => $notify
+            "evaluationID" => $evalID,
+            "eval_type" => $evalType,
+            "evaluator_userID" => intval($evaluatorID),
+            "programID" => $programID,
+            "evaluatee_userID" => $evaluateeID,
+            "notify" => $notify,
         ]);
         return self::medhubPOST($callPath, $request);
     }

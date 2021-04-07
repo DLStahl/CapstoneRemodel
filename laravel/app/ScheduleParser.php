@@ -160,8 +160,8 @@ class ScheduleParser extends Model
                     Log::info($residentEmail);
                     if (
                         Option::where("date", $date)
-                        ->where("resident", $residentId)
-                        ->delete()
+                            ->where("resident", $residentId)
+                            ->delete()
                     ) {
                         Log::info($residentName . " options deleted");
                     }
