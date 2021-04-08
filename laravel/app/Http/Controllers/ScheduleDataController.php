@@ -328,7 +328,8 @@ class ScheduleDataController extends Controller
                 $choice = $i + 1;
                 $schedule_data[$i] = ScheduleData::where("id", $split[$i])->get();
                 $attending_string = $schedule_data[$i][0]["lead_surgeon"];
-                $attending = substr($attending_string, 0, strpos($attending_string, "[")); // get rid of [number] after the surgeon name
+                preg_match("/(.+) \[(\d+)\]/", $attending_string, $matches); // get name of the lead surgeon
+                $attending = $matches[1];
                 $date = $schedule_data[$i][0]["date"];
                 $resident_data[$i]["schedule"] = $schedule_data[$i][0];
                 $resident_data[$i]["attending"] = $attending;
@@ -370,7 +371,8 @@ class ScheduleDataController extends Controller
                 $choice = $i + 1;
                 $schedule_data[$i] = ScheduleData::where("id", $split[$i])->get();
                 $attending_string = $schedule_data[$i][0]["lead_surgeon"];
-                $attending = substr($attending_string, 0, strpos($attending_string, "[")); // get rid of [number] after the surgeon name
+                preg_match("/(.+) \[(\d+)\]/", $attending_string, $matches); // get name of the lead surgeon
+                $attending = $matches[1];
                 $date = $schedule_data[$i][0]["date"];
                 $resident_data[$i]["schedule"] = $schedule_data[$i][0];
                 $resident_data[$i]["attending"] = $attending;
@@ -449,12 +451,8 @@ class ScheduleDataController extends Controller
                 $schedule_data[$i] = ScheduleData::where("id", $split[$i])->get();
                 $attending_string = $schedule_data[$i][0]["lead_surgeon"];
                 $date = $schedule_data[$i][0]["date"];
-                $attending = substr(
-                    // get rid of [number] after the surgeon name
-                    $attending_string,
-                    strpos($attending_string, "[") + 1,
-                    strpos($attending_string, "]") - (strpos($attending_string, "[") + 1)
-                );
+                preg_match("/(.+) \[(\d+)\]/", $attending_string, $matches); // get id of lead surgeon
+                $attending = $matches[2];
 
                 if (isset($_REQUEST["pref_anest" . $choice]) && $_REQUEST["pref_anest" . $choice] != 0) {
                     // if they chose an anesthesiologist, add their ID to the DB, if not, add NULL
