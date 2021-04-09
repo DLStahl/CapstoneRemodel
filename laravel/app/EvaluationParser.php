@@ -109,13 +109,13 @@ class EvaluationParser extends Model
         while ($line != false) {
             // get participant's full name
             $name = substr($line, 0, stripos($line, ","));
-            $ep = stripos(substr($line, 0), "\n");
-            $line = substr($line, $ep + 1);
+            $endOfLineIndex = stripos(substr($line, 0), "\n");
+            $line = substr($line, $endOfLineIndex + 1);
             // parse participant information
             while (str_starts_with($line, " ")) {
-                $ep = stripos($line, "\n");
+                $endOfLineIndex = stripos($line, "\n");
                 // determine if participant is resident or attending
-                $tmp = trim(substr($line, 0, $ep), " +");
+                $tmp = trim(substr($line, 0, $endOfLineIndex), " +");
                 $occupation = self::getOccupation(substr($tmp, 0, stripos($tmp, " ")));
                 // get startTime
                 preg_match("/from (.*) to/s", $tmp, $match);
@@ -195,7 +195,7 @@ class EvaluationParser extends Model
                     }
                     array_push($attendingsInLine, $attending);
                 }
-                $line = substr($line, $ep + 1);
+                $line = substr($line, $endOfLineIndex + 1);
             }
         }
         return [

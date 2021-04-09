@@ -158,9 +158,9 @@ class InitiateEval extends Command
         $alwaysEvalServices = ["1", "2", "21", "23"]; // hardcoded for now - needs to be changed when db updated
         $totalEvalsSent = 0;
         $time_difference = DB::table("variables")->where("name", "time_before_attending_evaluates_resident")->value("value");
-        $pairs = self::getResidentAttendingPairs($yesterday);
+        $residentAndAttendingPairs = self::getResidentAttendingPairs($yesterday);
         // for each Resident/Attending pair - send eval if necessary
-        foreach ($pairs as $pair) {
+        foreach ($residentAndAttendingPairs as $pair) {
             if (!is_null($pair["residentID"]) && !is_null($pair["attendingID"])) {
                 // get medhub form id for resident's active service
                 $medhubFormId = EvaluationForms::where("id", $pair["residentActiveService"])->value("medhub_form_id");
@@ -185,7 +185,7 @@ class InitiateEval extends Command
     // return Resident and Attending pairs with total time worked together for a given date
     public function getResidentAttendingPairs($date)
     {
-        $pairs = [];
+        $residentAndAttendingPairs = [];
         //get residents that have evaluation data in DB on day
         $residents = EvaluateData::where("date", $date)->pluck("resident_id", "resident")->unique();
         Log::info("Residents in Evaluation Data with date " . $date . ":  " . $residents);
@@ -212,9 +212,9 @@ class InitiateEval extends Command
                     "attendingName" => $attendingName,
                     "overallTime" => $overallTime,
                 ];
-                array_push($pairs, $residentAndAttending);
+                array_push($residentAndAttendingPairs, $residentAndAttending);
             }
         }
-        return $pairs;
+        return $residentAndAttendingPairs;
     }
 }

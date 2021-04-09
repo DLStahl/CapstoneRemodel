@@ -382,9 +382,4 @@ class PagesController extends Controller
         return view("pages.feedback", compact("data_date"));
     }
 
-    public function test()
-    {
-        $parser = new EvaluationParser(date("omd", strtotime("today")), true);
-        return "test1";
-    }
 }
