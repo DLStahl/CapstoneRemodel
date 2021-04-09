@@ -38,11 +38,10 @@ class InitiateEval extends Command
         parent::__construct();
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
+    public function handle()
+    {
+        self::initiateEvaluations();
+    }
 
     // request format: json_encode(array('programID' => 73));
     // or just a JSON encoded string: '{"programID":73}'
@@ -106,9 +105,11 @@ class InitiateEval extends Command
         return self::medhubPOST($callPath, $request);
     }
 
+    // send Medhub Evaluations for a resident and attending that worked together
     public function sendEvaluations($residentID, $residentName, $medhubFormId, $attendingID, $attendingName, $date)
     {
         $evalsSent = 0;
+        // send attending an evaluation for a resident
         try {
             $responseID = self::initAttendingEvalResidentPOST($attendingID, $residentID, $medhubFormId);
             if ($responseID != 0) {
@@ -118,6 +119,7 @@ class InitiateEval extends Command
             Log::debug("Failed to send evaluation: Attending Evaluating Resident. Resident: " . $residentName . "Resident ID: " . $residentID . " Attending: " . $attendingName . " Attending ID " . $attendingID . " Medhub Form ID: " . $medhubFormId);
             Log::debug("Associated Exception code: " . $e->getCode() . " Exception Message: " . $e->getMessage());
         }
+        // send resident an evaluation for an attending
         try {
             $responseID = self::initResidentEvalAttendingPOST($residentID, $attendingID);
             if ($responseID != 0) {
@@ -128,9 +130,9 @@ class InitiateEval extends Command
             Log::debug("Associated Exception code: " . $e->getCode() . " Exception Message: " . $e->getMessage());
         }
 
-        // if used REMODEL, fire off additional evaluation
+        // if resident used REMODEL, fire off additional evaluation
         $hasOptions = Option::where("resident", $residentID)->where("date", $date)->get();
-        if (!is_null($hasOptions) && count($hasOptions) > 0) {
+        if (count($hasOptions) > 0) {
             try {
                 $additionalFormType = "REMODEL feedback";
                 $additionalService = EvaluationForms::where("form_type", $additionalFormType)->value("medhub_form_id");
@@ -146,32 +148,31 @@ class InitiateEval extends Command
         return $evalsSent;
     }
 
+    // send evaluations for resident and attending pairs in the evaluation_data table with the date of yesterday
     public function initiateEvaluations()
     {
-        $date = date("Y-m-d");
-        $date = strtotime("-1 day", strtotime($date));
-        $date = date("Y-m-d", $date);
-        Log::info("initiate evaluations for " . $date . " evaluation data");
+
+        $yesterday = date("Y-m-d", strtotime("yesterday"));
+        Log::info("initiate evaluations for " . $yesterday . " evaluation data");
 
         $alwaysEvalServices = ["1", "2", "21", "23"]; // hardcoded for now - needs to be changed when db updated
         $totalEvalsSent = 0;
         $time_difference = DB::table("variables")->where("name", "time_before_attending_evaluates_resident")->value("value");
-        $time_difference = (int)$time_difference;
-        $pairs = self::getResidentAttendingPairs($date);
+        $pairs = self::getResidentAttendingPairs($yesterday);
         // for each Resident/Attending pair - send eval if necessary
         foreach ($pairs as $pair) {
-            if (!is_null($pair["residentActiveService"]) && !is_null($pair["residentActiveService"])) {
+            if (!is_null($pair["residentID"]) && !is_null($pair["attendingID"])) {
                 // get medhub form id for resident's active service
                 $medhubFormId = EvaluationForms::where("id", $pair["residentActiveService"])->value("medhub_form_id");
                 if (in_array($pair["residentActiveService"], $alwaysEvalServices)) {
                     Log::info("Resident: " .  $pair["residentName"] . " Active Service: " . $pair["residentActiveService"] . " is special. Attending " . $pair["attendingName"]);
-                    $totalEvalsSent += self::sendEvaluations($pair["residentID"], $pair["residentName"], $medhubFormId, $pair["attendingID"], $pair["attendingName"], $date);
+                    $totalEvalsSent += self::sendEvaluations($pair["residentID"], $pair["residentName"], $medhubFormId, $pair["attendingID"], $pair["attendingName"], $yesterday);
                 } else if ($medhubFormId == 0) {
                     Log::debug("Medhub Form ID is 0 for Resident " . $pair["residentName"] . "'s active service " . $pair["residentActiveService"]);
                 } else {
                     if ($pair["overallTime"] >= $time_difference) {
                         Log::info("Resident/Attending Pair send evaluation due to overall time. Resident: " . $pair["residentName"] . " Attending: " . $pair["attendingName"] . " Time: " . $pair["overallTime"] . " >= " . $time_difference);
-                        $totalEvalsSent +=  self::sendEvaluations($pair["residentID"], $pair["residentName"], $medhubFormId, $pair["attendingID"], $pair["attendingName"], $date);
+                        $totalEvalsSent +=  self::sendEvaluations($pair["residentID"], $pair["residentName"], $medhubFormId, $pair["attendingID"], $pair["attendingName"], $yesterday);
                     }
                 }
             } else {
@@ -181,11 +182,12 @@ class InitiateEval extends Command
         Log::debug("Total Number of Evaluations Succesfully sent: " . $totalEvalsSent);
     }
 
+    // return Resident and Attending pairs with total time worked together for a given date
     public function getResidentAttendingPairs($date)
     {
-        $pairs = array();
+        $pairs = [];
         //get residents that have evaluation data in DB on day
-        $residents = EvaluateData::where("date", $date)->pluck("resident_id", "resident");
+        $residents = EvaluateData::where("date", $date)->pluck("resident_id", "resident")->unique();
         Log::info("Residents in Evaluation Data with date " . $date . ":  " . $residents);
         // for each resident get their active rotation service and create pairs of residents and attendings that worked together
         foreach ($residents as $residentName => $residentID) {
@@ -202,22 +204,17 @@ class InitiateEval extends Command
             foreach ($attendings as $attendingName => $attendingID) {
                 $overallTime = EvaluateData::where("date", $date)->where("resident_id", $residentID)->where("attending_id", $attendingID)->sum("time_with_attending");
                 Log::info("Resident: " . $residentName . "(" . $residentID . ") Attending: " . $attendingName . "(" . $attendingID . ") Total Time Together: " . $overallTime);
-                $residentAndAttending = array(
+                $residentAndAttending = [
                     "residentName" => $residentName,
                     "residentID" => $residentID,
                     "residentActiveService" => $activeService,
                     "attendingID" => $attendingID,
                     "attendingName" => $attendingName,
                     "overallTime" => $overallTime,
-                );
+                ];
                 array_push($pairs, $residentAndAttending);
             }
         }
         return $pairs;
-    }
-
-    public function handle()
-    {
-        self::initiateEvaluations();
     }
 }

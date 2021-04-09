@@ -26,9 +26,13 @@ class EvaluationParser extends Model
         $month = intval(substr($datefile, 4, 2));
         $day = intval(substr($datefile, 6));
         $this->date = $year . "-" . $month . "-" . $day;
-        self::insertEvaluateData();
     }
 
+    /*
+    *  parse resident evaluation report csv and 
+    *  insert cases a given resident and attending worked together on in evaluation data
+    *  returns array with residents and attending that it failed to add to the resident and attending tables
+    */
     public function insertEvaluateData()
     {
         if (!file_exists($this->filepath)) {
@@ -37,10 +41,10 @@ class EvaluationParser extends Model
         }
         Log::info("Parse evaluation data for " . $this->date);
         $fp = fopen($this->filepath, "r");
-        $residentsFailedAdding = array();
-        $attendingsFailedAdding = array();
-        $residentsInFile = array();
-        $attendingsInFile = array();
+        $residentsFailedAdding = [];
+        $attendingsFailedAdding = [];
+        $residentsInFile = [];
+        $attendingsInFile = [];
         fgetcsv($fp);
         while (($line = fgetcsv($fp)) !== false) {
             // extract participants from Attending/Resident Times col
@@ -85,24 +89,30 @@ class EvaluationParser extends Model
                 }
             }
         }
-        //send emails for all users not added 
-        self::notifyForAllFailedUsers($residentsFailedAdding, $attendingsFailedAdding, config("mail.admin.name"), config("mail.admin.email"));
-        fclose($fp);
+        fclose($fp); 
+        return compact("residentsFailedAdding", "attendingsFailedAdding");
     }
 
+    /*
+    * Returns arrays of arrays - 
+    * residents & attendings for the case, 
+    * (if necessary) updates residents & attendings that failed in adding to the resident or attending table in the file 
+    * (if necessary) updates residents & attendings that were found in the evaluation file
+    * returns the updated arrays for failing to add a resident or attending
+    */ 
     private function getParticipants($line, $residentsFailedAdding, $attendingsFailedAdding, $residentsInFile, $attendingsInFile)
     {
-        $residentsInLine = array();
-        $attendingsInLine = array();
+        $residentsInLine = [];
+        $attendingsInLine = [];
         $line = $line . "\n";
         // while there are still participants in line, parse and add to residents or attendings
         while ($line != false) {
             // get participant's full name
-            $name = substr($line, 0, stripos(substr($line, 0), ","));
+            $name = substr($line, 0, stripos($line, ","));
             $ep = stripos(substr($line, 0), "\n");
             $line = substr($line, $ep + 1);
             // parse participant information
-            while (substr($line, 0, 1) == " ") {
+            while (str_starts_with($line, " ")) {
                 $ep = stripos($line, "\n");
                 // determine if participant is resident or attending
                 $tmp = trim(substr($line, 0, $ep), " +");
@@ -126,19 +136,19 @@ class EvaluationParser extends Model
                         }
                         $rId = $residentInfo["id"];
                         $rName = $residentInfo["name"];
-                        $resident = array(
+                        $resident = [
                             "fullName" => $name,
                             "occupation" => $occupation,
                             "startTime" => $startTime,
                             "endTime" => $endTime,
                             "time" => $time,
                             "id" => $rId,
-                            "dbName" => $rName
-                        );
+                            "dbName" => $rName,
+                        ];
                         $residentsInFile[$name] = $resident;
                     } else {
                         $resident = $residentsInFile[$name];
-                        $resident = array(
+                        $resident = [
                             "fullName" => $name,
                             "occupation" => $occupation,
                             "startTime" => $startTime,
@@ -146,7 +156,7 @@ class EvaluationParser extends Model
                             "time" => $time,
                             "id" => $resident["id"],
                             "dbName" => $resident["dbName"]
-                        );
+                        ];
                         $residentsInFile[$name] = $resident;
                     }
                     array_push($residentsInLine, $resident);
@@ -156,11 +166,11 @@ class EvaluationParser extends Model
                         $attendingInfo = self::getParticipantInfo("Attending", $name);
                         // if not found in DB or added - store to send email later
                         if (!$attendingInfo["found"] && !array_key_exists($attendingInfo["name"], $attendingsFailedAdding)) {
-                            $attendingFailedAdding[$attendingInfo["name"]] = $attendingInfo["emailMessage"];
+                            $attendingsFailedAdding[$attendingInfo["name"]] = $attendingInfo["emailMessage"];
                         }
                         $aId = $attendingInfo["id"];
                         $aName = $attendingInfo["name"];
-                        $attending = array(
+                        $attending = [
                             "fullName" => $name,
                             "occupation" => $occupation,
                             "startTime" => $startTime,
@@ -168,11 +178,11 @@ class EvaluationParser extends Model
                             "time" => $time,
                             "id" => $aId,
                             "dbName" => $aName
-                        );
+                        ];
                         $attendingsInFile[$name] = $attending;
                     } else {
                         $attending = $attendingsInFile[$name];
-                        $attending = array(
+                        $attending = [
                             "fullName" => $name,
                             "occupation" => $occupation,
                             "startTime" => $startTime,
@@ -180,7 +190,7 @@ class EvaluationParser extends Model
                             "time" => $time,
                             "id" => $attending["id"],
                             "dbName" => $attending["dbName"]
-                        );
+                        ];
                         $attendingsInFile[$name] = $attending;
                     }
                     array_push($attendingsInLine, $attending);
@@ -188,25 +198,25 @@ class EvaluationParser extends Model
                 $line = substr($line, $ep + 1);
             }
         }
-        return array(
+        return [
             "residentsInLine" => $residentsInLine,
             "attendingsInLine" => $attendingsInLine,
             "residentsFailedAdding" => $residentsFailedAdding,
             "attendingsFailedAdding" => $attendingsFailedAdding,
             "residentsInFile" => $residentsInFile,
             "attendingsInFile" => $attendingsInFile,
-        );
+        ];
     }
 
     private static function getOccupation($line)
     {
-        if ($line == "Anesthesiologist") return 1;
-        else return 0;
+        return $line == "Anesthesiologist" ? 1 : 0;
     }
 
+    // parses line (e.g. 1430) and returns time yyyy-mm-dd hh:mm format
     public static function getTime($line, $date)
     {
-        if ($line == "Now" || $line == "now") return $date . " " . "05:00";
+        if (strtolower($line) == "now") return $date . " " . "05:00";
         $date = null;
         $hourInt = null;
         $minuteInt = null;
@@ -222,14 +232,13 @@ class EvaluationParser extends Model
         return $date . " " . $hourInt . ":" . $minuteInt;
     }
 
+    // parses line (e.g. mm/dd/yyyy) and returns date in format yyyy-mm-dd format
     public static function getDate($line)
     {
-        $month = intval(substr($line, 0, 2));
-        $day = intval(substr($line, 3, 2));
-        $year = intval(substr($line, 6));
-        return ($year . "-" . $month . "-" . $day);
+        return  date('Y-m-d', strtotime($line));
     }
 
+    // returns the number of minutes between the start and end time
     public static function getMinutesDiff($startTime, $endTime)
     {
         return (strtotime($endTime) - strtotime($startTime)) / 60;
@@ -241,31 +250,31 @@ class EvaluationParser extends Model
     {
         $possibleNames = self::getNamePossibilities($name);
         $foundParticipant = false;
-        $participantInfo = array();
+        $participantInfo = [];
         foreach ($possibleNames as $possibleName) {
             $namefl = $possibleName[0] . " " . $possibleName[1];
             if (strcmp($userType, "Resident") == 0) {
                 $resident = Resident::where("name", $namefl)->first();
                 if (!is_null($resident)) {
                     $foundParticipant = true;
-                    $participantInfo = array(
+                    $participantInfo = [
                         "found" => $foundParticipant,
                         "id" => $resident->id,
                         "name" => $resident->name,
-                        "emailMessage" => ""
-                    );
+                        "emailMessage" => "",
+                    ];
                     break;
                 }
             } else {
                 $attending = Attending::where("name", $namefl)->first();
                 if (!is_null($attending)) {
                     $foundParticipant = true;
-                    $participantInfo = array(
+                    $participantInfo = [
                         "found" => $foundParticipant,
                         "id" => $attending->id,
                         "name" => $attending->name,
-                        "emailMessage" => ""
-                    );
+                        "emailMessage" => "",
+                    ];
                     break;
                 }
             }
@@ -317,18 +326,20 @@ class EvaluationParser extends Model
                 $participantID = $medhubResults["medhubId"];
             }
         }
-        return array(
+        return [
             "found" => $foundParticipant,
             "id" => $participantID,
             "name" => $oSUFindPeopleResults["name"],
-            "emailMessage" => $emailMessage
-        );
+            "emailMessage" => $emailMessage,
+        ];
     }
 
-    // Find user information using OSU Find People API.
-    // possibleNames = array of name arrays with 
-    // [0] = first name
-    // [1] = last name
+    /* 
+    * Find user information using OSU Find People API.
+    * possibleNames = array of name arrays with: 
+    * [0] = first name
+    * [1] = last name
+    */
     public function getParticipantNameAndEmail($userType, $possibleNames)
     {
         // if only one name possible
@@ -342,20 +353,28 @@ class EvaluationParser extends Model
                 }
             }
         }
-        return array(
+        return [
             "foundNameAndEmail" => $results["found"],
             "name" => $results["name"],
             "email" => $results["osuEmail"],
             "emailMessage" => $results["emailMessage"]
-        );
+        ];
     }
 
+    /*
+    * Sends a request to find people osu to get an osu email given a first and last name
+    * returns an array with: 
+    * a name (first last), 
+    * a osuEmail(if found), 
+    * an email message (in cases for failed users),
+    * a boolean for whether the person was accurately found by find people osu (false = failed user which needs an email)
+    */
     public function findParticipantWithFindPeopleOSU($firstName, $lastName, $userType)
     {
         $participantFound = false;
         $osuEmail = NULL;
         $name = $firstName . " " . $lastName;
-        $peopleFound = array();
+        $peopleFound = [];
         try {
             $peopleFound = json_decode(self::findPeopleOSU($firstName, $lastName)->getBody(), true);
         } catch (\Exception $e) {
@@ -375,12 +394,12 @@ class EvaluationParser extends Model
         } else {
             $emailMessage = "Multiple matches for " . $userType . " " . $name . " were found by OSU Find People. Please check the information and add user to database manually. ";
         }
-        return array(
+        return [
             "found" => $participantFound,
             "osuEmail" => $osuEmail,
             "name" => $name,
             "emailMessage" => $emailMessage
-        );
+        ];
     }
 
     public static function findPeopleOSU($firstName, $lastName)
@@ -394,9 +413,11 @@ class EvaluationParser extends Model
         return $client->request("GET", $callPath, ["query" => $query]);
     }
 
-    // Given a full name, return all possible first and last name combos
-    // - returns an array of possible name arrays
-    // - where a name array: [0] = first name string and [1] = last name string
+    /*
+    * Given a full name, return all possible first and last name combos
+    * - returns an array of possible name arrays
+    * - where a name array: [0] = first name string and [1] = last name string
+    */
     public static function getNamePossibilities($name)
     {
         $nameParts = explode(" ", $name);
@@ -437,17 +458,16 @@ class EvaluationParser extends Model
         return $nameOptions;
     }
 
-    public function notifyForAllFailedUsers($residentsFailedAdding, $attendingsFailedAdding, $toName, $toEmail)
+    // combines all failed residents and failed attendings and sends an email to the admin if necessary
+    public function notifyForAllFailedUsers($failedUsers, $toName, $toEmail)
     {
-        $dataRows = array();
-        $residentNames = array_keys($residentsFailedAdding);
-        foreach ($residentNames as $residentName) {
-            $data = self::getMailData("Resident", $residentName, $residentsFailedAdding[$residentName]);
+        $dataRows = [];
+        foreach ($failedUsers['residentsFailedAdding'] as $residentName => $emailMessage) {
+            $data = self::getMailData("Resident", $residentName, $emailMessage);
             array_push($dataRows, $data);
         }
-        $attendingNames = array_keys($attendingsFailedAdding);
-        foreach ($attendingNames as $attendingName) {
-            $data = self::getMailData("Attending", $attendingName, $attendingsFailedAdding[$attendingName]);
+        foreach ($failedUsers['attendingsFailedAdding'] as $attendingName =>$emailMessage) {
+            $data = self::getMailData("Attending", $attendingName, $emailMessage);
             array_push($dataRows, $data);
         }
         if (!empty($dataRows)) {
@@ -455,19 +475,21 @@ class EvaluationParser extends Model
         }
     }
 
+    // returns the data array to be used in the email for a given failed resident/attending
     public function getMailData($userType, $userName, $body)
     {
         $heading = $userType . " " . $userName . " needs to be added.";
-        return array(
+        return [
             "heading" => $heading,
             "body" => $body
-        );
+        ];
     }
 
     public function sendEmailForFailedUsers($toName, $toEmail, $dataRows)
     {
-        $subject = "(" . config("app.env") . ") REMODEL: Resident/Attending Needs to be Added";
-        $data = array("name" => $toName, "dataRows" => $dataRows);
+        $subject = config("app.env") == "production" ? "" : "(" .config("app.env") . ") ";
+        $subject .= "REMODEL: Resident/Attending Needs to be Added";
+        $data = ["name" => $toName, "dataRows" => $dataRows];
         Mail::send("emails.mail_table", $data, function ($message) use ($toName, $toEmail, $subject) {
             $message->to($toEmail, $toName)->subject($subject);
             $message->from(config("mail.username"));

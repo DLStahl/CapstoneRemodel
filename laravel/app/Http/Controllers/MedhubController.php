@@ -65,11 +65,11 @@ class MedhubController extends Controller
         ]);
     }
 
-    // Get Medhub Id using name and Medhub API
+    // Get Medhub Id using name and Medhub API 
     public function getMedhubId($userType, $name)
     {
         $medhubId = null;
-        $medhubMatches = array();
+        $medhubMatches = [];
         if (strcmp($userType, "Attending") == 0) {
             try {
                 $medhubMatches = json_decode(self::medhubPOST("users/facultySearch", json_encode(array("name" => $name)))->getBody(), true);
@@ -86,16 +86,16 @@ class MedhubController extends Controller
         $emailMessage = "";
         if (sizeof($medhubMatches) == 1) {
             $medhubId = $medhubMatches[0]["userID"];
-            $emailMessage = $emailMessage . $userType . " " . $name . " with MedHubID " . $medhubId . " was found on MedHub. ";
+            $emailMessage .=  $userType . " " . $name . " with MedHubID " . $medhubId . " was found on MedHub. ";
         } elseif (sizeof($medhubMatches) == 0) {
-            $emailMessage = $emailMessage . "No matches for " . $userType . " " . $name . " were found on MedHub. ";
+            $emailMessage .= "No matches for " . $userType . " " . $name . " were found on MedHub. ";
         } else {
-            $emailMessage = $emailMessage . "Multiple matches for " . $userType . " " . $name . " were found on MedHub. ";
+            $emailMessage .= "Multiple matches for " . $userType . " " . $name . " were found on MedHub. ";
         }
-        return array(
+        return [
             "medhubId" => $medhubId,
             "emailMessage" => $emailMessage
-        );
+        ];
     }
 
     // needs to be refactored still

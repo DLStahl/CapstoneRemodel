@@ -178,15 +178,19 @@ class ScheduleParser extends Model
     // Notify residents to select new preferences
     public function notifySelectNewPreferences($toName, $toEmail, $date)
     {
-        Log::info('send email');
-        $subject = '(' . config('app.env') . ') REMODEL: Please select new preferences for date ' . $date;
-        $body = 'Your previous preferences for date ' . $date . ' were deleted because the schedule is updated. Please select new preferences on REMODEL website.';
-        $heading = 'Please select new preferences for date ' . $date;
-        $data = array('name' => $toName, 'heading' => $heading, 'body' => $body);
+        Log::info("send email for schedule parser ". $date);
+        $subject = config("app.env") == "production" ? "" : "(" .config("app.env") . ") ";
+        $subject .= "REMODEL: Please select new preferences for date " . $date;
+        $body = 
+            "Your previous preferences for date " . 
+            $date . 
+            " were deleted because the schedule is updated. Please select new preferences on REMODEL website.";
+        $heading = "Please select new preferences for date " . $date;
+        $data = ["name" => $toName, "heading" => $heading, "body" => $body];
 
-        Mail::send('emails.mail', $data, function ($message) use ($toName, $toEmail, $subject) {
+        Mail::send("emails.mail", $data, function ($message) use ($toName, $toEmail, $subject) {
             $message->to($toEmail, $toName)->subject($subject);
-            $message->from(config('mail.username'));
+            $message->from(config("mail.username"));
         });
     }
 

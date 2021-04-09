@@ -546,15 +546,15 @@ class ScheduleDataController extends Controller
         if ($overwrittenChoices[2] == 3) {
             $choice = $choice . " 3";
         }
-
-        $subject = '(' . config('app.env') . ') REMODEL: Resident Preference ' . $choice . ' Overwritten for ' . $date;
+        $subject = config("app.env") == "production" ? "" : "(" .config("app.env") . ") ";
+        $subject .= "REMODEL: Resident Preference " . $choice . " Overwritten for " . $date;
         $body = "Resident $residentName has overwritten OR preferences  " . $choice . " for " . $date . ". New preferences are now viewable on REMODEL website.";
         $heading = "Resident $residentName has overwritten OR preference " . $choice;
-        $data = array('name' => $toName, 'heading' => $heading, 'body' => $body);
+        $data = ["name" => $toName, "heading" => $heading, "body" => $body];
 
         Mail::send("emails.mail", $data, function ($message) use ($toName, $toEmail, $subject) {
             $message->to($toEmail, $toName)->subject($subject);
-            $message->from(config('mail.username'));
+            $message->from(config("mail.username"));
         });
         return true;
     }
@@ -818,9 +818,9 @@ class ScheduleDataController extends Controller
         $choice++;
         if (
             Option::where("date", $date)
-            ->where("resident", $resident)
-            ->where("option", $choice)
-            ->count() != 0
+                ->where("resident", $resident)
+                ->where("option", $choice)
+                ->count() != 0
         ) {
             Option::where("date", $date)
                 ->where("resident", $resident)
