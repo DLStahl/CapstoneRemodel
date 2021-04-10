@@ -157,7 +157,7 @@ class InitiateEval extends Command
 
         $alwaysEvalServices = ["1", "2", "21", "23"]; // hardcoded for now - needs to be changed when db updated
         $totalEvalsSent = 0;
-        $time_difference = DB::table("variables")->where("name", "time_before_attending_evaluates_resident")->value("value");
+        $time_difference = intval(DB::table("variables")->where("name", "time_before_attending_evaluates_resident")->value("value"));
         $residentAndAttendingPairs = self::getResidentAttendingPairs($yesterday);
         // for each Resident/Attending pair - send eval if necessary
         foreach ($residentAndAttendingPairs as $pair) {

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use GuzzleHttp\Client;
 use Carbon\Carbon;
 
-class EvaluationParser extends Model
+class EvaluationParser
 {
     protected $filepath;
     protected $date;
@@ -109,7 +109,7 @@ class EvaluationParser extends Model
         while ($line != false) {
             // get participant's full name
             $name = substr($line, 0, stripos($line, ","));
-            $endOfLineIndex = stripos(substr($line, 0), "\n");
+            $endOfLineIndex = stripos($line, "\n");
             $line = substr($line, $endOfLineIndex + 1);
             // parse participant information
             while (str_starts_with($line, " ")) {
@@ -198,14 +198,7 @@ class EvaluationParser extends Model
                 $line = substr($line, $endOfLineIndex + 1);
             }
         }
-        return [
-            "residentsInLine" => $residentsInLine,
-            "attendingsInLine" => $attendingsInLine,
-            "residentsFailedAdding" => $residentsFailedAdding,
-            "attendingsFailedAdding" => $attendingsFailedAdding,
-            "residentsInFile" => $residentsInFile,
-            "attendingsInFile" => $attendingsInFile,
-        ];
+        return compact("residentsInLine", "attendingsInLine", "residentsFailedAdding", "attendingsFailedAdding", "residentsInFile", "attendingsInFile");
     }
 
     private static function getOccupation($line)
@@ -214,7 +207,7 @@ class EvaluationParser extends Model
     }
 
     // parses line (e.g. 1430) and returns time yyyy-mm-dd hh:mm format
-    public static function getTime($line, $date)
+    private static function getTime($line, $date)
     {
         if (strtolower($line) == "now") return $date . " " . "05:00";
         $date = null;
@@ -479,10 +472,7 @@ class EvaluationParser extends Model
     public function getMailData($userType, $userName, $body)
     {
         $heading = $userType . " " . $userName . " needs to be added.";
-        return [
-            "heading" => $heading,
-            "body" => $body
-        ];
+        return compact("heading", "body");
     }
 
     public function sendEmailForFailedUsers($toName, $toEmail, $dataRows)

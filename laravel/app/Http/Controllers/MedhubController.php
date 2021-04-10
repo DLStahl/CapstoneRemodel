@@ -15,7 +15,6 @@
     ...
  */
 
-// remodel is green 1611
 
 namespace App\Http\Controllers;
 

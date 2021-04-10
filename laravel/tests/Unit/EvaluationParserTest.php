@@ -8,22 +8,53 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class EvaluationParserTest extends TestCase
 {
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
     use DatabaseTransactions;
+
+    public function getPrivateMethod( $className, $methodName ) {
+		$reflector = new \ReflectionClass( $className );
+		$method = $reflector->getMethod( $methodName );
+		$method->setAccessible( true );
+		return $method;
+	}
+
+    
     public function testEvaluationParser()
     {
-        //$parser = new EvaluationParser('20210328', true);
-        $parser = new EvaluationParser('20210323', true);
-        //$parser = new EvaluationParser('20180418', true);
+        $expectedResults = [
+            "Failed Resident Name" => ["No matches for Resident Failed Resident Name were found on MedHub. No matches for Resident Failed Resident Name were found by OSU Find People. The Resident may be using a preffered name at OSU. Please check the information and add user to database manually."],
+            "Failed Attendings" => ["No matches for Attending Failed Attending were found on MedHub. No matches for Attending Failed Attending were found by OSU Find People. The Attending may be using a preffered name at OSU. Please check the information and add user to database manually."],
+        ];
+        $expectedDataInserted = [
+            ["Peter Khoury", "Michelle Humeidan",  "23", "TestL1"],
+            ["Robert Schroell", "Michelle Humeidan", "495", "TestL2"],
+            ["Drew Michael Donnell", "Failed Attending", "90", "TestL3"],
+            ["Whitney Loggins", "Michelle Humeidan", "57", "TestL4"],
+            ["Whitney Loggins", "Michelle Humeidan", "56", "TestL4"],
+            ["Whitney Loggins", "Michelle Humeidan", "239", "TestL5"],
+            ["Whitney Loggins", "William Kelly", "78", "TestL5"],
+            ["Robert Stocum", "Jyoti Pandya", "107", "TestL6"],
+            ["Peter Khoury", "Jyoti Pandya", "30", "TestL7"],
+            ["Robert Stocum", "Jyoti Pandya", "159", "TestL7"],
+            ["Alix Zuleta Alarcon", "Failed Attending", "7", "TestL9"],
+            ["Failed Resident Name", "Jyoti Pandya", "132", "TestL10"],
+            ["Whitney Loggins", "Jyoti Pandya", "186", "TestL11"],
+            ["Whitney Loggins", "Yun Xia", "25", "TestL11"],
+        ];
+        $parser = new EvaluationParser('20210328', true);
         $results = $parser->insertEvaluateData();
-        //$parser->notifyForAllFailedUsers($results, config("mail.admin.name"), config("mail.admin.email"));
-        $this->assertDatabaseHas('evaluation_data', [
-            'date' => date('2021-03-22')
-        ]);
+        
+        $this->assertEqualsCanonicalizing($expectedResults, $results);
+        foreach($expectedDataInserted as $expectedEntry){
+            $this->assertDatabaseHas('evaluation_data', 
+                [ 
+                    "date" => date("2021-03-27"), 
+                    "resident" => $expectedEntry[0], 
+                    "attending" => $expectedEntry[1], 
+                    "time_with_attending" => $expectedEntry[2], 
+                    "location" => $expectedEntry[3],
+                ]
+            );
+        }
     }
 
 
@@ -119,19 +150,25 @@ class EvaluationParserTest extends TestCase
 // Tests for getTime()
 
     public function testGetTimeForLineWithDate() {
-        $time = EvaluationParser::getTime("03/22/21 1930", "2021-03-22");
+        $parser = new EvaluationParser('20210323', true);
+        $getTimeMethod = $this->getPrivateMethod("\App\EvaluationParser", "getTime");
+        $time = $getTimeMethod->invokeArgs($parser, ["03/22/21 1930", "2021-03-22"]);
         $expectedTime = "2021-03-22 19:30";
         $this->assertEquals($expectedTime, $time);
     }
 
     public function testGetTimeWithNow() {
-        $time = EvaluationParser::getTime("Now", "2021-03-26");
+        $parser = new EvaluationParser('20210323', true);
+        $getTimeMethod = $this->getPrivateMethod("\App\EvaluationParser", "getTime");
+        $time = $getTimeMethod->invokeArgs($parser, ["Now", "2021-03-26"]);
         $expectedTime = "2021-03-26 05:00";
         $this->assertEquals($expectedTime, $time);
     }
 
     public function testGetTimeWithNoDate() {
-        $time = EvaluationParser::getTime("1430", date('y-m-d'));
+        $parser = new EvaluationParser('20210323', true);
+        $getTimeMethod = $this->getPrivateMethod("\App\EvaluationParser", "getTime");
+        $time = $getTimeMethod->invokeArgs($parser, ["1430", date('y-m-d')]);
         $expectedTime = date('y-m-d', strtotime("-1 day")) . " 14:30";
         $this->assertEquals($expectedTime, $time);
     }
