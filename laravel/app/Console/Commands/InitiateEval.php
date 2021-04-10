@@ -47,24 +47,23 @@ class InitiateEval extends Command
     // or just a JSON encoded string: '{"programID":73}'
     public function medhubPOST($callPath, $request = '{"programID":73}')
     {
-        // $client = new Client([
-        //     "base_uri" => "https://osu.medhub.com/functions/api/",
-        // ]);
-        // $clientID = "5006";
-        // $privateKey = "331xyg1hl65o";
-        // $time = time();
+        $client = new Client([
+            "base_uri" => "https://osu.medhub.com/functions/api/",
+        ]);
+        $clientID = "5006";
+        $privateKey = "331xyg1hl65o";
+        $time = time();
 
-        // Log::info($request);
-        // return $client->request("POST", $callPath, [
-        //     "form_params" => [
-        //         "clientID" => $clientID,
-        //         "ts" => $time,
-        //         "type" => "json",
-        //         "request" => $request,
-        //         "verify" => hash("sha256", "$clientID|$time|$privateKey|$request"),
-        //     ],
-        // ]);
-        return 1;
+        Log::info($request);
+        return $client->request("POST", $callPath, [
+            "form_params" => [
+                "clientID" => $clientID,
+                "ts" => $time,
+                "type" => "json",
+                "request" => $request,
+                "verify" => hash("sha256", "$clientID|$time|$privateKey|$request"),
+            ],
+        ]);
     }
 
     // initiate evaluation for attending to eval resident
