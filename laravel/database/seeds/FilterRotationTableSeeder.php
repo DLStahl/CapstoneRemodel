@@ -19,9 +19,7 @@ class FilterRotationTableSeeder extends Seeder
             return;
         }
 
-        /**
-         * Read data from the backup file and add into database
-         */
+        // Read data from the backup file and add into database
         $fp = fopen(__DIR__ . "/../../../resources/database/SurgeonRotations.csv", "r");
 
         // Read the first row
