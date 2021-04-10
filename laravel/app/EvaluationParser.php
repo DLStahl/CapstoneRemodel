@@ -109,13 +109,13 @@ class EvaluationParser
         while ($line != false) {
             // get participant's full name
             $name = substr($line, 0, stripos($line, ","));
-            $endOfLineIndex = stripos($line, "\n");
-            $line = substr($line, $endOfLineIndex + 1);
+            $newLineIndex = stripos($line, "\n");
+            $line = substr($line, $newLineIndex + 1);
             // parse participant information
             while (str_starts_with($line, " ")) {
-                $endOfLineIndex = stripos($line, "\n");
+                $newLineIndex = stripos($line, "\n");
                 // determine if participant is resident or attending
-                $tmp = trim(substr($line, 0, $endOfLineIndex), " +");
+                $tmp = trim(substr($line, 0, $newLineIndex), " +");
                 $occupation = self::getOccupation(substr($tmp, 0, stripos($tmp, " ")));
                 // get startTime
                 preg_match("/from (.*) to/s", $tmp, $match);
@@ -195,7 +195,7 @@ class EvaluationParser
                     }
                     array_push($attendingsInLine, $attending);
                 }
-                $line = substr($line, $endOfLineIndex + 1);
+                $line = substr($line, $newLineIndex + 1);
             }
         }
         return compact("residentsInLine", "attendingsInLine", "residentsFailedAdding", "attendingsFailedAdding", "residentsInFile", "attendingsInFile");

@@ -10,6 +10,8 @@ class EvaluationParserTest extends TestCase
 {
     use DatabaseTransactions;
 
+    // sets a private method for a given class to be accessible so it can be used in testing
+    // link: https://stackoverflow.com/questions/249664/best-practices-to-test-protected-methods-with-phpunit
     public function getPrivateMethod( $className, $methodName ) {
 		$reflector = new \ReflectionClass( $className );
 		$method = $reflector->getMethod( $methodName );
@@ -40,7 +42,7 @@ class EvaluationParserTest extends TestCase
             ["Whitney Loggins", "Jyoti Pandya", "186", "TestL11"],
             ["Whitney Loggins", "Yun Xia", "25", "TestL11"],
         ];
-        $parser = new EvaluationParser('20210328', true);
+        $parser = new EvaluationParser('20210328');
         $results = $parser->insertEvaluateData();
         
         $this->assertEqualsCanonicalizing($expectedResults, $results);
@@ -150,7 +152,7 @@ class EvaluationParserTest extends TestCase
 // Tests for getTime()
 
     public function testGetTimeForLineWithDate() {
-        $parser = new EvaluationParser('20210323', true);
+        $parser = new EvaluationParser('20210323');
         $getTimeMethod = $this->getPrivateMethod("\App\EvaluationParser", "getTime");
         $time = $getTimeMethod->invokeArgs($parser, ["03/22/21 1930", "2021-03-22"]);
         $expectedTime = "2021-03-22 19:30";
@@ -158,7 +160,7 @@ class EvaluationParserTest extends TestCase
     }
 
     public function testGetTimeWithNow() {
-        $parser = new EvaluationParser('20210323', true);
+        $parser = new EvaluationParser('20210323');
         $getTimeMethod = $this->getPrivateMethod("\App\EvaluationParser", "getTime");
         $time = $getTimeMethod->invokeArgs($parser, ["Now", "2021-03-26"]);
         $expectedTime = "2021-03-26 05:00";
@@ -166,7 +168,7 @@ class EvaluationParserTest extends TestCase
     }
 
     public function testGetTimeWithNoDate() {
-        $parser = new EvaluationParser('20210323', true);
+        $parser = new EvaluationParser('20210323');
         $getTimeMethod = $this->getPrivateMethod("\App\EvaluationParser", "getTime");
         $time = $getTimeMethod->invokeArgs($parser, ["1430", date('y-m-d')]);
         $expectedTime = date('y-m-d', strtotime("-1 day")) . " 14:30";

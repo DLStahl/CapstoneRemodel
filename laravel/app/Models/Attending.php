@@ -18,7 +18,7 @@ class Attending extends Model
      *
      * @var array
      */
-    protected $guarded = ["id"];
+    protected $guarded = [];
 
     /**
      * Indicates if the model should be timestamped.

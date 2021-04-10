@@ -38,7 +38,7 @@ class UpdateEvaluateData extends Command
      */
     public function handle()
     {
-        $parser = new EvaluationParser(date("omd", strtotime("today")), true);
+        $parser = new EvaluationParser(date("omd", strtotime("today")));
         $failedUsersResult = $parser->insertEvaluateData();
         $parser->notifyForAllFailedUsers($failedUsersResult, config("mail.admin.name"), config("mail.admin.email"));
     }
