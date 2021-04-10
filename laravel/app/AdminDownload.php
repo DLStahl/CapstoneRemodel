@@ -2,8 +2,6 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
 use App\Models\Admin;
 use App\Models\Resident;
 use App\Models\Attending;
@@ -11,7 +9,7 @@ use App\Models\Assignment;
 use App\Models\Option;
 use App\Models\ScheduleData;
 
-class AdminDownload extends Model
+class AdminDownload
 {
     public static function updateAccess()
     {
