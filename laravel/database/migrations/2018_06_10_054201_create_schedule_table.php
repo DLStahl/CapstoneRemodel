@@ -14,19 +14,15 @@ class CreateScheduleTable extends Migration
      */
     private function initialize()
     {
-        if (file_exists ( __DIR__.$_ENV["BACKUP_PATH"]."schedule_data.csv" )) {
+        if (file_exists(__DIR__ . $_ENV["BACKUP_PATH"] . "schedule_data.csv")) {
+            // Read data from the backup file and add into database
+            $fp = fopen(__DIR__ . $_ENV["BACKUP_PATH"] . "schedule_data.csv", "r");
 
-            /**
-             * Read data from the backup file and add into database
-             */
-            $fp = fopen(__DIR__.$_ENV["BACKUP_PATH"]."schedule_data.csv", 'r');
-            
             // Read the first row
             fgetcsv($fp);
 
             // Read rows until null
-            while (($line = fgetcsv($fp)) !== false)
-            {
+            while (($line = fgetcsv($fp)) !== false) {
                 $id = $line[0];
                 $date = $line[1];
                 $location = $line[2];
@@ -36,17 +32,17 @@ class CreateScheduleTable extends Migration
                 $patient_class = $line[6];
                 $start_time = $line[7];
                 $end_time = $line[8];
-                
-                DB::table('schedule_data')->insert([
-                    'id' => $id, 
-                    'date' => $date,
-                    'location' => $location,
-                    'room' => $room,
-                    'case_procedure' => $case_procedure,
-                    'lead_surgeon' => $lead_surgeon,
-                    'patient_class' => $patient_class,
-                    'start_time' => $start_time,
-                    'end_time' => $end_time
+
+                DB::table("schedule_data")->insert([
+                    "id" => $id,
+                    "date" => $date,
+                    "location" => $location,
+                    "room" => $room,
+                    "case_procedure" => $case_procedure,
+                    "lead_surgeon" => $lead_surgeon,
+                    "patient_class" => $patient_class,
+                    "start_time" => $start_time,
+                    "end_time" => $end_time,
                 ]);
             }
 
@@ -64,50 +60,46 @@ class CreateScheduleTable extends Migration
      */
     private function backup()
     {
-        /** 
-         * Save data sets into a csv file
-         */        
-        $filename = __DIR__.$_ENV["BACKUP_PATH"]."schedule_data.csv";
-        $data = DB::table('schedule_data')->get();
-        
+        // Save data sets into a csv file
+        $filename = __DIR__ . $_ENV["BACKUP_PATH"] . "schedule_data.csv";
+        $data = DB::table("schedule_data")->get();
+
         // Erase existing file
-        if (file_exists ( $filename )) {
-            $output = fopen($filename, 'w');
+        if (file_exists($filename)) {
+            $output = fopen($filename, "w");
+        } else {
+            $output = fopen($filename, "x");
         }
-        else {
-            $output = fopen($filename, 'x');
-        }
-        
+
         // Set up the first row
-        fputcsv($output, array(
-            'id', 
-            'date',
-            'location',
-            'room',
-            'case_procedure',
-            'lead_surgeon',
-            'patient_class',
-            'start_time',
-            'end_time'
-        ));
+        fputcsv($output, [
+            "id",
+            "date",
+            "location",
+            "room",
+            "case_procedure",
+            "lead_surgeon",
+            "patient_class",
+            "start_time",
+            "end_time",
+        ]);
         // Add all rows
         foreach ($data as $info) {
-            fputcsv($output, array(
-                $info['id'],
-                $info['date'],
-                $info['location'],
-                $info['room'],
-                $info['case_procedure'],
-                $info['lead_surgeon'],
-                $info['patient_class'],
-                $info['start_time'],
-                $info['end_time']
-            ));
+            fputcsv($output, [
+                $info["id"],
+                $info["date"],
+                $info["location"],
+                $info["room"],
+                $info["case_procedure"],
+                $info["lead_surgeon"],
+                $info["patient_class"],
+                $info["start_time"],
+                $info["end_time"],
+            ]);
         }
 
         // Close file
         fclose($output);
-    
     }
 
     /**
@@ -117,26 +109,24 @@ class CreateScheduleTable extends Migration
      */
     public function up()
     {
-        Schema::create('schedule_data', function (Blueprint $table) {
-
+        Schema::create("schedule_data", function (Blueprint $table) {
             // Primary Key
-            $table->increments('id');
+            $table->increments("id");
 
-            $table->date('date'); // Date of the schedule
-            $table->text('location')->nullable(); // Location of the surgery
-            $table->text('room')->nullable();  // Room of the surgery
-            $table->longText('case_procedure')->nullable();  // Case procedure of the surgery
-            $table->text('lead_surgeon')->nullable();   // Lead surgeon of the surgery
-            $table->longText('patient_class')->nullable();  // Patient class of the surgery
-            $table->time('start_time')->nullable(); // Start time of the surgery
-            $table->time('end_time')->nullable();   // End time of the surgery
+            $table->date("date"); // Date of the schedule
+            $table->text("location")->nullable(); // Location of the surgery
+            $table->text("room")->nullable(); // Room of the surgery
+            $table->longText("case_procedure")->nullable(); // Case procedure of the surgery
+            $table->text("lead_surgeon")->nullable(); // Lead surgeon of the surgery
+            $table->longText("patient_class")->nullable(); // Patient class of the surgery
+            $table->time("start_time")->nullable(); // Start time of the surgery
+            $table->time("end_time")->nullable(); // End time of the surgery
 
             // Add for future extension
             $table->timestamps();
         });
 
         self::initialize();
- 
     }
 
     /**
@@ -147,6 +137,6 @@ class CreateScheduleTable extends Migration
     public function down()
     {
         self::backup();
-        Schema::dropIfExists('schedule_data');
+        Schema::dropIfExists("schedule_data");
     }
 }

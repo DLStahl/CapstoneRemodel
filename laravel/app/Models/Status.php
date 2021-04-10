@@ -11,7 +11,7 @@ class Status extends Model
      *
      * @var string
      */
-    protected $table = 'status';
+    protected $table = "status";
 
     /**
      * Indicates if the model should be timestamped.

@@ -13,10 +13,10 @@ class RemovePreferenceMilestonesObjectivesFromAssignmentTable extends Migration
      */
     public function up()
     {
-        Schema::table('assignment', function (Blueprint $table) {
-            $table->dropColumn('preference');
-            $table->dropColumn('milestones');
-            $table->dropColumn('objectives');
+        Schema::table("assignment", function (Blueprint $table) {
+            $table->dropColumn("preference");
+            $table->dropColumn("milestones");
+            $table->dropColumn("objectives");
         });
     }
 
@@ -27,10 +27,10 @@ class RemovePreferenceMilestonesObjectivesFromAssignmentTable extends Migration
      */
     public function down()
     {
-        Schema::table('assignment', function (Blueprint $table) {
-            $table->unsignedInteger('preference')->nullable();
-            $table->longText('milestones')->nullable();
-            $table->longText('objectives')->nullable();
+        Schema::table("assignment", function (Blueprint $table) {
+            $table->unsignedInteger("preference")->nullable();
+            $table->longText("milestones")->nullable();
+            $table->longText("objectives")->nullable();
         });
     }
 }

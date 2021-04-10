@@ -2,16 +2,16 @@
 @section('content')
 
     <form method="POST" action="addDB">
-        <div class="form-group">    
-            
+        <div class="form-group">
+
             <input type="hidden" name="date" value="{{ $date }}">
-            
+
             <label>Location:</label>
             <input type="text" name="location" required>
             <br>
 
             <label>Room:</label>
-            <input type="text" name="room" required>                
+            <input type="text" name="room" required>
             <br>
 
             <label>Case Procedure 1:</label>
@@ -55,8 +55,8 @@
             <label> End Time:</label>
             <input type="time" name="end_time" required>
             <br>
-                    
-            <input align = "right" type='submit' class='btn btn-md btn-success'>
+
+            <input align="right" type='submit' class='btn btn-md btn-success'>
 
         </div>
     </form>

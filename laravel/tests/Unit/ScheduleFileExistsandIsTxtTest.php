@@ -13,9 +13,7 @@ class ScheduleFileExistsandIsTxtTest extends TestCase
 
     public function TestUploadSchedulePageHasAScheduleFile()
     {
-        $this->assertFileExists(
-            "/laravel/storage/app/ResidentRotationSchedule/medhub-report.txt"
-        );
+        $this->assertFileExists("/laravel/storage/app/ResidentRotationSchedule/medhub-report.txt");
     }
 
     public function TestUploadSchedulePageHasTxtFile()
@@ -23,8 +21,7 @@ class ScheduleFileExistsandIsTxtTest extends TestCase
         $reg = "^.*\.(txt)$^";
         $result = -1;
         $actual = 1;
-        $file =
-            "/laravel/storage/app/ResidentRotationSchedule/medhub-rotations.txt";
+        $file = "/laravel/storage/app/ResidentRotationSchedule/medhub-rotations.txt";
         if (preg_match($reg, $file)) {
             $result = 1;
         } else {
@@ -39,8 +36,7 @@ class ScheduleFileExistsandIsTxtTest extends TestCase
         $reg = "(medhub-report)\.(txt)";
         $result = -1;
         $actual = 1;
-        $file =
-            "/laravel/storage/app/ResidentRotationSchedule/medhub-rotations.txt";
+        $file = "/laravel/storage/app/ResidentRotationSchedule/medhub-rotations.txt";
 
         if (preg_match($reg, $file)) {
             $result = 1;

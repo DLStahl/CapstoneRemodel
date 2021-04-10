@@ -18,14 +18,7 @@ class AdminAddUpdateMilestoneTest extends TestCase
     public function testAdminDeleteMilestone()
     {
         $AC = new AdminController();
-        $AC->getUpdateMilestone(
-            "delete",
-            "true",
-            198,
-            "FakeAbbreviation",
-            "FakeFullName",
-            "FakeDetail"
-        );
+        $AC->getUpdateMilestone("delete", "true", 198, "FakeAbbreviation", "FakeFullName", "FakeDetail");
         $this->assertDatabaseHas("milestone", ["exists" => "0"]);
         Milestone::where("id", 198)->update(["exists" => 1]);
     }

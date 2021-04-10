@@ -11,7 +11,7 @@ class Admin extends Model
      *
      * @var string
      */
-    protected $table = 'admin';
+    protected $table = "admin";
 
     /**
      * Indicates if the model should be timestamped.
@@ -19,5 +19,4 @@ class Admin extends Model
      * @var bool
      */
     public $timestamps = false;
-
 }

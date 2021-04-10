@@ -1,7 +1,7 @@
 @extends('main')
 
 @section('content')
-    
+
     <h4>Download Data Sheets</h4><br>
     <ul>
         <li><a href="../../../downloads/resident.csv">List of Residents</a></li>

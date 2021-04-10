@@ -13,14 +13,14 @@ class AutoAssign extends Command
      *
      * @var string
      */
-    protected $signature = 'autoassign';
+    protected $signature = "autoassign";
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'auto assign';
+    protected $description = "auto assign";
 
     /**
      * Create a new command instance.
@@ -40,16 +40,16 @@ class AutoAssign extends Command
     public function handle()
     {
         //       Log::info('It works');
-        $tomorrow = date("Y-m-d", strtotime('+1 day'));
-        if (Status::where('date', $tomorrow)->doesntExist()) {
+        $tomorrow = date("Y-m-d", strtotime("+1 day"));
+        if (Status::where("date", $tomorrow)->doesntExist()) {
             Status::insert([
-                'date' => $tomorrow
+                "date" => $tomorrow,
             ]);
         }
-        if ((int)Status::where('date', $tomorrow)->value('assignment') != 1) {
+        if ((int) Status::where("date", $tomorrow)->value("assignment") != 1) {
             AutoAssignment::assignment($tomorrow);
-            Status::where('date', $tomorrow)->update([
-                'assignment' => 1
+            Status::where("date", $tomorrow)->update([
+                "assignment" => 1,
             ]);
         }
     }

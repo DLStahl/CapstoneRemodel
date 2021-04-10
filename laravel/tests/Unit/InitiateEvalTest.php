@@ -11,9 +11,7 @@ class InitiateEvalTest extends TestCase
     {
         $initiateEval = new InitiateEval();
         $testPOST = json_decode(
-            $initiateEval
-                ->medhubPOST("info/test", json_encode(["programID" => 73]))
-                ->getBody(),
+            $initiateEval->medhubPOST("info/test", json_encode(["programID" => 73]))->getBody(),
             true
         );
         // echo json_encode($testPOST);

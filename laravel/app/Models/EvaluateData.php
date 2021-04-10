@@ -11,7 +11,7 @@ class EvaluateData extends Model
      *
      * @var string
      */
-    protected $table = 'evaluation_data';
+    protected $table = "evaluation_data";
 
     /**
      * Indicates if the model should be timestamped.
