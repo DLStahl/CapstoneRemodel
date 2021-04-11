@@ -52,8 +52,6 @@ class AutoAssignment extends Model
                 Probability::insert([
                     'resident' => $resident['id'], 
                     'total' => "0", 
-                    'selected' => "0", 
-                    'probability' => "0"
                 ]);
             }
         }
@@ -263,19 +261,14 @@ class AutoAssignment extends Model
         Option::where('schedule', $schedule)->update([
             'isValid' => '0'
         ]);
-        $attending =ScheduleData::where('id', $schedule)->value('lead_surgeon');
-        $pos = strpos($attending, '[');
-        $pos_end = strpos($attending, "]");
-        $attending = substr($attending, $pos + 1, $pos_end - $pos - 1);
 
         $option = Option::where('resident', $resident)->where('date', $date)->where('schedule', $schedule)->value('id');
 
         Assignment::insert([
             'date' => $date, 
-            'resident' => $resident, 
-            'attending' => $attending, 
-            'schedule' => $schedule, 
-            'option' => $option,
+            'resident_id' => $resident, 
+            'schedule_id' => $schedule, 
+            'option_id' => $option,
             'anesthesiologist_id' => $anestId
         ]);
     }

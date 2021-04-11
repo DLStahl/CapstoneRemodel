@@ -236,16 +236,16 @@ class EvaluationParser extends Model
                                     $aId = Attending::where('name', $attending->namefl)->value('id');
                                 }
 
-                                $schedule = Assignment::where(['resident'=>$rId, 'date'=>$date])->value('schedule');
-                                $milestone = Option::where(['resident'=>$rId, 'schedule'=>$schedule])->value('milestones');
-                                $objective = Option::where(['resident'=>$rId, 'schedule'=>$schedule])->value('objectives');
+                                $schedule = Assignment::where(['resident_id'=>$rId, 'date'=>$date])->value('schedule_data_id');
+                                $milestone = Option::where(['resident_id'=>$rId, 'schedule_data_id'=>$schedule])->value('milestone_id');
+                                $objective = Option::where(['resident_id'=>$rId, 'schedule_data_id'=>$schedule])->value('objectives');
                                 // echo $rId."\n"."Diff mins is: ".$resident->diff."\n";
                                 // echo "Resident ".$resident->namefl."\n";
                                 // echo " work with Attending ".$attending->namefl."<br>";
                                 // echo "see aId "."\n"."milestones ".$schedule."\n".$milestone;
                                 if(EvaluateData::where(['date'=>$date, 'location'=>$location, 'resident'=>$resident->namefl, 'attending'=>$attending->namefl])->doesntExist()){
                                     EvaluateData::insert(
-                                        ['date' => $date, 'location' => $location, 'diagnosis' => $diagnosis, 'procedure' => $procedure,'asa' => $asa, 'rId' => $rId, 'resident' => $resident->namefl, 'aId' => $aId, 'attending' => $attending->namefl, 'diff' =>$resident->diff ]
+                                        ['date' => $date, 'location' => $location, 'diagnosis' => $diagnosis, 'procedure' => $procedure,'asa' => $asa, 'resident_id' => $rId, 'resident' => $resident->namefl, 'attending_id' => $aId, 'attending' => $attending->namefl, 'time_with_resident' =>$resident->diff ]
                                     );
                                 }
                             }

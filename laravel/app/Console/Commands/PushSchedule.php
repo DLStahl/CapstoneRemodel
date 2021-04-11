@@ -78,7 +78,7 @@ class PushSchedule extends Command
             $lead_surgeon = ScheduleData::where('id', $schedule_id)->value('lead_surgeon');
             $resident = Resident::where('id', $resident_id)->value('name');
             $option_id = $assignment['option'];
-            $milestone_id = Option::where('id', $option_id)->value('milestones');
+            $milestone_id = Option::where('id', $option_id)->value('milestone_id');
             $preference = Option::where('id', $option_id)->value('option');
             $milestones = Milestone::where('id', $milestone_id)->value('category');
             $objectives = Option::where('id', $option_id)->value('objectives');

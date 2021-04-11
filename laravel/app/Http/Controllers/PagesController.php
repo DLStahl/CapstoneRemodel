@@ -167,9 +167,9 @@ class PagesController extends Controller
         $firstday = null;
         $assignment = Assignment::where('date',$date)->where('resident', $id);
         if ($assignment->exists()) {
-            $firstday_schedule_id = Assignment::where('date', $date)->where('resident', $id)->value('schedule');
+            $firstday_schedule_id = Assignment::where('date', $date)->where('resident_id', $id)->value('schedule_data_id');
             $option = Option::where('id', $assignment->value('option'));
-            $milestone = $option->value('milestones');
+            $milestone = $option->value('milestone_id');
             $milestoneC = Milestone::where('id', $milestone)->value('category');
             $milestoneD = Milestone::where('id', $milestone)->value('detail');
             $objective = $option->value('objectives');

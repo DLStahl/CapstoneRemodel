@@ -96,9 +96,9 @@ class ScheduleDataController extends Controller
         foreach ($schedule_data as $data)
         {
             $resident = null;
-            if (Assignment::where('schedule', $data['id'])->exists())
+            if (Assignment::where('schedule_data_id', $data['id'])->exists())
             {
-                $resident_id = Assignment::where('schedule', $data['id'])->value('resident');
+                $resident_id = Assignment::where('schedule_data_id', $data['id'])->value('resident_id');
                 $resident = Resident::where('id', $resident_id)->value('name');
             }
             array_push($schedule, array(
@@ -271,7 +271,7 @@ class ScheduleDataController extends Controller
         $previousChoices = array();
         $resident = Resident::where('email', $_SERVER["HTTP_EMAIL"])->value('id');
         for($i = 0; $i < 3; $i++) {
-            $previousOption = Option::where('date', $date)->where('resident', $resident)->where('option', ($i+1))->where('isValid', 1)->get();
+            $previousOption = Option::where('date', $date)->where('resident_id', $resident)->where('option', ($i+1))->where('isValid', 1)->get();
             if(sizeof($previousOption) > 0) {
                 $schedule = ScheduleData::where('id', $previousOption[0]['schedule'])->get();
                 $previousChoices[$i] = array(
@@ -391,7 +391,7 @@ class ScheduleDataController extends Controller
         $data1['schedule'] = $schedule_data1[0];
         $data1['attending'] = $attending1;
         // Find previous milestone and educational objective
-        $option1 = Option::where('date', $date)->where('resident', $resident)->where('option', 1)->get();
+        $option1 = Option::where('date', $date)->where('resident_id', $resident)->where('option', 1)->get();
         if (sizeof($option1) > 0){
             $milestone1 = Milestone::where('id', $option1[0]['milestones'])->get();
             if(sizeof($milestone1) > 0){
@@ -421,7 +421,7 @@ class ScheduleDataController extends Controller
             $data2['schedule'] = $schedule_data2[0];
             $data2['attending'] = $attending2;
             // Find previous milestone and educational objective
-            $option2 = Option::where('date', $date)->where('resident', $resident)->where('option', 2)->get();
+            $option2 = Option::where('date', $date)->where('resident_id', $resident)->where('option', 2)->get();
             if (sizeof($option2) > 0){
                 $milestone2 = Milestone::where('id', $option2[0]['milestones'])->get();
                 if(sizeof($milestone2) > 0){
@@ -452,7 +452,7 @@ class ScheduleDataController extends Controller
             $data3['schedule'] = $schedule_data3[0];
             $data3['attending'] = $attending3;
             // Find previous milestone and educational objective
-            $option3 = Option::where('date', $date)->where('resident', $resident)->where('option', 3)->get();
+            $option3 = Option::where('date', $date)->where('resident_id', $resident)->where('option', 3)->get();
             if (sizeof($option3) > 0){
                 $milestone3 = Milestone::where('id', $option3[0]['milestones'])->get();
                 if(sizeof($milestone3) > 0){
@@ -545,7 +545,7 @@ class ScheduleDataController extends Controller
         
         // Update or insert option 1 data
         if (Option::where('date', $date)
-                    ->where('resident', $resident)
+                    ->where('resident_id', $resident)
                     ->where('option',$choice)
                     ->count() != 0)
         {
@@ -554,12 +554,11 @@ class ScheduleDataController extends Controller
 			$overwrittenChoices[0] = 1;
 
             Option::where('date', $date)
-                    ->where('resident', $resident)
+                    ->where('resident_id', $resident)
                     ->where('option',$choice)
                     ->update([
-                        'schedule' => $split[0],
-                        'attending' => $attending,
-                        'milestones'=>$_REQUEST['milestones1'],
+                        'schedule_data_id' => $split[0],
+                        'milestone_id'=>$_REQUEST['milestones1'],
                         'objectives'=>$_REQUEST['objectives1'],
                         'anesthesiologist_id'=>$pref_anest1,
                         'isValid'=>1
@@ -568,8 +567,8 @@ class ScheduleDataController extends Controller
         	$overwrittenChoices[0] = 0;
             // Insert data
             Option::insert(
-                ['date' => $date, 'resident' => $resident, 'schedule' => $split[0],
-                'attending' => $attending, 'option' => $choice, 'milestones'=>$_REQUEST['milestones1'],
+                ['date' => $date, 'resident_id' => $resident, 'schedule_data_id' => $split[0],
+                'option' => $choice, 'milestone_id'=>$_REQUEST['milestones1'],
                 'objectives'=>$_REQUEST['objectives1'], 'anesthesiologist_id'=>$pref_anest1, 'isValid'=>1] 
             );
         }
@@ -597,7 +596,7 @@ class ScheduleDataController extends Controller
 
         // Update/Insert option 2 data
         if (Option::where('date', $date)
-                    ->where('resident', $resident)
+                    ->where('resident_id', $resident)
                     ->where('option',$choice)
                     ->count() != 0)
         {
@@ -607,19 +606,18 @@ class ScheduleDataController extends Controller
             // If user enters 2nd choice, update option 2 data; otherwise, delete old 2nd choice data.
             if (!is_null($schedule_data2)){
                 Option::where('date', $date)
-                        ->where('resident', $resident)
+                        ->where('resident_id', $resident)
                         ->where('option',$choice)
                         ->update([
-                            'schedule' => $split[1],
-                            'attending' => $attending,
-                            'milestones'=>$_REQUEST['milestones2'],
+                            'schedule_data_id' => $split[1],
+                            'milestone_id'=>$_REQUEST['milestones2'],
                             'objectives'=>$_REQUEST['objectives2'],
                             'anesthesiologist_id'=>$pref_anest2,
                             'isValid'=>1
                         ]);
             } else {
                 Option::where('date', $date)
-                        ->where('resident', $resident)
+                        ->where('resident_id', $resident)
                         ->where('option',$choice)
                         ->delete();
             }
@@ -629,11 +627,10 @@ class ScheduleDataController extends Controller
                 // Insert data
                 Option::insert([
                     'date' => $date,
-                    'resident' => $resident,
-                    'schedule' => $split[1],
-                    'attending' => $attending,
+                    'resident_id' => $resident,
+                    'schedule_data_id' => $split[1],
                     'option' => $choice,
-                    'milestones'=>$_REQUEST['milestones2'],
+                    'milestone_id'=>$_REQUEST['milestones2'],
                     'objectives'=>$_REQUEST['objectives2'],
                     'anesthesiologist_id'=>$pref_anest2,
                     'isValid'=>1
@@ -666,7 +663,7 @@ class ScheduleDataController extends Controller
 
 		//Insert/Update old option 3 data
 		if (Option::where('date', $date)
-		          ->where('resident', $resident)
+		          ->where('resident_id', $resident)
 		          ->where('option',$choice)
 		          ->count() != 0)
 		  {
@@ -676,12 +673,11 @@ class ScheduleDataController extends Controller
             // If user enters 3rd choice, update option 3 data; otherwise, make old 3nd choice data invalid.
             if(!is_null($schedule_data3)){
                 Option::where('date', $date)
-                        ->where('resident', $resident)
+                        ->where('resident_id', $resident)
                         ->where('option',$choice)
                         ->update([
-                            'schedule' => $split[2],
-                            'attending' => $attending,
-                            'milestones'=>$_REQUEST['milestones3'],
+                            'schedule_data_id' => $split[2],
+                            'milestone_id'=>$_REQUEST['milestones3'],
                             'objectives'=>$_REQUEST['objectives3'],
                             'anesthesiologist_id'=>$pref_anest3,
                             'isValid'=>1
@@ -700,11 +696,10 @@ class ScheduleDataController extends Controller
                 // Insert data
                 Option::insert([
                     'date' => $date,
-                    'resident' => $resident,
-                    'schedule' => $split[2],
-                    'attending' => $attending,
+                    'resident_id' => $resident,
+                    'schedule_data_id' => $split[2],
                     'option' => $choice,
-                    'milestones'=>$_REQUEST['milestones3'],
+                    'milestone_id'=>$_REQUEST['milestones3'],
                     'objectives'=>$_REQUEST['objectives3'],
                     'anesthesiologist_id'=>$pref_anest3,
                     'isValid'=>1]
@@ -729,36 +724,36 @@ class ScheduleDataController extends Controller
 		//delete first choice data
 		$choice = 1;
         if (Option::where('date', $date)
-                    ->where('resident', $resident)
+                    ->where('resident_id', $resident)
                     ->where('option',$choice)
                     ->count() != 0)
         {
             Option::where('date', $date)
-                    ->where('resident', $resident)
+                    ->where('resident_id', $resident)
                     ->where('option',$choice)
                     ->delete();
         }
 		//delete second choice data
 		$choice++;
 		if (Option::where('date', $date)
-                    ->where('resident', $resident)
+                    ->where('resident_id', $resident)
                     ->where('option',$choice)
                     ->count() != 0)
         {
             Option::where('date', $date)
-                    ->where('resident', $resident)
+                    ->where('resident_id', $resident)
                     ->where('option',$choice)
                     ->delete();
         }
 		//delete third choice data
 		$choice++;
         if (Option::where('date', $date)
-                    ->where('resident', $resident)
+                    ->where('resident_id', $resident)
                     ->where('option',$choice)
                     ->count() != 0)
         {
             Option::where('date', $date)
-                    ->where('resident', $resident)
+                    ->where('resident_id', $resident)
                     ->where('option',$choice)
                     ->delete();
         }

@@ -437,7 +437,7 @@ class AdminController extends Controller
             $email = "";
             if (Assignment::where('schedule', $id)->exists())
             {
-                $resident = Assignment::where('schedule', $id)->value('resident');
+                $resident = Assignment::where('schedule_id', $id)->value('resident_id');
                 $assignment = Resident::where('id', $resident)->value('name');
                 $email = Resident::where('id', $resident)->value('email');
             }
@@ -539,8 +539,8 @@ class AdminController extends Controller
             if (strlen($_POST['assignment']) > 0 && Assignment::where('schedule', $id)->exists())
             {
                 $assignment = Resident::where('email', $_POST['assignment'])->value('id');
-                Assignment::where('schedule', $id)->update([
-                    'resident'=>$assignment
+                Assignment::where('schedule_id', $id)->update([
+                    'resident_id'=>$assignment
                 ]);
             }
             elseif (strlen($_POST['assignment']) > 0)
@@ -548,9 +548,9 @@ class AdminController extends Controller
                 $assignment = Resident::where('email', $_POST['assignment'])->value('id');
                 $date = $_POST['date'];
                 Assignment::insert([
-                    'date'=>$date, 'resident'=>$assignment,
-                    'attending'=>$_POST['lead_surgeon_code'],
-                    'schedule'=>$id,
+                    'date'=>$date, 'resident_id'=>$assignment,
+                    'attending_id'=>$_POST['lead_surgeon_code'],
+                    'schedule_id'=>$id,
                 ]);
             }
 
@@ -608,13 +608,13 @@ class AdminController extends Controller
         $evaluate_data = array();
         foreach ($evaluate as $data)
         {
-            $schedule = Assignment::where(['resident'=>$data['rId'], 'date'=>$data['date']])->value('schedule');
+            $schedule = Assignment::where(['resident_id'=>$data['rId'], 'date'=>$data['date']])->value('schedule_id');
             $milestone = null;
             $objective = null;
 
-            $milestoneId = Option::where(['resident'=>$data['rId'], 'schedule'=>$schedule])->value('milestones');
+            $milestoneId = Option::where(['resident_id'=>$data['rId'], 'schedule_id'=>$schedule])->value('milestone_id');
 	    $milestone = Milestone::where('id', $milestoneId)->value('category');
-            $objective = Option::where(['resident'=>$data['rId'], 'schedule'=>$schedule])->value('objectives');
+            $objective = Option::where(['resident_id'=>$data['rId'], 'schedule_data_id'=>$schedule])->value('objectives');
 
             array_push($evaluate_data, array(
                 'location'=>$data['location'], 'diagnosis'=>$data['diagnosis'],'procedure'=>$data['procedure'], 'ASA'=>$data['ASA'],
