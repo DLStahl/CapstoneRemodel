@@ -2,8 +2,6 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
 use App\Models\Option;
 use App\Models\Assignment;
 use App\Models\Resident;
@@ -13,7 +11,7 @@ use App\Models\Rotations;
 use App\Models\EvaluationForms;
 use Illuminate\Support\Facades\Log;
 
-class AutoAssignment extends Model
+class AutoAssignment
 {
     public static function assignment($date)
     {
