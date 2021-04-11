@@ -37,7 +37,7 @@ class AutoAssignment extends Model
         foreach($arrayFromThirdPref[0] as $unassignedResident){
             //if the resident made at least one preference then increase tickets
             if (Option::where('date', $date)
-                ->where('resident', $unassignedResident)
+                ->where('resident_id', $unassignedResident)
                 ->count() > 0){
                     self::increaseProbability($unassignedResident, 6);
             }
@@ -48,9 +48,9 @@ class AutoAssignment extends Model
         // residents = array of resident objects
     private static function initalizeResidentProbabilities($residents) {
         foreach($residents as $resident){
-            if (Probability::where('resident', $resident['id'])->doesntExist()) {
+            if (Probability::where('resident_id', $resident['id'])->doesntExist()) {
                 Probability::insert([
-                    'resident' => $resident['id'], 
+                    'resident_id' => $resident['id'], 
                     'total' => "0", 
                 ]);
             }
@@ -72,10 +72,10 @@ class AutoAssignment extends Model
         //store them in wantedSchedules if more than 1 residents wants it
         foreach($residents as $resident){
             $schedulePref = Option::where('date', $date)
-                            ->where('resident', $resident)
+                            ->where('resident_id', $resident)
                             ->where('option', $prefNum)
                             ->where('isValid', "1")
-                            ->value('schedule');
+                            ->value('schedule_data_id');
             // if resident does not have preference add to remainder              
             if(is_null($schedulePref)){
                 array_push($remainder, $resident);
@@ -83,15 +83,15 @@ class AutoAssignment extends Model
             // if there is exactly one pref made for the schedule,
             // assign the resident to the schedule
             else if(Option::where('date', $date)
-                ->where('schedule', $schedulePref)
+                ->where('schedule_data_id', $schedulePref)
                 ->where('option', $prefNum)
                 ->where('isValid', "1")
                 ->count() == 1){
                     $anestPref = Option::where('date', $date)
-                                ->where('schedule', $schedulePref)
+                                ->where('schedule_data_id', $schedulePref)
                                 ->where('option', $prefNum)
                                 ->where('isValid', "1")
-                                ->where('resident', $resident)
+                                ->where('resident_id', $resident)
                                 ->value('anesthesiologist_id');
                     $anestsAssigned = self::handleAssignment($schedulePref, $resident, $date, $ticketsToAdd, $anestPref, $anestsAssigned); 
             // for competing schedules add schedule pref if it is not already in wantedSchedules array  
@@ -104,7 +104,7 @@ class AutoAssignment extends Model
             $schedRotation = ScheduleData::where('id', $wantedSchedule)->value('rotation');
             // holds all valid options that want same schedule and have same preference rank                
             $competingOptions = Option::where('date', $date)
-                            ->where('schedule', $wantedSchedule)
+                            ->where('schedule_data_id', $wantedSchedule)
                             ->where('option', $prefNum)
                             ->where('isValid', "1")
                             ->get();
@@ -141,10 +141,10 @@ class AutoAssignment extends Model
                 $remainder = array_merge($remainder, $notOnRotation);
                 // assign resident to schedule
                 $anestPref = Option::where('date', $date)
-                                ->where('schedule', $wantedSchedule)
+                                ->where('schedule_data_id', $wantedSchedule)
                                 ->where('option', $prefNum)
                                 ->where('isValid', "1")
-                                ->where('resident', $onRotation[0]['resident'])
+                                ->where('resident_id', $onRotation[0]['resident'])
                                 ->value('anesthesiologist_id');
                 $anestsAssigned = self::handleAssignment($wantedSchedule, $onRotation[0]['resident'], $date, $ticketsToAdd, $anestPref, $anestsAssigned);
             }
@@ -153,7 +153,7 @@ class AutoAssignment extends Model
                 // find which resident on rotation has the most tickets
                 foreach($onRotation as $onRotationOption){
                     // add losing residents to remainder array
-                    $residentTickets = Probability::where('resident', $onRotationOption['resident'])->value('total');
+                    $residentTickets = Probability::where('resident_id', $onRotationOption['resident'])->value('total');
                     if($maxTickets < $residentTickets){
                         $maxTickets = $residentTickets;
                         if (!is_null($winnerResident)){
@@ -168,10 +168,10 @@ class AutoAssignment extends Model
                 $remainder = array_merge($remainder, $notOnRotation);
                 // assign winning resident to schedule
                 $anestPref = Option::where('date', $date)
-                                ->where('schedule', $wantedSchedule)
+                                ->where('schedule_data_id', $wantedSchedule)
                                 ->where('option', $prefNum)
                                 ->where('isValid', "1")
-                                ->where('resident', $winnerResident)
+                                ->where('resident_id', $winnerResident)
                                 ->value('anesthesiologist_id');
                 $anestsAssigned = self::handleAssignment($wantedSchedule, $winnerResident, $date, $ticketsToAdd, $anestPref, $anestsAssigned);
             }
@@ -180,7 +180,7 @@ class AutoAssignment extends Model
                 // find which resident has the most tickets
                 foreach($competingOptions as $competingOption){
                     // add losing residents to remainder array
-                    $residentTickets = Probability::where('resident', $competingOption['resident'])->value('total');
+                    $residentTickets = Probability::where('resident_id', $competingOption['resident'])->value('total');
                     if($maxTickets < $residentTickets){
                         $maxTickets = $residentTickets;
                         if (!is_null($winnerResident)){
@@ -193,10 +193,10 @@ class AutoAssignment extends Model
                 }
                 // assign winning resident to schedule
                 $anestPref = Option::where('date', $date)
-                                ->where('schedule', $wantedSchedule)
+                                ->where('schedule_data_id', $wantedSchedule)
                                 ->where('option', $prefNum)
                                 ->where('isValid', "1")
-                                ->where('resident', $winnerResident)
+                                ->where('resident_id', $winnerResident)
                                 ->value('anesthesiologist_id');
                 $anestsAssigned = self::handleAssignment($wantedSchedule, $winnerResident, $date, $ticketsToAdd, $anestPref, $anestsAssigned);
             }
@@ -254,15 +254,15 @@ class AutoAssignment extends Model
         // anestId = id for anesthesiologist
     private static function addAssignment($schedule, $resident, $date, $anestId) {
         // resident's other options/preferences made are now invalid
-        Option::where('resident', $resident)->where('date', $date)->update([
+        Option::where('resident_id', $resident)->where('date', $date)->update([
             'isValid' => "0"
         ]);
         // other preferences for the schedule are now invalid
-        Option::where('schedule', $schedule)->update([
+        Option::where('schedule_data_id', $schedule)->update([
             'isValid' => '0'
         ]);
 
-        $option = Option::where('resident', $resident)->where('date', $date)->where('schedule', $schedule)->value('id');
+        $option = Option::where('resident_id', $resident)->where('date', $date)->where('schedule_data_id', $schedule)->value('id');
 
         Assignment::insert([
             'date' => $date, 
@@ -277,8 +277,8 @@ class AutoAssignment extends Model
         // resident = id for resident
         // ticketsToAdd = number of tickets that will be added to resident's total
     private static function increaseProbability($resident, $ticketsToAdd) {
-        $total = Probability::where('resident', $resident)->value('total') + $ticketsToAdd;
-        Probability::where('resident', $resident)->update([
+        $total = Probability::where('resident_id', $resident)->value('total') + $ticketsToAdd;
+        Probability::where('resident_id', $resident)->update([
             'total' => $total
         ]);
     }
