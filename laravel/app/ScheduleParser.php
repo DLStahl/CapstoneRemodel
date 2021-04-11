@@ -153,15 +153,15 @@ class ScheduleParser extends Model
 
         // If residents already made preferences and the schedule changed, delete existing preferences and notify residents to select new preferences.
         foreach ($datesUpdated as $date){
-            $options = Option::where('date', $date)->get()->groupBy('resident');
+            $options = Option::where('date', $date)->get()->groupBy('resident_id');
             if(sizeof($options)>0){
                 foreach ($options as $residentOptions){
-                    $residentId = $residentOptions[0]['resident'];
+                    $residentId = $residentOptions[0]['resident_id'];
                     $residentName = Resident::where('id', $residentId)->value('name');
                     $residentEmail = Resident::where('id', $residentId)->value('email');
                     Log::info($residentName);
                     Log::info($residentEmail);
-                    if(Option::where('date', $date)->where('resident', $residentId)->delete()){
+                    if(Option::where('date', $date)->where('resident_id', $residentId)->delete()){
                         Log::info($residentName.' options deleted');
                     }
                     self::notifySelectNewPreferences($residentName, $residentEmail, $date);
