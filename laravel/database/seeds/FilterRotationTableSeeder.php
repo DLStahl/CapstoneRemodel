@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FilterRotationTableSeeder extends Seeder
 {
@@ -14,8 +15,7 @@ class FilterRotationTableSeeder extends Seeder
     {
         // Make sure the file containing FilterRotation data exists. If it does not, print a warning and return.
         if (!file_exists(__DIR__ . "/../../../resources/database/SurgeonRotations.csv")) {
-            print "WARNING: resources/database/SurgeonRotations.csv not found. Can't seed Filter Rotation Table." .
-                PHP_EOL;
+            Log::warning("resources/database/SurgeonRotations.csv not found. Can't seed Filter Rotation Table.");
             return;
         }
 
