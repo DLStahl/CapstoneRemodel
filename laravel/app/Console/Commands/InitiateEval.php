@@ -98,8 +98,8 @@ class InitiateEval extends Command
 		$yesterday = strtotime ( '-1 day' , strtotime ( $date ) ) ;
 		$yesterday = date ( 'Y-m-d' , $yesterday );
 		
-		$residentId = DB::table('evaluation_data')->where('date', $yesterday)->pluck('rId');
-		$attendingId = DB::table('evaluation_data')->where('date', $yesterday)->pluck('aId');	
+		$residentId = DB::table('evaluation_data')->where('date', $yesterday)->pluck('resident_id');
+		$attendingId = DB::table('evaluation_data')->where('date', $yesterday)->pluck('attending_id');	
 		$evalID = DB::table('evaluation_data')->where('date', $yesterday)->pluck('id');			
 		
         Log::info(sizeof($residentId).' residents: '.$residentId);

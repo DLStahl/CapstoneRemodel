@@ -273,11 +273,11 @@ class ScheduleDataController extends Controller
         for($i = 0; $i < 3; $i++) {
             $previousOption = Option::where('date', $date)->where('resident_id', $resident)->where('option', ($i+1))->where('isValid', 1)->get();
             if(sizeof($previousOption) > 0) {
-                $schedule = ScheduleData::where('id', $previousOption[0]['schedule'])->get();
+                $schedule = ScheduleData::where('id', $previousOption[0]['schedule_data_id'])->get();
                 $previousChoices[$i] = array(
                     'schedule' => $schedule,
                     'case_procedure' => self::parseCaseProcedure($schedule[0]['case_procedure']),
-                    'milestone' => Milestone::where('id', $previousOption[0]['milestones'])->get(),
+                    'milestone' => Milestone::where('id', $previousOption[0]['milestone_id'])->get(),
                     'objective' => $previousOption[0]['objectives'],
                     'anesthesiologist_pref'=> Anesthesiologist::where('id', $previousOption[0]['anesthesiologist_id'])->get()
                 );
@@ -393,7 +393,7 @@ class ScheduleDataController extends Controller
         // Find previous milestone and educational objective
         $option1 = Option::where('date', $date)->where('resident_id', $resident)->where('option', 1)->get();
         if (sizeof($option1) > 0){
-            $milestone1 = Milestone::where('id', $option1[0]['milestones'])->get();
+            $milestone1 = Milestone::where('id', $option1[0]['milestone_id'])->get();
             if(sizeof($milestone1) > 0){
                 $data1['milestone'] = $milestone1[0];
             }
@@ -423,7 +423,7 @@ class ScheduleDataController extends Controller
             // Find previous milestone and educational objective
             $option2 = Option::where('date', $date)->where('resident_id', $resident)->where('option', 2)->get();
             if (sizeof($option2) > 0){
-                $milestone2 = Milestone::where('id', $option2[0]['milestones'])->get();
+                $milestone2 = Milestone::where('id', $option2[0]['milestone_id'])->get();
                 if(sizeof($milestone2) > 0){
                     $data2['milestone'] = $milestone2[0];
                 }
@@ -454,7 +454,7 @@ class ScheduleDataController extends Controller
             // Find previous milestone and educational objective
             $option3 = Option::where('date', $date)->where('resident_id', $resident)->where('option', 3)->get();
             if (sizeof($option3) > 0){
-                $milestone3 = Milestone::where('id', $option3[0]['milestones'])->get();
+                $milestone3 = Milestone::where('id', $option3[0]['milestone_id'])->get();
                 if(sizeof($milestone3) > 0){
                     $data3['milestone'] = $milestone3[0];
                 }

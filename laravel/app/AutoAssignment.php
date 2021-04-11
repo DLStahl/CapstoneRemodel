@@ -267,7 +267,7 @@ class AutoAssignment extends Model
         Assignment::insert([
             'date' => $date, 
             'resident_id' => $resident, 
-            'schedule_id' => $schedule, 
+            'schedule_data_id' => $schedule, 
             'option_id' => $option,
             'anesthesiologist_id' => $anestId
         ]);

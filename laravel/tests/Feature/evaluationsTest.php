@@ -31,18 +31,17 @@ class evaluationsTest extends TestCase
             "diagnosis" => "test",
             "procedure" => "test",
             "ASA" => 5,
-            "rId" => 306,
+            "resident_id" => 306,
             "resident" => "Test Resident1",
-            "aId" => 115350,
+            "attending_id" => 115350,
             "attending" => "testfaculty20",
         ]);
         $optionId = DB::table("option")->insertGetId([
             "date" => $yesterday,
-            "resident" => 306,
-            "schedule" => 1,
-            "attending" => 115350,
+            "resident_id" => 306,
+            "schedule_data_id" => 1,
             "option" => 1,
-            "milestones" => 3,
+            "milestone_id" => 3,
             "objectives" => "test",
         ]);
         $rotationId = DB::table("rotations")->insertGetId([

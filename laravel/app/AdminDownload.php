@@ -133,8 +133,8 @@ class AdminDownload extends Model
 
         foreach ($options as $option)
         {
-            $schedule_id = $option['schedule'];
-            $resident_id = $option['resident'];
+            $schedule_id = $option['schedule_data_id'];
+            $resident_id = $option['resident_id'];
 
             $date = $option['date'];
             $room = ScheduleData::where('id', $schedule_id)->value('room');
@@ -144,7 +144,7 @@ class AdminDownload extends Model
             $lead_surgeon = ScheduleData::where('id', $schedule_id)->value('lead_surgeon');
             $resident = Resident::where('id', $resident_id)->value('name');
             $preference = $option['option'];
-            $milestones = $option['milestones'];
+            $milestones = $option['milestone_id'];
             $objectives = $option['objectives'];
 
             fputcsv($fp, array($date, $room, $patient_class, $start_time, $end_time,
@@ -177,8 +177,8 @@ class AdminDownload extends Model
         
         foreach ($options as $option)
         {
-            $schedule_id = $option['schedule'];
-            $resident_id = $option['resident'];
+            $schedule_id = $option['schedule_data_id'];
+            $resident_id = $option['resident_id'];
 
             $date = $option['date'];
             $room = ScheduleData::where('id', $schedule_id)->value('room');

@@ -82,34 +82,34 @@ class PagesController extends Controller
             "ids"=>null,
         );
 
-        $schedule1 = Option::where('date', $date)->where('resident', $id)->where('option', 1)->value('schedule');
-        $milestone1 = Option::where('date', $date)->where('resident', $id)->where('option', 1)->value('milestones');
+        $schedule1 = Option::where('date', $date)->where('resident_id', $id)->where('option', 1)->value('schedule_data_id');
+        $milestone1 = Option::where('date', $date)->where('resident_id', $id)->where('option', 1)->value('milestone_id');
         $milestone1C = Milestone::where('id', $milestone1)->value('category');
         $milestone1D = Milestone::where('id', $milestone1)->value('detail');
-        $objective1 = Option::where('date', $date)->where('resident', $id)->where('option', 1)->value('objectives');
-        $pref_anest_id = Option::where('date', $date)->where('resident', $id)->where('option', 1)->value('anesthesiologist_id');
+        $objective1 = Option::where('date', $date)->where('resident_id', $id)->where('option', 1)->value('objectives');
+        $pref_anest_id = Option::where('date', $date)->where('resident_id', $id)->where('option', 1)->value('anesthesiologist_id');
         if ($pref_anest_id != NULL){
             $pref_anest1 = Anesthesiologist::where('id', $pref_anest_id)->value('first_name') ." ". Anesthesiologist::where('id', $pref_anest_id)->value('last_name');
         } else {
             $pref_anest1 = "No Preference";
         }
-        $schedule2 = Option::where('date', $date)->where('resident', $id)->where('option', 2)->value('schedule');
-        $milestone2 = Option::where('date', $date)->where('resident', $id)->where('option', 2)->value('milestones');
+        $schedule2 = Option::where('date', $date)->where('resident_id', $id)->where('option', 2)->value('schedule_data_id');
+        $milestone2 = Option::where('date', $date)->where('resident_id', $id)->where('option', 2)->value('milestone_id');
         $milestone2C = Milestone::where('id', $milestone2)->value('category');
         $milestone2D = Milestone::where('id', $milestone2)->value('detail');
-        $objective2 = Option::where('date', $date)->where('resident', $id)->where('option', 2)->value('objectives');
-        $pref_anest_id = Option::where('date', $date)->where('resident', $id)->where('option', 2)->value('anesthesiologist_id');
+        $objective2 = Option::where('date', $date)->where('resident_id', $id)->where('option', 2)->value('objectives');
+        $pref_anest_id = Option::where('date', $date)->where('resident_id', $id)->where('option', 2)->value('anesthesiologist_id');
         if ($pref_anest_id != NULL){
             $pref_anest2 = Anesthesiologist::where('id', $pref_anest_id)->value('first_name') ." ". Anesthesiologist::where('id', $pref_anest_id)->value('last_name');
         } else {
             $pref_anest2 = "No Preference";
         }
-        $schedule3 = Option::where('date', $date)->where('resident', $id)->where('option', 3)->value('schedule');
-        $milestone3 = Option::where('date', $date)->where('resident', $id)->where('option', 3)->value('milestones');
+        $schedule3 = Option::where('date', $date)->where('resident_id', $id)->where('option', 3)->value('schedule_data_id');
+        $milestone3 = Option::where('date', $date)->where('resident_id', $id)->where('option', 3)->value('milestone_id');
         $milestone3C = Milestone::where('id', $milestone3)->value('category');
         $milestone3D = Milestone::where('id', $milestone3)->value('detail');
-        $objective3 = Option::where('date', $date)->where('resident', $id)->where('option', 3)->value('objectives');
-        $pref_anest_id = Option::where('date', $date)->where('resident', $id)->where('option', 3)->value('anesthesiologist_id');
+        $objective3 = Option::where('date', $date)->where('resident_id', $id)->where('option', 3)->value('objectives');
+        $pref_anest_id = Option::where('date', $date)->where('resident_id', $id)->where('option', 3)->value('anesthesiologist_id');
         if ($pref_anest_id != NULL){
             $pref_anest3 = Anesthesiologist::where('id', $pref_anest_id)->value('first_name') ." ". Anesthesiologist::where('id', $pref_anest_id)->value('last_name');
         } else {
@@ -165,7 +165,7 @@ class PagesController extends Controller
         $id = Resident::where('email', $_SERVER["HTTP_EMAIL"])->value('id');
         $date = self::calculateFirst();
         $firstday = null;
-        $assignment = Assignment::where('date',$date)->where('resident', $id);
+        $assignment = Assignment::where('date',$date)->where('resident_id', $id);
         if ($assignment->exists()) {
             $firstday_schedule_id = Assignment::where('date', $date)->where('resident_id', $id)->value('schedule_data_id');
             $option = Option::where('id', $assignment->value('option'));
