@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Constant;
 use App\Models\EvaluateData;
@@ -33,7 +32,7 @@ class user
     }
 }
 
-class EvaluationParser extends Model
+class EvaluationParser
 {
     protected $filepath;
     protected $date;
