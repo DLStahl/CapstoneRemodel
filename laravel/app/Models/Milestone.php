@@ -19,4 +19,10 @@ class Milestone extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    public function options()
+    {
+        return $this->hasMany(Option::class);
+    }
+
 }

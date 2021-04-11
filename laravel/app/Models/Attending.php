@@ -19,4 +19,14 @@ class Attending extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
+
+    public function options()
+    {
+        return $this->hasMany(Option::class);
+    }
 }

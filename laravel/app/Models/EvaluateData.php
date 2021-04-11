@@ -19,4 +19,14 @@ class EvaluateData extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    public function residents()
+    {
+        return $this->belongsTo(Resident::class);
+    }
+
+    public function attendings()
+    {
+        return $this->belongsTo(Attending::class);
+    }
 }
