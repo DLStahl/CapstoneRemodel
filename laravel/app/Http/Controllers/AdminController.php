@@ -549,7 +549,6 @@ class AdminController extends Controller
                 $date = $_POST['date'];
                 Assignment::insert([
                     'date'=>$date, 'resident_id'=>$assignment,
-                    'attending_id'=>$_POST['lead_surgeon_code'],
                     'schedule_data_id'=>$id,
                 ]);
             }

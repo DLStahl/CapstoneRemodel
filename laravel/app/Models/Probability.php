@@ -20,7 +20,7 @@ class Probability extends Model
      */
     public $timestamps = false;
 
-    public function residents()
+    public function resident()
     {
         return $this->belongsTo(Resident::class);
     }

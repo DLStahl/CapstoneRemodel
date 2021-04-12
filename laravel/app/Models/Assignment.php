@@ -20,22 +20,22 @@ class Assignment extends Model
      */
     public $timestamps = false;
 
-    public function residents()
+    public function resident()
     {
         return $this->belongsTo(Resident::class);
     }
 
-    public function options()
+    public function option()
     {
         return $this->belongsTo(Option::class);
     }
 
-    public function scheduledatas()
+    public function schedule_data()
     {
         return $this->belongsTo(ScheduleData::class);
     }
 
-    public function attendings()
+    public function attending()
     {
         return $this->belongsTo(Attending::class);
     }

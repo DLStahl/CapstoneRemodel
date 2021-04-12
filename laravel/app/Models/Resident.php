@@ -30,7 +30,7 @@ class Resident extends Model
         return $this->hasMany(Assignment::class);
     }
 
-    public function evaluatedatas()
+    public function evaluate_datas()
     {
         return $this->hasMany(EvaluateData::class);
     }

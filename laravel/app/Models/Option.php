@@ -29,22 +29,22 @@ class Option extends Model
         return $this->belongsTo(Anesthesiologist::class);
     }
 
-    public function residents()
+    public function resident()
     {
         return $this->belongsTo(Resident::class);
     }
 
-    public function milestones()
+    public function milestone()
     {
         return $this->belongsTo(Milestone::class);
     }
 
-    public function scheduledatas()
+    public function schedule_data()
     {
         return $this->belongsTo(ScheduleData::class);
     }
 
-    public function attendings()
+    public function attending()
     {
         return $this->belongsTo(Attending::class);
     }

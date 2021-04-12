@@ -20,12 +20,12 @@ class EvaluateData extends Model
      */
     public $timestamps = false;
 
-    public function residents()
+    public function resident()
     {
         return $this->belongsTo(Resident::class);
     }
 
-    public function attendings()
+    public function attending()
     {
         return $this->belongsTo(Attending::class);
     }
