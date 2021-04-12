@@ -161,7 +161,7 @@ class AutoAssignment extends Model
                         }
                         $winnerResident = $onRotationOption['resident_id'];
                     }else{
-                        array_push($remainder, $onRotationOption['resident-Id']);
+                        array_push($remainder, $onRotationOption['resident_id']);
                     }
                 }
                 // residents not on rotation are added to remainder array
