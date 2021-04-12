@@ -24,5 +24,4 @@ class Milestone extends Model
     {
         return $this->hasMany(Option::class);
     }
-
 }

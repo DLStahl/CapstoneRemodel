@@ -20,13 +20,8 @@ class Attending extends Model
      */
     public $timestamps = false;
 
-    public function assignments()
+    public function evaluate_datas()
     {
-        return $this->hasMany(Assignment::class);
-    }
-
-    public function options()
-    {
-        return $this->hasMany(Option::class);
+        return $this->hasMany(EvaluateData::class);
     }
 }

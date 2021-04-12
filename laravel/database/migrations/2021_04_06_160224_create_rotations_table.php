@@ -13,15 +13,18 @@ class CreateRotationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('rotations', function (Blueprint $table) {
-            $table->String('Name');
-            $table->bigIncrements('ID');
-            $table->Integer('Level');
-            $table->Integer('Service');
-            $table->String('Site');
-            $table->date('Start');
-            $table->date('End');
-        });
+        if (!Schema::hasTable('rotations'))
+        {
+            Schema::create('rotations', function (Blueprint $table) {
+                $table->String('Name');
+                $table->bigIncrements('ID');
+                $table->Integer('Level');
+                $table->Integer('Service');
+                $table->String('Site');
+                $table->date('Start');
+                $table->date('End');
+            });
+        }
     }
 
     /**

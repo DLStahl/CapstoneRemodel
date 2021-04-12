@@ -20,4 +20,8 @@ class Rotations extends Model
      */
     public $timestamps = false;
 
+    public function evaluation_forms()
+    {
+        return $this->belongsTo(EvaluationForms::class);
+    }
 }

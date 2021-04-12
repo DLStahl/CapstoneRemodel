@@ -25,23 +25,18 @@ class Assignment extends Model
         return $this->belongsTo(Resident::class);
     }
 
-    public function option()
-    {
-        return $this->belongsTo(Option::class);
-    }
-
     public function schedule_data()
     {
         return $this->belongsTo(ScheduleData::class);
     }
 
-    public function attending()
-    {
-        return $this->belongsTo(Attending::class);
-    }
-
     public function anesthesiologist()
     {
         return $this->belongsTo(Anesthesiologist::class);
+    }
+
+    public function option()
+    {
+        return $this->hasOne(Option::class);
     }
 }

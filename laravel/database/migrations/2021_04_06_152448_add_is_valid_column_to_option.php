@@ -13,9 +13,12 @@ class AddIsValidColumnToOption extends Migration
      */
     public function up()
     {
-        Schema::table('option', function (Blueprint $table) {
-            $table->integer('isValid');
-        });
+        if (!Schema::hasColumn('option', 'isValid'))
+        {
+            Schema::table('option', function (Blueprint $table) {
+                $table->integer('isValid');
+            });
+        }
     }
 
     /**
@@ -25,8 +28,11 @@ class AddIsValidColumnToOption extends Migration
      */
     public function down()
     {
-        Schema::table('option', function (Blueprint $table) {
-            $table->dropColumn('isValid');
-        });
-    }
+        if (!Schema::hasColumn('option', 'isValid'))
+        {
+            Schema::table('option', function (Blueprint $table) {
+                $table->dropColumn('isValid');
+            });
+        }
+    }   
 }

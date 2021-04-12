@@ -44,8 +44,8 @@ class Option extends Model
         return $this->belongsTo(ScheduleData::class);
     }
 
-    public function attending()
+    public function assignment()
     {
-        return $this->belongsTo(Attending::class);
+        return $this->belongsTo(Assignment::class);
     }
 }

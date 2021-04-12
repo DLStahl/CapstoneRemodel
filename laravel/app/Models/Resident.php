@@ -34,4 +34,10 @@ class Resident extends Model
     {
         return $this->hasMany(EvaluateData::class);
     }
+
+    public function probability()
+    {
+        return $this->hasOne(Probability::class);
+    }
+    
 }

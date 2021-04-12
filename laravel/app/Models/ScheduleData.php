@@ -20,4 +20,9 @@ class ScheduleData extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    public function option()
+    {
+        return $this->hasOne(Option::class);
+    }
 }

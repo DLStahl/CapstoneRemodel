@@ -24,4 +24,9 @@ class EvaluationForms extends Model
 		return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
 	}
 
+	public function rotations()
+	{
+		return $this->belongsTo(Rotations::class);
+	}
+
 }
