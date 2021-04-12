@@ -3,13 +3,11 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class ScheduleFileExistsandIsTxtTest extends TestCase
 {
-    /**
-     * Test if the schedule file exists
-     * @return void
-     */
+    use DatabaseTransactions;
 
     public function TestUploadSchedulePageHasAScheduleFile()
     {

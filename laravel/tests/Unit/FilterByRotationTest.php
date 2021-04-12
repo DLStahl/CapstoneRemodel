@@ -4,9 +4,11 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use App\ScheduleParser;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class FilterByRotationTest extends TestCase
 {
+    use DatabaseTransactions;
     //TODO: rewrite - testing for SchedulerParser
     public function testFilterByRotation1()
     {
