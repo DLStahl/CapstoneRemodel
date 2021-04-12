@@ -116,7 +116,7 @@ class AutoAssignment extends Model
             $notOnRotation = array(); 
             // identify which residents have/don't have same rotation as the schedule rotation 
             foreach($competingOptions as $competingOption){
-                $resName = Resident::where('id',$competingOption['resident'])->value('name');
+                $resName = Resident::where('id',$competingOption['resident_id'])->value('name');
                 $resRotations = Rotations::where('name', $resName)->get();
                 $serviceId ="";
                 foreach($resRotations as $resRotation){
@@ -131,7 +131,7 @@ class AutoAssignment extends Model
                 if($resRotation != "" && $schedRotation != "" && strpos($schedRotation, $resRotation) !== false){
                     array_push($onRotation, $competingOption);
                 }else{
-                    array_push($notOnRotation, $competingOption['resident']);
+                    array_push($notOnRotation, $competingOption['resident_id']);
                 }
             }
             // Residents on same rotation as schedule get priority
@@ -144,24 +144,24 @@ class AutoAssignment extends Model
                                 ->where('schedule_data_id', $wantedSchedule)
                                 ->where('option', $prefNum)
                                 ->where('isValid', "1")
-                                ->where('resident_id', $onRotation[0]['resident'])
+                                ->where('resident_id', $onRotation[0]['resident_id'])
                                 ->value('anesthesiologist_id');
-                $anestsAssigned = self::handleAssignment($wantedSchedule, $onRotation[0]['resident'], $date, $ticketsToAdd, $anestPref, $anestsAssigned);
+                $anestsAssigned = self::handleAssignment($wantedSchedule, $onRotation[0]['resident_id'], $date, $ticketsToAdd, $anestPref, $anestsAssigned);
             }
             // Case 2: multiple residents on same rotation 
             else if(count($onRotation) > 1){
                 // find which resident on rotation has the most tickets
                 foreach($onRotation as $onRotationOption){
                     // add losing residents to remainder array
-                    $residentTickets = Probability::where('resident_id', $onRotationOption['resident'])->value('total');
+                    $residentTickets = Probability::where('resident_id', $onRotationOption['resident_id'])->value('total');
                     if($maxTickets < $residentTickets){
                         $maxTickets = $residentTickets;
                         if (!is_null($winnerResident)){
                             array_push($remainder, $winnerResident);
                         }
-                        $winnerResident = $onRotationOption['resident'];
+                        $winnerResident = $onRotationOption['resident_id'];
                     }else{
-                        array_push($remainder, $onRotationOption['resident']);
+                        array_push($remainder, $onRotationOption['resident-Id']);
                     }
                 }
                 // residents not on rotation are added to remainder array
@@ -180,15 +180,15 @@ class AutoAssignment extends Model
                 // find which resident has the most tickets
                 foreach($competingOptions as $competingOption){
                     // add losing residents to remainder array
-                    $residentTickets = Probability::where('resident_id', $competingOption['resident'])->value('total');
+                    $residentTickets = Probability::where('resident_id', $competingOption['resident_id'])->value('total');
                     if($maxTickets < $residentTickets){
                         $maxTickets = $residentTickets;
                         if (!is_null($winnerResident)){
                             array_push($remainder, $winnerResident);
                         }
-                        $winnerResident = $competingOption['resident'];
+                        $winnerResident = $competingOption['resident_id'];
                     }else{
-                        array_push($remainder, $competingOption['resident']);
+                        array_push($remainder, $competingOption['resident_id']);
                     }
                 }
                 // assign winning resident to schedule
