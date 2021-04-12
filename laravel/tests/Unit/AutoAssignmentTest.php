@@ -8,6 +8,7 @@ use App\Models\Option;
 use App\Models\Assignment;
 use App\Models\Probability;
 use App\Models\ScheduleData;
+use App\Models\Milestone;
 use App\Models\Resident;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -30,6 +31,7 @@ class AutoAssignmentTest extends TestCase
     private $residentB;
     private $residentC;
     private $residentD;
+    private $milestone_id;
 
     public function setUp ():void 
     {
@@ -53,6 +55,7 @@ class AutoAssignmentTest extends TestCase
             ]);
         }
         $this->autoAssignment = new AutoAssignment();
+        $this->milestone_id = Milestone::first()->value("id");
     }
 
     public function addOptionsToDatabase($optionsDataArrays)
@@ -65,6 +68,7 @@ class AutoAssignmentTest extends TestCase
                 "option" => $optionDataArray[2],
                 "isValid" => 1,
                 "anesthesiologist_id" => $optionDataArray[3],
+                "milestone_id" => $optionDataArray[4]
             ]);
         }
     }
@@ -98,12 +102,12 @@ class AutoAssignmentTest extends TestCase
     public function testPreferenceTicketingWithAnestsGranted()
     {
         $options = [
-            [$this->residentA, $this->CCCT10, 1, 1],
-            [$this->residentB, $this->CCCT10, 1, 1],
-            [$this->residentB, $this->CCCT14, 2, 2],
-            [$this->residentC, $this->CCCT10, 1, 1],
-            [$this->residentC, $this->CCCT14, 2, 2],
-            [$this->residentC, $this->CCCT11, 3, 3],
+            [$this->residentA, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 2, 2, $this->milestone_id],
+            [$this->residentC, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 2, 2, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 3, 3, $this->milestone_id],
         ];
         $expectedAssignments = [
             [$this->residentA, $this->CCCT10, 1],
@@ -126,13 +130,13 @@ class AutoAssignmentTest extends TestCase
     public function testPreferenceTicketingWithAnestsNotGranted()
     {
         $options = [
-            [$this->residentA, $this->EP05, 1, 1],
-            [$this->residentB, $this->CCCT10, 1, 1],
-            [$this->residentC, $this->CCCT10, 1, 1],
-            [$this->residentC, $this->CCCT14, 2, 1],
-            [$this->residentD, $this->CCCT10, 1, 1],
-            [$this->residentD, $this->CCCT14, 2, 1],
-            [$this->residentD, $this->CCCT11, 3, 1],
+            [$this->residentA, $this->EP05, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 2, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT14, 2, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT11, 3, 1, $this->milestone_id],
         ];
         $expectedAssignments = [
             [$this->residentA, $this->EP05, 1],
@@ -162,12 +166,12 @@ class AutoAssignmentTest extends TestCase
     public function testPreferenceTicketingNoAnestsPreferences()
     {
         $options = [
-            [$this->residentA, $this->CCCT10, 1, null],
-            [$this->residentB, $this->CCCT10, 1, null],
-            [$this->residentB, $this->CCCT14, 2, null],
-            [$this->residentC, $this->CCCT10, 1, null],
-            [$this->residentC, $this->CCCT14, 2, null],
-            [$this->residentC, $this->CCCT11, 3, null],
+            [$this->residentA, $this->CCCT10, 1, null, $this->milestone_id],
+            [$this->residentB, $this->CCCT10, 1, null, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 2, null, $this->milestone_id],
+            [$this->residentC, $this->CCCT10, 1, null, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 2, null, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 3, null, $this->milestone_id],
         ];
         $expectedAssignments = [
             [$this->residentA, $this->CCCT10, null],
@@ -190,13 +194,13 @@ class AutoAssignmentTest extends TestCase
     public function testPreferenceTicketingForUnassignedResidents()
     {
         $options = [
-            [$this->residentA, $this->CCCT14, 1, 1],
-            [$this->residentB, $this->CCCT14, 1, 1],
-            [$this->residentC, $this->CCCT14, 1, 1],
-            [$this->residentC, $this->CCCT14, 2, 1],
-            [$this->residentD, $this->CCCT14, 1, 1],
-            [$this->residentD, $this->CCCT14, 2, 1],
-            [$this->residentD, $this->CCCT14, 3, 1],
+            [$this->residentA, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 2, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT14, 2, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT14, 3, 1, $this->milestone_id],
         ];
         $expectedAssignments = [[$this->residentA, $this->CCCT14, 1]];
         $expectedProbTotals = [
@@ -221,7 +225,10 @@ class AutoAssignmentTest extends TestCase
     // Tests for Anesthesiologist Preference Assignment
     public function testAnestAssignedOnce()
     {
-        $options = [[$this->residentA, $this->EP05, 1, 1], [$this->residentB, $this->CCCT14, 1, 1]];
+        $options = [
+            [$this->residentA, $this->EP05, 1, 1, $this->milestone_id], 
+            [$this->residentB, $this->CCCT14, 1, 1, $this->milestone_id]
+        ];
         $expectedAssignments = [
             [$this->residentA, $this->EP05, 1],
             [$this->residentB, $this->CCCT14, null],
@@ -241,9 +248,9 @@ class AutoAssignmentTest extends TestCase
     public function testAnestDoubleAssignedCCCT()
     {
         $options = [
-            [$this->residentA, $this->CCCT10, 1, 1],
-            [$this->residentB, $this->CCCT14, 1, 1],
-            [$this->residentC, $this->CCCT11, 1, 1],
+            [$this->residentA, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 1, 1, $this->milestone_id],
         ];
         $expectedAssignments1 = [
             [$this->residentA, $this->CCCT10, 1],
@@ -272,9 +279,9 @@ class AutoAssignmentTest extends TestCase
     public function testAnestDoubleAssignedUH()
     {
         $options = [
-            [$this->residentA, $this->UH19, 1, 1],
-            [$this->residentB, $this->UH2, 1, 1],
-            [$this->residentC, $this->UH16, 1, 1],
+            [$this->residentA, $this->UH19, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->UH2, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->UH16, 1, 1, $this->milestone_id],
         ];
         $expectedAssignments1 = [
             [$this->residentA, $this->UH19, 1],
@@ -303,10 +310,10 @@ class AutoAssignmentTest extends TestCase
     public function testAnestDoubleAssignedCCCTLeasingUHGivenCCCTAssignment()
     {
         $options = [
-            [$this->residentA, $this->CCCT14, 1, 1],
-            [$this->residentB, $this->CCCT19LeasingUH7, 1, 1],
-            [$this->residentC, $this->CCCT14, 1, 1],
-            [$this->residentC, $this->CCCT11, 2, 1],
+            [$this->residentA, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT19LeasingUH7, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 2, 1, $this->milestone_id],
         ];
         $expectedAssignments = [
             [$this->residentA, $this->CCCT14, 1],
@@ -329,10 +336,10 @@ class AutoAssignmentTest extends TestCase
     public function testAnestDoubleAssignedCCCTGivenCCCTLeasingUHAssignment()
     {
         $options = [
-            [$this->residentA, $this->CCCT19LeasingUH7, 1, 1],
-            [$this->residentB, $this->CCCT14, 1, 1],
-            [$this->residentC, $this->CCCT14, 1, 1],
-            [$this->residentC, $this->CCCT11, 2, 1],
+            [$this->residentA, $this->CCCT19LeasingUH7, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 2, 1, $this->milestone_id],
         ];
         $expectedAssignments = [
             [$this->residentA, $this->CCCT19LeasingUH7, 1],
@@ -355,12 +362,12 @@ class AutoAssignmentTest extends TestCase
     public function testAnestDoubleAssignedCCCTLeasingUHGivenUHAssignment()
     {
         $options = [
-            [$this->residentA, $this->UH19, 1, 1],
-            [$this->residentB, $this->UH19, 1, 1],
-            [$this->residentB, $this->CCCT19LeasingUH7, 2, 1],
-            [$this->residentC, $this->UH19, 1, 1],
-            [$this->residentC, $this->CCCT19LeasingUH7, 2, 1],
-            [$this->residentC, $this->UH2, 3, 1],
+            [$this->residentA, $this->UH19, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->UH19, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT19LeasingUH7, 2, 1, $this->milestone_id],
+            [$this->residentC, $this->UH19, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT19LeasingUH7, 2, 1, $this->milestone_id],
+            [$this->residentC, $this->UH2, 3, 1, $this->milestone_id],
         ];
         $expectedAssignments = [
             [$this->residentA, $this->UH19, 1],
@@ -383,11 +390,11 @@ class AutoAssignmentTest extends TestCase
     public function testAnestDoubleAssignedUHGivenCCCTLeasingUHAssignment()
     {
         $options = [
-            [$this->residentA, $this->CCCT19LeasingUH7, 1, 1],
-            [$this->residentB, $this->CCCT19LeasingUH7, 1, 1],
-            [$this->residentB, $this->UH19, 2, 1],
-            [$this->residentC, $this->CCCT19LeasingUH7, 1, 1],
-            [$this->residentC, $this->CCCT11, 2, 1],
+            [$this->residentA, $this->CCCT19LeasingUH7, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT19LeasingUH7, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->UH19, 2, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT19LeasingUH7, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 2, 1, $this->milestone_id],
         ];
         $expectedAssignments = [
             [$this->residentA, $this->CCCT19LeasingUH7, 1],
@@ -406,4 +413,5 @@ class AutoAssignmentTest extends TestCase
         $this->assertTrue(self::correctAssignments($expectedAssignments));
         $this->assertTrue(self::correctProbTotals($expectedProbTotals));
     }
+    
 }
