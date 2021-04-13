@@ -4,6 +4,8 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use App\EvaluationParser;
+use App\Models\Resident;
+use App\Models\Attending;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class EvaluationParserTest extends TestCase
@@ -19,28 +21,66 @@ class EvaluationParserTest extends TestCase
 		return $method;
 	}
 
-    
+    public function addResident($resident){
+        return Resident::insertGetId([
+            "name" => $resident[0],
+            "email" => $resident[1],
+        ]);
+    }
+
+    public function addAllResidents($residents){
+        $ids = [];
+        foreach($residents as $resident){
+            $id = self::addResident($resident);
+            array_push($ids, $id);
+        }
+        return $ids;
+    }
+
+    public function addAllAttendings($attendings){
+        foreach($attendings as $attending){
+            Attending::insert([
+                "id" => $attending[0],
+                "name" => $attending[1],
+            ]);
+        }
+    }
     public function testEvaluationParser()
     {
+        
+        // insert residents and attendings
+        $residents = [
+            ["Peter Khoury", "test1@email"],
+            ["Robert Schroell", "test2@email"],
+            ["Drew Michael Donnell", "test3@email"],
+            ["Whitney Loggins", "test4@email"],
+            ["Robert Stocum", "test5@email"],
+        ];
+        $residentIds =$this->addAllResidents($residents);
+        $attendings = [
+            ["1", "Michelle Humeidan"],
+            ["2", "Yun Xia"],
+            ["3", "William Kelly"],
+            ["4", "Jyoti Pandya"],
+        ];
+        self::addAllAttendings($attendings);
         $expectedResults = [
             "Failed Resident Name" => ["No matches for Resident Failed Resident Name were found on MedHub. No matches for Resident Failed Resident Name were found by OSU Find People. The Resident may be using a preffered name at OSU. Please check the information and add user to database manually."],
             "Failed Attendings" => ["No matches for Attending Failed Attending were found on MedHub. No matches for Attending Failed Attending were found by OSU Find People. The Attending may be using a preffered name at OSU. Please check the information and add user to database manually."],
         ];
         $expectedDataInserted = [
-            ["Peter Khoury", "Michelle Humeidan",  "23", "TestL1"],
-            ["Robert Schroell", "Michelle Humeidan", "495", "TestL2"],
-            ["Drew Michael Donnell", "Failed Attending", "90", "TestL3"],
-            ["Whitney Loggins", "Michelle Humeidan", "57", "TestL4"],
-            ["Whitney Loggins", "Michelle Humeidan", "56", "TestL4"],
-            ["Whitney Loggins", "Michelle Humeidan", "239", "TestL5"],
-            ["Whitney Loggins", "William Kelly", "78", "TestL5"],
-            ["Robert Stocum", "Jyoti Pandya", "107", "TestL6"],
-            ["Peter Khoury", "Jyoti Pandya", "30", "TestL7"],
-            ["Robert Stocum", "Jyoti Pandya", "159", "TestL7"],
-            ["Alix Zuleta Alarcon", "Failed Attending", "7", "TestL9"],
-            ["Failed Resident Name", "Jyoti Pandya", "132", "TestL10"],
-            ["Whitney Loggins", "Jyoti Pandya", "186", "TestL11"],
-            ["Whitney Loggins", "Yun Xia", "25", "TestL11"],
+            [$residentIds[0], "Peter Khoury", 1, "Michelle Humeidan",  "23", "TestL1"],
+            [$residentIds[1],"Robert Schroell", 1, "Michelle Humeidan", "495", "TestL2"],
+            [$residentIds[2],"Drew Michael Donnell", 2, "Yun Xia", "90", "TestL3"],
+            [$residentIds[3],"Whitney Loggins", 1, "Michelle Humeidan", "57", "TestL4"],
+            [$residentIds[3],"Whitney Loggins", 1, "Michelle Humeidan", "56", "TestL4"],
+            [$residentIds[3],"Whitney Loggins", 1, "Michelle Humeidan", "239", "TestL5"],
+            [$residentIds[3],"Whitney Loggins", 3, "William Kelly", "78", "TestL5"],
+            [$residentIds[4],"Robert Stocum", 4, "Jyoti Pandya", "107", "TestL6"],
+            [$residentIds[0],"Peter Khoury", 4, "Jyoti Pandya", "30", "TestL7"],
+            [$residentIds[4],"Robert Stocum", 4, "Jyoti Pandya", "159", "TestL7"],
+            [$residentIds[3],"Whitney Loggins", 4, "Jyoti Pandya", "186", "TestL11"],
+            [$residentIds[3],"Whitney Loggins", 2,"Yun Xia", "25", "TestL11"],
         ];
         $parser = new EvaluationParser('20210328');
         $results = $parser->insertEvaluateData();
@@ -50,10 +90,12 @@ class EvaluationParserTest extends TestCase
             $this->assertDatabaseHas('evaluation_data', 
                 [ 
                     "date" => date("2021-03-27"), 
-                    "resident" => $expectedEntry[0], 
-                    "attending" => $expectedEntry[1], 
-                    "time_with_attending" => $expectedEntry[2], 
-                    "location" => $expectedEntry[3],
+                    "resident_id" => $expectedEntry[0],
+                    "resident" => $expectedEntry[1], 
+                    "attending_id" => $expectedEntry[2],
+                    "attending" => $expectedEntry[3], 
+                    "time_with_attending" => $expectedEntry[4], 
+                    "location" => $expectedEntry[5],
                 ]
             );
         }

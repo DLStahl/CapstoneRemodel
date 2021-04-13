@@ -70,19 +70,21 @@ class EvaluationParser
                                 $rName = $resident["dbName"];
                                 $aId = $attending["id"];
                                 $aName = $attending["dbName"];
-                                EvaluateData::insert([
-                                    "date" => $date,
-                                    "location" => $location,
-                                    "diagnosis" => $diagnosis,
-                                    "procedure" => $procedure,
-                                    "asa" => $asa,
-                                    "resident_id" => $rId,
-                                    "resident" => $rName,
-                                    "attending_id" => $aId,
-                                    "attending" => $aName,
-                                    "time_with_attending" => $minutesOverlapped,
-                                    "created_at" => Carbon::now()
-                                ]);
+                                if(!is_null($rId) && !is_null($aId)){
+                                    EvaluateData::insert([
+                                        "date" => $date,
+                                        "location" => $location,
+                                        "diagnosis" => $diagnosis,
+                                        "procedure" => $procedure,
+                                        "asa" => $asa,
+                                        "resident_id" => $rId,
+                                        "resident" => $rName,
+                                        "attending_id" => $aId,
+                                        "attending" => $aName,
+                                        "time_with_attending" => $minutesOverlapped,
+                                        "created_at" => Carbon::now()
+                                    ]);
+                                }  
                             }
                         }
                     }
