@@ -17,9 +17,9 @@ class CreateRotationsTable extends Migration
         {
             Schema::create('rotations', function (Blueprint $table) {
                 $table->String('Name');
-                $table->bigIncrements('ID');
-                $table->Integer('Level');
-                $table->Integer('Service');
+                $table->increments('ID');
+                $table->unsignedInteger('Level');
+                $table->unsignedInteger('Service');
                 $table->String('Site');
                 $table->date('Start');
                 $table->date('End');

@@ -662,7 +662,7 @@ class AdminController extends Controller
 				$endDate = $endDate->format('Y-m-d');
 
 				$formTableID = EvaluationForms::where('medhub_form_name', $service)->value('id');
-				Rotations::insert(['Name'=>$name, 'Level'=>$level, 'Service'=>$formTableID, 'Site'=>$site, 'Start'=>$startDate, 'End'=>$endDate]);
+				Rotations::insert(['Name'=>$name, 'Level'=>$level, 'evaluation_forms_id'=>$formTableID, 'Site'=>$site, 'Start'=>$startDate, 'End'=>$endDate]);
 
 			}
 			$i++;

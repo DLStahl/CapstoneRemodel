@@ -121,7 +121,7 @@ class AutoAssignment extends Model
                 $serviceId ="";
                 foreach($resRotations as $resRotation){
                     if($resRotation['Start'] <= $date && $date <= $resRotation['End']){
-                        $serviceId = $resRotation['Service'];
+                        $serviceId = $resRotation['evaluation_forms_id'];
                     }
                 }
                 $resRotation = EvaluationForms::where('id', $serviceId)->value('rotation');

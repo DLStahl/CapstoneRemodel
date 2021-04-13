@@ -26,7 +26,7 @@ class EvaluationForms extends Model
 
 	public function rotations()
 	{
-		return $this->belongsTo(Rotations::class);
+		return $this->hasMany(Rotations::class);
 	}
 
 }

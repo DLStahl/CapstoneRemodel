@@ -46,6 +46,6 @@ class Option extends Model
 
     public function assignment()
     {
-        return $this->belongsTo(Assignment::class);
+        return $this->hasOne(Assignment::class);
     }
 }
