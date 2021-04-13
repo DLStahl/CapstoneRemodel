@@ -194,7 +194,7 @@ class InitiateEval extends Command
             if (is_null($activeRotation)) {
                 Log::info("Could not find an active rotation for Resident " . $residentName . " ID: " . $residentID);
             } else {
-                $activeService = $activeRotation["Service"];
+                $activeService = $activeRotation["evaluation_forms_id"];
             }
             Log::info("Resident " . $residentName . " has active service id " . $activeService);
             $attendings = EvaluateData::where("date", $date)->where("resident_id", $residentID)->pluck("attending_id", "attending")->unique();
