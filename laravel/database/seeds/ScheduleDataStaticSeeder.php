@@ -20,7 +20,7 @@ class ScheduleDataStaticSeeder extends Seeder
             ["Pulmonary", "Pulmonary", "Bronchoscopy Procedure"],
         ];
         foreach($allStaticData as $data){
-            ScheduleDataStatic::insert([
+            ScheduleDataStatic::firstOrCreate([
                 "location" => $data[0],
                 "room" => $data[1],
                 "case_procedure" => $data[2],
