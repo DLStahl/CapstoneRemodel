@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             FilterRotationTableSeeder::class,
             MilestoneTableSeeder::class,
             TaskAbbreviationSeeder::class,
+            ScheduleDataStaticSeeder::class,
         ]);
     }
 }
