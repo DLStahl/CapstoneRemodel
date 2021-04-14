@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Constant extends Model
+class Constant
 {
     // Path used to open .csv files
     const WEB_PATH = __DIR__ . "/../../resources/Resident_Education_Report.";

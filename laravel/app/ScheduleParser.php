@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Constant;
 use App\Models\ScheduleData;
 use App\Models\Option;
@@ -11,7 +10,7 @@ use App\Models\FilterRotation;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
-class ScheduleParser extends Model
+class ScheduleParser
 {
     /**
      * Protected members

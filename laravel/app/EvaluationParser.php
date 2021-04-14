@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use App\Constant;
 use App\Models\EvaluateData;
 use App\Models\Resident;
