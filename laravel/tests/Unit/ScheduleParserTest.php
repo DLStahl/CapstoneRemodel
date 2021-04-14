@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class ScheduleParserTest extends TestCase
 {
-   // use DatabaseTransactions;
+    use DatabaseTransactions;
 
     public function testScheduleParser()
     {
