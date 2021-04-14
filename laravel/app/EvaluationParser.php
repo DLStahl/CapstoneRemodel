@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use App\Constant;
 use App\Models\EvaluateData;
 use App\Models\Resident;
@@ -71,18 +70,17 @@ class EvaluationParser
                                 $aId = $attending["id"];
                                 $aName = $attending["dbName"];
                                 if(!is_null($rId) && !is_null($aId)){
-                                    EvaluateData::insert([
+                                    EvaluateData::create([
                                         "date" => $date,
                                         "location" => $location,
                                         "diagnosis" => $diagnosis,
                                         "procedure" => $procedure,
-                                        "asa" => $asa,
+                                        "ASA" => $asa,
                                         "resident_id" => $rId,
                                         "resident" => $rName,
                                         "attending_id" => $aId,
                                         "attending" => $aName,
                                         "time_with_attending" => $minutesOverlapped,
-                                        "created_at" => Carbon::now()
                                     ]);
                                 }  
                             }

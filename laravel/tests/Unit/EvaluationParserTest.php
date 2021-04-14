@@ -50,18 +50,18 @@ class EvaluationParserTest extends TestCase
         
         // insert residents and attendings
         $residents = [
-            ["Peter Khoury", "test1@email"],
-            ["Robert Schroell", "test2@email"],
-            ["Drew Michael Donnell", "test3@email"],
-            ["Whitney Loggins", "test4@email"],
-            ["Robert Stocum", "test5@email"],
+            ["Resident Test1", "test1@email"],
+            ["Resident Test2", "test2@email"],
+            ["Resident Name Test3", "test3@email"],
+            ["Resident Test4", "test4@email"],
+            ["Resident Name Test5", "test5@email"],
         ];
         $residentIds =$this->addAllResidents($residents);
         $attendings = [
-            ["1", "Michelle Humeidan"],
-            ["2", "Yun Xia"],
-            ["3", "William Kelly"],
-            ["4", "Jyoti Pandya"],
+            ["1", "Attending Test1"],
+            ["2", "Attending Name Test2"],
+            ["3", "Attending Test3"],
+            ["4", "Attending Test4"],
         ];
         self::addAllAttendings($attendings);
         $expectedResults = [
@@ -69,18 +69,18 @@ class EvaluationParserTest extends TestCase
             "Failed Attendings" => ["No matches for Attending Failed Attending were found on MedHub. No matches for Attending Failed Attending were found by OSU Find People. The Attending may be using a preffered name at OSU. Please check the information and add user to database manually."],
         ];
         $expectedDataInserted = [
-            [$residentIds[0], "Peter Khoury", 1, "Michelle Humeidan",  "23", "TestL1"],
-            [$residentIds[1],"Robert Schroell", 1, "Michelle Humeidan", "495", "TestL2"],
-            [$residentIds[2],"Drew Michael Donnell", 2, "Yun Xia", "90", "TestL3"],
-            [$residentIds[3],"Whitney Loggins", 1, "Michelle Humeidan", "57", "TestL4"],
-            [$residentIds[3],"Whitney Loggins", 1, "Michelle Humeidan", "56", "TestL4"],
-            [$residentIds[3],"Whitney Loggins", 1, "Michelle Humeidan", "239", "TestL5"],
-            [$residentIds[3],"Whitney Loggins", 3, "William Kelly", "78", "TestL5"],
-            [$residentIds[4],"Robert Stocum", 4, "Jyoti Pandya", "107", "TestL6"],
-            [$residentIds[0],"Peter Khoury", 4, "Jyoti Pandya", "30", "TestL7"],
-            [$residentIds[4],"Robert Stocum", 4, "Jyoti Pandya", "159", "TestL7"],
-            [$residentIds[3],"Whitney Loggins", 4, "Jyoti Pandya", "186", "TestL11"],
-            [$residentIds[3],"Whitney Loggins", 2,"Yun Xia", "25", "TestL11"],
+            [$residentIds[0], "Resident Test1", 1, "Attending Test1",  "23", "TestL1", "TestD1", "TestP1", "4"],
+            [$residentIds[1],"Resident Test2", 1, "Attending Test1", "495", "TestL2", "TestD2", "TestP2", "3"],
+            [$residentIds[2],"Resident Name Test3", 2, "Attending Name Test2", "90", "TestL3", "", "TestP3", "3"],
+            [$residentIds[3],"Resident Test4", 1, "Attending Test1", "57", "TestL4", "TestD4", "TestP4", "4"],
+            [$residentIds[3],"Resident Test4", 1, "Attending Test1", "56", "TestL4", "TestD4", "TestP4", "4"],
+            [$residentIds[3],"Resident Test4", 1, "Attending Test1", "239", "TestL5", "TestD5", "TestP5", "1"],
+            [$residentIds[3],"Resident Test4", 3, "Attending Test3", "78", "TestL5", "TestD5", "TestP5", "1"],
+            [$residentIds[4],"Resident Name Test5", 4, "Attending Test4", "107", "TestL6", "TestD6", "TestP6", "2"],
+            [$residentIds[0],"Resident Test1", 4, "Attending Test4", "30", "TestL7", "TestD7", "TestP7", ""],
+            [$residentIds[4],"Resident Name Test5", 4, "Attending Test4", "159", "TestL7", "TestD7", "TestP7", ""],
+            [$residentIds[3],"Resident Test4", 4, "Attending Test4", "186", "TestL11", "TestD11", "TestP11", "3"],
+            [$residentIds[3],"Resident Test4", 2,"Attending Name Test2", "25", "TestL11", "TestD11", "TestP11", "3"],
         ];
         $parser = new EvaluationParser('20210328');
         $results = $parser->insertEvaluateData();
@@ -96,6 +96,9 @@ class EvaluationParserTest extends TestCase
                     "attending" => $expectedEntry[3], 
                     "time_with_attending" => $expectedEntry[4], 
                     "location" => $expectedEntry[5],
+                    "diagnosis" => $expectedEntry[6],
+                    "procedure" => $expectedEntry[7],
+                    "ASA" => $expectedEntry[8],
                 ]
             );
         }
