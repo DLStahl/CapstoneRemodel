@@ -125,7 +125,7 @@ class InitiateEval extends Command
 				$endDate = date('Y-m-d', strtotime($evaluateeRotationsEnd[$j])); //get the  end date 
 				
 				if (($yesterday>= $startDate) && ($yesterday<=$endDate)){ // find the date range that fits today
-					$evaluationFormsId = Rotations::where('Name', $evaluateeName)->where('Start', $evaluateeRotationsStart[$j])->value('Service');
+					$evaluationFormsId = Rotations::where('Name', $evaluateeName)->where('Start', $evaluateeRotationsStart[$j])->value('evaluation_forms_id');
 					$evaluateeService = EvaluationForms::where('id', $evaluationFormsId)->value('medhub_form_id');
 					break; // break so we can save the evaluateeService
 				}
