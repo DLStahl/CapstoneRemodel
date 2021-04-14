@@ -33,10 +33,8 @@ class ScheduleParserTest extends TestCase
             ["2021-03-24", "OSU ROSS CATH", "CATH 03", "08:00:00", "09:00:00"],    
         ];
         $parser = new ScheduleParser("20210320", true);
-        // assert database has schedule data with 3/22 and 3/24
         foreach($expectedDataInserted as $expected){
             if(is_null($expected[3])){
-                //change to use a query and then assert
                 $this->assertDatabaseHas("schedule_data", [
                     "date" => $expected[0],
                     "location" => $expected[1],
