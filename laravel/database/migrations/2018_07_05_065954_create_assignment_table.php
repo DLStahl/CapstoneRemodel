@@ -57,11 +57,8 @@ class CreateAssignmentTable extends Migration
         $data = DB::table('assignment')->get();
 
         // Erase existing file
-        if (file_exists($filename)) {
-            $output = fopen($filename, 'w');
-        } else {
-            $output = fopen($filename, 'x');
-        }
+        $output = fopen($filename, file_exists($filename) ? 'w' : 'x');
+
         // Set up the first row
         fputcsv($output, ['id', 'date', 'resident', 'schedule', 'attending']);
         // Add all rows

@@ -57,11 +57,8 @@ class CreateProbabilityTable extends Migration
         $data = DB::table('probability')->get();
 
         // Erase existing file
-        if (file_exists($filename)) {
-            $output = fopen($filename, 'w');
-        } else {
-            $output = fopen($filename, 'x');
-        }
+        $output = fopen($filename, file_exists($filename) ? 'w' : 'x');
+
         // Set up the first row
         fputcsv($output, ['id', 'resident', 'total', 'selected', 'probability']);
         // Add all rows

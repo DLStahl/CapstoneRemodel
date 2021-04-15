@@ -108,11 +108,7 @@ class EvaluationParser
     }
     private static function getOccupation($line)
     {
-        if ($line == 'Anesthesiologist') {
-            return 1;
-        } else {
-            return 0;
-        }
+        return $line == 'Anesthesiologist' ? 1 : 0;
     }
 
     private static function getTime($line, $date)

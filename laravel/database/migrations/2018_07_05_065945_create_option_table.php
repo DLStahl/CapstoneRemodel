@@ -63,11 +63,8 @@ class CreateOptionTable extends Migration
         $data = DB::table('option')->get();
 
         // Erase existing file
-        if (file_exists($filename)) {
-            $output = fopen($filename, 'w');
-        } else {
-            $output = fopen($filename, 'x');
-        }
+        $output = fopen($filename, file_exists($filename) ? 'w' : 'x');
+
         // Set up the first row
         fputcsv($output, ['id', 'date', 'resident', 'schedule', 'attending', 'option', 'milestones', 'objectives']);
         // Add all rows

@@ -14,13 +14,7 @@ class AdminDownload
     public static function updateAccess()
     {
         $dir = __DIR__ . '/../../downloads/.htaccess';
-        $fp = null;
-
-        if (file_exists($dir)) {
-            $fp = fopen($dir, 'w');
-        } else {
-            $fp = fopen($dir, 'c');
-        }
+        $fp = fopen($dir, file_exists($dir) ? 'w' : 'c');
 
         fwrite($fp, "ShibUseHeaders On\r\n");
         fwrite($fp, "AuthType shibboleth\r\n");
@@ -43,13 +37,7 @@ class AdminDownload
     private static function updateResident($date)
     {
         $dir = __DIR__ . '/../../downloads/resident' . $date . '.csv';
-        $fp = null;
-
-        if (file_exists($dir)) {
-            $fp = fopen($dir, 'w');
-        } else {
-            $fp = fopen($dir, 'c');
-        }
+        $fp = fopen($dir, file_exists($dir) ? 'w' : 'c');
 
         fputcsv($fp, ['name', 'email']);
         $residents = Resident::where('exists', '1')->get();
@@ -63,13 +51,7 @@ class AdminDownload
     private static function updateAttending($date)
     {
         $dir = __DIR__ . '/../../downloads/attending' . $date . '.csv';
-        $fp = null;
-
-        if (file_exists($dir)) {
-            $fp = fopen($dir, 'w');
-        } else {
-            $fp = fopen($dir, 'c');
-        }
+        $fp = fopen($dir, file_exists($dir) ? 'w' : 'c');
 
         fputcsv($fp, ['name', 'email']);
         $attendings = Attending::where('exists', '1')->get();
@@ -83,13 +65,7 @@ class AdminDownload
     private static function updateAdmin($date)
     {
         $dir = __DIR__ . '/../../downloads/admin' . $date . '.csv';
-        $fp = null;
-
-        if (file_exists($dir)) {
-            $fp = fopen($dir, 'w');
-        } else {
-            $fp = fopen($dir, 'c');
-        }
+        $fp = fopen($dir, file_exists($dir) ? 'w' : 'c');
 
         fputcsv($fp, ['name', 'email']);
         $admins = Admin::where('exists', '1')->get();
@@ -103,13 +79,7 @@ class AdminDownload
     private static function updateOption($date)
     {
         $dir = __DIR__ . '/../../downloads/option' . $date . '.csv';
-        $fp = null;
-
-        if (file_exists($dir)) {
-            $fp = fopen($dir, 'w');
-        } else {
-            $fp = fopen($dir, 'c');
-        }
+        $fp = fopen($dir, file_exists($dir) ? 'w' : 'c');
 
         fputcsv($fp, [
             'date',
@@ -164,13 +134,7 @@ class AdminDownload
     private static function updateAssignment($date)
     {
         $dir = __DIR__ . '/../../downloads/assignment' . $date . '.csv';
-        $fp = null;
-
-        if (file_exists($dir)) {
-            $fp = fopen($dir, 'w');
-        } else {
-            $fp = fopen($dir, 'c');
-        }
+        $fp = fopen($dir, file_exists($dir) ? 'w' : 'c');
 
         fputcsv($fp, ['date', 'room', 'patient class', 'start time', 'end time', 'lead surgeon', 'resident']);
 

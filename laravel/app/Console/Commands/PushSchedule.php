@@ -53,12 +53,7 @@ class PushSchedule extends Command
     public static function updateAssignments($date)
     {
         $all_assignments = [];
-        $assignments = null;
-        if ($date == null) {
-            $assignments = Assignment::orderBy('date', 'desc')->get();
-        } else {
-            $assignments = Assignment::where('date', $date)->get();
-        }
+        $assignments = ($date == null ? Assignment::orderBy('date', 'desc') : Assignment::where('date', $date))->get();
 
         //find all relavant data for the assignments
         foreach ($assignments as $assignment) {
@@ -167,7 +162,6 @@ class PushSchedule extends Command
 
         //Relative path for assignment sheet
         $dir = '../downloads/assignment' . $date . '.csv';
-        $fp = null;
 
         $mode = file_exists($dir) ? 'w' : 'c';
         $fp = fopen($dir, $mode);

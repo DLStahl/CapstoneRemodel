@@ -49,11 +49,8 @@ class CreateAttendingTable extends Migration
         $data = DB::table('attending')->get();
 
         // Erase existing file
-        if (file_exists($filename)) {
-            $output = fopen($filename, 'w');
-        } else {
-            $output = fopen($filename, 'x');
-        }
+        $output = fopen($filename, file_exists($filename) ? 'w' : 'x');
+
         // Set up the first row
         fputcsv($output, ['id', 'name', 'email', 'exists']);
         // Add all rows
