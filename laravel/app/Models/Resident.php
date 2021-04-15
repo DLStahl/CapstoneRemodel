@@ -11,7 +11,7 @@ class Resident extends Model
      *
      * @var string
      */
-    protected $table = "resident";
+    protected $table = 'resident';
 
     /**
      * Indicates if the model should be timestamped.

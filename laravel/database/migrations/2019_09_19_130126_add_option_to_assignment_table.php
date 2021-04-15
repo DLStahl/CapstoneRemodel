@@ -13,8 +13,8 @@ class AddOptionToAssignmentTable extends Migration
      */
     public function up()
     {
-        Schema::table("assignment", function ($table) {
-            $table->unsignedInteger("option");
+        Schema::table('assignment', function ($table) {
+            $table->unsignedInteger('option');
         });
     }
 
@@ -25,8 +25,8 @@ class AddOptionToAssignmentTable extends Migration
      */
     public function down()
     {
-        Schema::table("assignment", function (Blueprint $table) {
-            $table->dropColumn("option");
+        Schema::table('assignment', function (Blueprint $table) {
+            $table->dropColumn('option');
         });
     }
 }

@@ -13,8 +13,8 @@ class AddMedhubidToResidentTable extends Migration
      */
     public function up()
     {
-        Schema::table("resident", function (Blueprint $table) {
-            $table->string("medhubId");
+        Schema::table('resident', function (Blueprint $table) {
+            $table->string('medhubId');
         });
     }
 
@@ -25,8 +25,8 @@ class AddMedhubidToResidentTable extends Migration
      */
     public function down()
     {
-        Schema::table("resident", function (Blueprint $table) {
-            $table->dropColumn("medhubId");
+        Schema::table('resident', function (Blueprint $table) {
+            $table->dropColumn('medhubId');
         });
     }
 }

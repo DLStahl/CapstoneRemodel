@@ -17,8 +17,8 @@ class AdminDeleteDataSetTest extends TestCase
     public function testAdminDeleteDataSetDataTableHasData()
     {
         $AC = new AdminController();
-        $AC->getUpdateMilestone("delete", "true", 198, "FakeAbbreviation", "FakeFullName", "FakeDetail");
-        $this->assertDatabaseHas("milestone", ["exists" => "0"]);
-        Milestone::where("id", 198)->update(["exists" => 1]);
+        $AC->getUpdateMilestone('delete', 'true', 198, 'FakeAbbreviation', 'FakeFullName', 'FakeDetail');
+        $this->assertDatabaseHas('milestone', ['exists' => '0']);
+        Milestone::where('id', 198)->update(['exists' => 1]);
     }
 }

@@ -14,7 +14,7 @@ class UpdateAnesthesiologistsDataTest extends TestCase
      */
     public function testUpdateAnesthesiologistDataCommand()
     {
-        $this->artisan("update:anesthesiologists_data");
-        $this->assertDatabaseHas("anesthesiologists", [["updated_at", ">", Carbon::today()]]);
+        $this->artisan('update:anesthesiologists_data');
+        $this->assertDatabaseHas('anesthesiologists', [['updated_at', '>', Carbon::today()]]);
     }
 }

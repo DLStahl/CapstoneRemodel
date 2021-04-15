@@ -14,6 +14,6 @@ class AdminEvalButtonTest extends TestCase
 
     public function testAdminEvalButtonEvaluationDataTableHasData()
     {
-        $this->assertDatabaseHas("evaluation_data", ["id" => "71"]);
+        $this->assertDatabaseHas('evaluation_data', ['id' => '71']);
     }
 }

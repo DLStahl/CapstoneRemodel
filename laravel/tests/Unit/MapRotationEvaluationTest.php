@@ -13,8 +13,8 @@ class MapRotationEvaluationTest extends TestCase
      */
     public function testResidentTableHasData()
     {
-        $this->assertDatabaseHas("resident", [
-            "name" => "Priscilla Agbenyefia",
+        $this->assertDatabaseHas('resident', [
+            'name' => 'Priscilla Agbenyefia',
         ]);
     }
     /**
@@ -24,7 +24,7 @@ class MapRotationEvaluationTest extends TestCase
      */
     public function testAttendingTableHasData()
     {
-        $this->assertDatabaseHas("attending", ["name" => "David Stahl"]);
+        $this->assertDatabaseHas('attending', ['name' => 'David Stahl']);
     }
     /**
      * A basic test to check that the residents table has values
@@ -33,8 +33,8 @@ class MapRotationEvaluationTest extends TestCase
      */
     public function testEvalTableHasData()
     {
-        $this->assertDatabaseHas("evaluation_data", [
-            "resident" => "Adam Thomas",
+        $this->assertDatabaseHas('evaluation_data', [
+            'resident' => 'Adam Thomas',
         ]);
     }
 }

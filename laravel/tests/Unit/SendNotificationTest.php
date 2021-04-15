@@ -14,17 +14,17 @@ class SendNotificationTest extends TestCase
 
     public function testSendNotificationResidentTableHasData()
     {
-        $this->assertDatabaseHas("resident", ["id" => "1"]);
+        $this->assertDatabaseHas('resident', ['id' => '1']);
     }
 
     public function testSendNotificationResidentTableNoticesMissingData()
     {
-        $this->assertDatabaseMissing("resident", ["id" => "9999999"]);
+        $this->assertDatabaseMissing('resident', ['id' => '9999999']);
     }
 
     public function testSendNofiticaionResidentTableHasCorrectNameData()
     {
-        $this->assertDatabaseHas("resident", ["name" => "Amy Baumann"]);
+        $this->assertDatabaseHas('resident', ['name' => 'Amy Baumann']);
     }
 
     // public function testNotificationResidentTableHasCorrectIDData()

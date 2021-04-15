@@ -11,7 +11,7 @@ class FilterRotation extends Model
      *
      * @var string
      */
-    protected $table = "filter_rotation";
+    protected $table = 'filter_rotation';
 
     /**
      * Indicates if the model should be timestamped.
