@@ -19,7 +19,7 @@ class ScheduleDataStaticSeeder extends Seeder
             ["IR", "IR2", "IR Procedure"],
             ["Pulmonary", "Pulmonary", "Bronchoscopy Procedure"],
         ];
-        foreach($allStaticData as $data){
+        foreach ($allStaticData as $data) {
             ScheduleDataStatic::firstOrCreate([
                 "location" => $data[0],
                 "room" => $data[1],
@@ -32,6 +32,6 @@ class ScheduleDataStaticSeeder extends Seeder
                 "end_time" => "17:00:00",
                 "rotation" => "OORA",
             ]);
-        }   
+        }
     }
 }
