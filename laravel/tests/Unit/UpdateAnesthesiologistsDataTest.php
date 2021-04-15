@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 class UpdateAnesthesiologistsDataTest extends TestCase
 {
     use DatabaseTransactions;
-    
+
     public function testUpdateAnesthesiologistDataCommand()
     {
         $this->artisan("update:anesthesiologists_data");

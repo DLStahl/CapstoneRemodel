@@ -35,5 +35,4 @@ class AdminControllerTest extends TestCase
         $AC->getUpdateUsers("addUser", "Resident", "fakeRes@fak.com", "true", "FakeName");
         $this->assertDatabaseHas("resident", ["email" => "fakeRes@fak.com"]);
     }
-
 }

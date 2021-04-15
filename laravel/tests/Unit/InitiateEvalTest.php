@@ -14,9 +14,10 @@ class InitiateEvalTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function insertEvalData($data){
+    public function insertEvalData($data)
+    {
         EvaluateData::insert([
-            "date"=> $data[0],
+            "date" => $data[0],
             "location" => $data[1],
             "diagnosis" => "Test",
             "procedure" => "Test",
@@ -28,30 +29,34 @@ class InitiateEvalTest extends TestCase
             "time_with_attending" => $data[6],
         ]);
     }
-    
-    public function insertAllEvalData($allData){
-        foreach($allData as $data){
+
+    public function insertAllEvalData($allData)
+    {
+        foreach ($allData as $data) {
             self::insertEvalData($data);
         }
     }
-    public function addResident($resident){
+    public function addResident($resident)
+    {
         return Resident::insertGetId([
             "name" => $resident[0],
             "email" => $resident[1],
         ]);
     }
 
-    public function addAllResidents($residents){
+    public function addAllResidents($residents)
+    {
         $ids = [];
-        foreach($residents as $resident){
+        foreach ($residents as $resident) {
             $id = self::addResident($resident);
             array_push($ids, $id);
         }
         return $ids;
     }
 
-    public function addAllAttendings($attendings){
-        foreach($attendings as $attending){
+    public function addAllAttendings($attendings)
+    {
+        foreach ($attendings as $attending) {
             Attending::insert([
                 "id" => $attending[0],
                 "name" => $attending[1],
@@ -59,7 +64,8 @@ class InitiateEvalTest extends TestCase
         }
     }
 
-    public function insertRotationData($data){
+    public function insertRotationData($data)
+    {
         Rotations::insert([
             "name" => $data[0],
             "level" => "1",
@@ -70,12 +76,13 @@ class InitiateEvalTest extends TestCase
         ]);
     }
 
-    public function insertAllRotationData($allData){
-        foreach($allData as $data){
+    public function insertAllRotationData($allData)
+    {
+        foreach ($allData as $data) {
             self::insertRotationData($data);
         }
     }
-    
+
     public function testMedHubAPIConnection()
     {
         $initiateEval = new InitiateEval();
@@ -90,15 +97,9 @@ class InitiateEvalTest extends TestCase
     public function testGetResidentAndAttendingEvalData()
     {
         // insert mock data
-        $residents = [
-            ["Resident A", "test1@email"],
-            ["Resident B", "test2@email"],
-        ];
-        $residentIds =$this->addAllResidents($residents);
-        $attendings = [
-            ["1", "Attending A"],
-            ["2", "Attending B"],
-        ];
+        $residents = [["Resident A", "test1@email"], ["Resident B", "test2@email"]];
+        $residentIds = $this->addAllResidents($residents);
+        $attendings = [["1", "Attending A"], ["2", "Attending B"]];
         self::addAllAttendings($attendings);
         $initiateEval = new InitiateEval();
         $evalData = [
@@ -121,7 +122,7 @@ class InitiateEvalTest extends TestCase
         $expectedResults = [
             ["Resident A", strval($residentIds[0]), "2", "1", "Attending A", "30"],
             ["Resident B", strval($residentIds[1]), 0, "1", "Attending A", "30"],
-            ["Resident B",  strval($residentIds[1]), 0, "2", "Attending B", "40"],
+            ["Resident B", strval($residentIds[1]), 0, "2", "Attending B", "40"],
         ];
 
         $results = $initiateEval->getResidentAndAttendingEvalData("2021-03-03");
