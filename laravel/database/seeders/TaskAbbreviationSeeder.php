@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use App\Models\TaskAbbreviation;
 use Illuminate\Database\Seeder;
 
