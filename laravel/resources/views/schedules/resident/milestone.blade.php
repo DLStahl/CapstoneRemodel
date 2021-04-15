@@ -5,7 +5,7 @@
     <div id="Resident Form">
         <h4>Resident Preferences</h4>
         <form method="POST" action="../confirm">
-            @foreach ($resident_choices as $data)
+            @foreach ($resident_data as $data)
                 @if (is_null($data['schedule']))
                     <h5>Preference #{{ $loop->iteration }}: None</h5>
                 @else

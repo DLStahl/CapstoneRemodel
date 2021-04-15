@@ -255,11 +255,11 @@ class ScheduleDataController extends Controller
         $id = $_REQUEST["schedule_id"];
         $choiceTypes = ["First", "Second", "Third"];
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $split = explode("_", $id);
+        $schedule_data_ids = explode("_", $id);
         // get current preferences
         for ($i = 0; $i < 3; $i++) {
-            if ($split[$i] != 0) {
-                $schedule = ScheduleData::where("id", $split[$i])->get();
+            if ($schedule_data_ids[$i]) {
+                $schedule = ScheduleData::where("id", $schedule_data_ids[$i])->get();
                 $currentChoices[$i] = [
                     "schedule" => $schedule,
                     "case_procedure" => self::parseCaseProcedure($schedule[0]["case_procedure"]),
@@ -317,16 +317,15 @@ class ScheduleDataController extends Controller
         $resident = $current_resident[0]["id"];
 
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $split = explode("_", $id);
+        $schedule_data_ids[$i] = explode("_", $id);
 
         for ($i = 0; $i < 3; $i++) {
             $resident_data[$i] = [
                 "schedule" => null,
                 "attending" => null,
             ];
-            if ($split[$i] != 0) {
-                $choice = $i + 1;
-                $schedule_data[$i] = ScheduleData::where("id", $split[$i])->get();
+            if ($schedule_data_ids[$i]) {
+                $schedule_data[$i] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
                 $attending_string = $schedule_data[$i][0]["lead_surgeon"];
                 preg_match("/(.+) \[(\d+)\]/", $attending_string, $matches); // get name of the lead surgeon
                 $attending = $matches[1];
@@ -342,11 +341,10 @@ class ScheduleDataController extends Controller
             ->orderBy("last_name")
             ->get();
 
-        $resident_choices = $resident_data;
 
         return view(
             "schedules.resident.milestone",
-            compact("id", "milestones", "resident_choices", "anesthesiologists")
+            compact("id", "milestones", "resident_data", "anesthesiologists")
         );
     }
 
@@ -358,7 +356,7 @@ class ScheduleDataController extends Controller
         $current_resident = Resident::where("email", $_SERVER["HTTP_EMAIL"])->get();
         $resident = $current_resident[0]["id"];
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $split = explode("_", $id);
+        $schedule_data_ids[$i] = explode("_", $id);
         for ($i = 0; $i < 3; $i++) {
             $resident_data[$i] = [
                 "schedule" => null,
@@ -367,9 +365,9 @@ class ScheduleDataController extends Controller
                 "objective" => null,
                 "pref_anest" => null,
             ];
-            if ($split[$i]) {
+            if ($schedule_data_ids[$i]) {
                 $choice = $i + 1;
-                $schedule_data[$i] = ScheduleData::where("id", $split[$i])->get();
+                $schedule_data[$i] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
                 $attending_string = $schedule_data[$i][0]["lead_surgeon"];
                 preg_match("/(.+) \[(\d+)\]/", $attending_string, $matches); // get name of the lead surgeon
                 $attending = $matches[1];
@@ -398,11 +396,9 @@ class ScheduleDataController extends Controller
             ->orderBy("last_name")
             ->get();
 
-        $resident_choices = $resident_data;
-
         return view(
             "schedules.resident.milestone",
-            compact("id", "milestones", "resident_choices", "anesthesiologists")
+            compact("id", "milestones", "resident_data", "anesthesiologists")
         );
     }
 
@@ -433,22 +429,22 @@ class ScheduleDataController extends Controller
         $id = $_REQUEST["schedule_id"];
 
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $split = explode("_", $id);
+        $schedule_data_ids[$i] = explode("_", $id);
 
         // Get resident
         $resident_data = Resident::where("email", $_SERVER["HTTP_EMAIL"])->get();
         $resident = $resident_data[0]["id"];
         $residentName = $resident_data[0]["name"];
 
-        $schedule_data[0] = ScheduleData::where("id", $split[0])->get();
+        $schedule_data[0] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
         $attending_string = $schedule_data[0][0]["lead_surgeon"];
         $date = $schedule_data[0][0]["date"];
 
         for ($i = 0; $i < 3; $i++) {
             $choice = $i + 1;
-            if ($split[$i]) {
+            if ($schedule_data_ids[$i]) {
                 $pref_anest[$i] = null;
-                $schedule_data[$i] = ScheduleData::where("id", $split[$i])->get();
+                $schedule_data[$i] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
                 $attending_string = $schedule_data[$i][0]["lead_surgeon"];
                 $date = $schedule_data[$i][0]["date"];
                 preg_match("/(.+) \[(\d+)\]/", $attending_string, $matches); // get id of lead surgeon
@@ -472,7 +468,7 @@ class ScheduleDataController extends Controller
                         ->where("resident", $resident)
                         ->where("option", $choice)
                         ->update([
-                            "schedule" => $split[$i],
+                            "schedule" => $schedule_data_ids[$i],
                             "attending" => $attending,
                             "milestones" => $_REQUEST["milestones" . $choice],
                             "objectives" => $_REQUEST["objectives" . $choice],
@@ -485,7 +481,7 @@ class ScheduleDataController extends Controller
                         Option::insert([
                             "date" => $date,
                             "resident" => $resident,
-                            "schedule" => $split[$i],
+                            "schedule" => $schedule_data_ids[$i],
                             "attending" => $attending,
                             "option" => $choice,
                             "milestones" => $_REQUEST["milestones" . $choice],
