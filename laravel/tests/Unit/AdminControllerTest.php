@@ -16,7 +16,12 @@ class AdminControllerTest extends TestCase
     {
         $AC = new AdminController();
         $AC->getUpdateMilestone("add", "true", null, "FakeAbbreviation", "FakeFullName", "FakeDetail");
-        $this->assertDatabaseHas("milestone", ["detail" => "FakeDetail"]);
+        $this->assertDatabaseHas("milestone", [
+            "category" => "FakeAbbreviation",
+            "title" => "FakeFullName",
+            "detail" => "FakeDetail",
+            "exists" => "1",
+        ]);
     }
 
     public function testAdminDeleteMilestone()
@@ -33,7 +38,10 @@ class AdminControllerTest extends TestCase
     {
         $AC = new AdminController();
         $AC->getUpdateUsers("addUser", "Resident", "fakeRes@fak.com", "true", "FakeName");
-        $this->assertDatabaseHas("resident", ["email" => "fakeRes@fak.com"]);
+        $this->assertDatabaseHas("resident", [
+            "name" => "FakeName",
+            "email" => "fakeRes@fak.com"
+        ]);
     }
 
 }

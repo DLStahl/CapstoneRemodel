@@ -34,21 +34,13 @@ class ScheduleParserTest extends TestCase
         ];
         $parser = new ScheduleParser("20210320", true);
         foreach($expectedDataInserted as $expected){
-            if(is_null($expected[3])){
-                $this->assertDatabaseHas("schedule_data", [
-                    "date" => $expected[0],
-                    "location" => $expected[1],
-                    "room" => $expected[2],
-                ]);
-            }else{
-                $this->assertDatabaseHas("schedule_data", [
-                    "date" => $expected[0],
-                    "location" => $expected[1],
-                    "room" => $expected[2],
-                    "start_time" => $expected[3],
-                    "end_time" => $expected[4],
-                ]);
-            }
+            $this->assertDatabaseHas("schedule_data", [
+                "date" => $expected[0],
+                "location" => $expected[1],
+                "room" => $expected[2],
+                "start_time" => $expected[3],
+                "end_time" => $expected[4],
+            ]);
         }
     }
 }
