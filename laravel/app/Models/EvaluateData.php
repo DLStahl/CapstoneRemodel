@@ -14,22 +14,9 @@ class EvaluateData extends Model
     protected $table = "evaluation_data";
 
     /**
-     * Indicates if the model should be timestamped.
+     * The attributes that aren't mass assignable.
      *
-     * @var bool
+     * @var array
      */
-    public $timestamps = true;
-    
-    protected $fillable = [
-        "date", 
-        "location", 
-        "diagnosis", 
-        "procedure", 
-        "ASA", 
-        "resident_id", 
-        "resident", 
-        "attending_id", 
-        "attending", 
-        "time_with_attending"
-    ];
+    protected $guarded = ["id"];
 }
