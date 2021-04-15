@@ -159,7 +159,7 @@ class InitiateEval extends Command
                 // $evalSent++;
                 // do nothing
                 Log::info(
-                    'No valid serviceID found for Resident Name:' . $evaluateeName . ' Resident ID ' . $evaluateeID
+                    "No valid serviceID found for Resident Name: $evaluateeName. Resident ID: $evaluateeID."
                 );
             } else {
                 // grab the attending id
@@ -174,16 +174,7 @@ class InitiateEval extends Command
                         $evalSent++;
                     } catch (\Exception $e) {
                         Log::debug(
-                            'Error on Attending Eval Resident. Eval ID' .
-                                $evalID[$i] .
-                                ' Resident Name: ' .
-                                $evaluateeName .
-                                ' Resident ID ' .
-                                $evaluateeID .
-                                ' Attending ID ' .
-                                $evaluatorID .
-                                ' Service ID' .
-                                $evaluateeService
+                            "Error on Attending Eval Resident. Eval ID: $evalID[$i]. Resident Name: $evaluateeName. Resident ID: $evaluateeID. Attending ID: $evaluatorID. Service ID: $evaluateeService."
                         );
                     }
                     try {
@@ -191,14 +182,7 @@ class InitiateEval extends Command
                         $evalSent++;
                     } catch (\Exception $e) {
                         Log::debug(
-                            'Error on Resident Eval Attending. Eval ID' .
-                                $evalID[$i] .
-                                ' Attending ID: ' .
-                                $evaluatorID .
-                                '  Resident Name ' .
-                                $evaluateeName .
-                                ' Resident ID ' .
-                                $evaluateeID
+                            "Error on Resident Eval Attending. Eval ID: $evalID[$i]. Attending ID: $evaluatorID. Resident Name: $evaluateeName. Resident ID: $evaluateeID."
                         );
                     }
 
@@ -217,31 +201,13 @@ class InitiateEval extends Command
                             $evalSent++;
                         } catch (\Exception $e) {
                             Log::debug(
-                                'Error on Attending Eval Resident. Eval ID' .
-                                    $evalID[$i] .
-                                    ' Resident Name: ' .
-                                    $evaluateeName .
-                                    ' Resident ID ' .
-                                    $evaluateeID .
-                                    ' Attending ID ' .
-                                    $evaluatorID .
-                                    ' Service ID' .
-                                    $evaluateeService
+                                "Error on Attending Eval Resident. Eval ID: $evalID[$i]. Resident Name: $evaluateeName. Resident ID: $evaluateeID. Attending ID: $evaluatorID. Service ID: $evaluateeService."
                             );
                         }
                     }
                 } else {
                     Log::info(
-                        'Cannot initiate evaluations because no resident ID or no attending ID can be found. Eval ID' .
-                            $evalID[$i] .
-                            ' Resident Name: ' .
-                            $evaluateeName .
-                            ' Resident ID ' .
-                            $evaluateeID .
-                            ' Attending ID ' .
-                            $evaluatorID .
-                            ' Service ID ' .
-                            $evaluateeService
+                        "Cannot initiate evaluations because no resident ID or no attending ID can be found. Eval ID: $evalID[$i]. Resident Name: $evaluateeName. Resident ID: $evaluateeID. Attending ID: $evaluatorID. Service ID: $evaluateeService."
                     );
                 }
             }

@@ -165,49 +165,24 @@ class PagesController extends Controller
         }
 
         if ($schedule1 != null) {
-            $day_arr['first'] =
-                'First Choice: ' .
-                self::processSingleChoice($schedule1) .
-                "\n  Milestone: " .
-                $milestone1C .
-                ' - ' .
-                $milestone1D .
-                "\n  Objective: " .
-                $objective1 .
-                "\n Anesthesiologist Preference: " .
-                $pref_anest1;
+            $first_choice = self::processSingleChoice($schedule1);
+            $day_arr['first'] = "First Choice: $first_choice\nMilestone: $milestone1C - $milestone1D\nObjective: $objective1\nAnesthesiologist Preference: $pref_anest1";
             $day_arr['ids'] = $schedule1 . '_';
         } else {
             $day_arr['ids'] = '0_';
         }
+
         if ($schedule2 != null) {
-            $day_arr['second'] =
-                "\n \n Second Choice: " .
-                self::processSingleChoice($schedule2) .
-                "\n Milestone: " .
-                $milestone2C .
-                ' - ' .
-                $milestone2D .
-                " \n Objective: " .
-                $objective2 .
-                "\n Anesthesiologist Preference: " .
-                $pref_anest2;
+            $second_choice = self::processSingleChoice($schedule2);
+            $day_arr['second'] = "\n\nSecond Choice: $second_choice\nMilestone: $milestone2C - $milestone2D\nObjective: $objective2\nAnesthesiologist Preference: $pref_anest2";
             $day_arr['ids'] .= $schedule2 . '_';
         } else {
             $day_arr['ids'] .= '0_';
         }
+
         if ($schedule3 != null) {
-            $day_arr['third'] =
-                "\n \n Third Choice: " .
-                self::processSingleChoice($schedule3) .
-                "\n Milestone: " .
-                $milestone3C .
-                ' - ' .
-                $milestone3D .
-                "\n  Objective: " .
-                $objective3 .
-                "\n Anesthesiologist Preference: " .
-                $pref_anest3;
+            $third_choice = self::processSingleChoice($schedule3);
+            $day_arr['third'] = "\n\nThird Choice: $third_choice\nMilestone: $milestone3C - $milestone3D\nObjective: $objective3\nAnesthesiologist Preference: $pref_anest3";
             $day_arr['ids'] .= $schedule3 . '_';
         } else {
             $day_arr['ids'] .= '0_';
@@ -258,14 +233,9 @@ class PagesController extends Controller
             $milestoneC = Milestone::where('id', $milestone)->value('category');
             $milestoneD = Milestone::where('id', $milestone)->value('detail');
             $objective = $option->value('objectives');
-            $firstday =
-                self::processSingleChoice($firstday_schedule_id) .
-                "\n  Milestone: " .
-                $milestoneC .
-                ' - ' .
-                $milestoneD .
-                "\n  Objective: " .
-                $objective;
+
+            $choice = self::processSingleChoice($firstday_schedule_id);
+            $firstday = "$choice\nMilestone: $milestoneC - $milestoneD\nObjective: $objective";
         }
 
         $date = self::calculateSecond();
