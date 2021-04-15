@@ -43,5 +43,4 @@ class AdminControllerTest extends TestCase
             "email" => "fakeRes@fak.com"
         ]);
     }
-
 }

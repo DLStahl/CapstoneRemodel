@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 class MedhubControllerTest extends TestCase
 {
     use DatabaseTransactions;
-    
+
     public function testMedHubAPIConnection()
     {
         $MHC = new MedhubController();

@@ -12,7 +12,7 @@ use App\Models\Milestone;
 use App\Models\Resident;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
- 
+
 class AutoAssignmentTest extends TestCase
 {
     use DatabaseTransactions;
@@ -33,24 +33,24 @@ class AutoAssignmentTest extends TestCase
     private $residentD;
     private $milestone_id;
 
-    public function setUp ():void 
+    public function setUp(): void
     {
         parent::setUp();
         $rooms = ["CCCT 10", "CCCT 14", "CCCT 11", "EP 05", "UH 19", "UH 2", "UH 16", "CCCT 19 Leasing UH7"];
-        foreach ($rooms as $room){
-            $this->{str_replace(" ", "",$room)} = ScheduleData::insertGetId([
+        foreach ($rooms as $room) {
+            $this->{str_replace(" ", "", $room)} = ScheduleData::insertGetId([
                 "date" => self::$date,
                 "room" => $room,
             ]);
         }
         $residents = ["resident A", "resident B", "resident C", "resident D"];
-        foreach($residents as $resident){
-            $this->{str_replace(" ", "",$resident)} = Resident::insertGetId([
+        foreach ($residents as $resident) {
+            $this->{str_replace(" ", "", $resident)} = Resident::insertGetId([
                 "name" => $resident,
                 "email" => $resident . "@email",
             ]);
             Probability::insert([
-                "resident_id" => $this->{str_replace(" ", "",$resident)},
+                "resident_id" => $this->{str_replace(" ", "", $resident)},
                 "total" => 0,
             ]);
         }
@@ -68,7 +68,7 @@ class AutoAssignmentTest extends TestCase
                 "option" => $optionDataArray[2],
                 "isValid" => 1,
                 "anesthesiologist_id" => $optionDataArray[3],
-                "milestone_id" => $optionDataArray[4]
+                "milestone_id" => $optionDataArray[4],
             ]);
         }
     }
@@ -226,13 +226,10 @@ class AutoAssignmentTest extends TestCase
     public function testAnestAssignedOnce()
     {
         $options = [
-            [$this->residentA, $this->EP05, 1, 1, $this->milestone_id], 
-            [$this->residentB, $this->CCCT14, 1, 1, $this->milestone_id]
+            [$this->residentA, $this->EP05, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 1, 1, $this->milestone_id],
         ];
-        $expectedAssignments = [
-            [$this->residentA, $this->EP05, 1],
-            [$this->residentB, $this->CCCT14, null],
-        ];
+        $expectedAssignments = [[$this->residentA, $this->EP05, 1], [$this->residentB, $this->CCCT14, null]];
         $expectedProbTotals = [[$this->residentA, 0], [$this->residentB, 1]];
 
         self::addOptionsToDatabase($options);
@@ -272,8 +269,12 @@ class AutoAssignmentTest extends TestCase
 
         $this->autoAssignment->assignment(self::$date);
 
-        $this->assertTrue(self::correctAssignments($expectedAssignments1) || self::correctAssignments($expectedAssignments2));
-        $this->assertTrue(self::correctProbTotals($expectedProbTotals1) || self::correctProbTotals($expectedProbTotals2));
+        $this->assertTrue(
+            self::correctAssignments($expectedAssignments1) || self::correctAssignments($expectedAssignments2)
+        );
+        $this->assertTrue(
+            self::correctProbTotals($expectedProbTotals1) || self::correctProbTotals($expectedProbTotals2)
+        );
     }
 
     public function testAnestDoubleAssignedUH()
@@ -303,8 +304,12 @@ class AutoAssignmentTest extends TestCase
 
         $this->autoAssignment->assignment(self::$date);
 
-        $this->assertTrue(self::correctAssignments($expectedAssignments1) || self::correctAssignments($expectedAssignments2));
-        $this->assertTrue(self::correctProbTotals($expectedProbTotals1) || self::correctProbTotals($expectedProbTotals2));
+        $this->assertTrue(
+            self::correctAssignments($expectedAssignments1) || self::correctAssignments($expectedAssignments2)
+        );
+        $this->assertTrue(
+            self::correctProbTotals($expectedProbTotals1) || self::correctProbTotals($expectedProbTotals2)
+        );
     }
 
     public function testAnestDoubleAssignedCCCTLeasingUHGivenCCCTAssignment()
@@ -413,5 +418,4 @@ class AutoAssignmentTest extends TestCase
         $this->assertTrue(self::correctAssignments($expectedAssignments));
         $this->assertTrue(self::correctProbTotals($expectedProbTotals));
     }
-    
 }
