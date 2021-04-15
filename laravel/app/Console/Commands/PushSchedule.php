@@ -152,10 +152,9 @@ class PushSchedule extends Command
                 ],
             ],
         ]);
-        $service->spreadsheets->batchUpdate('1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY', $newSheet);
+        $service->spreadsheets->batchUpdate($spreadsheetId, $newSheet);
 
         // setup today's sheet to be ready to be added to
-        $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
         $title = "\'" . $title . "\'!";
 
         $date = date('Y-m-d', strtotime('+1 day'));
@@ -251,7 +250,7 @@ class PushSchedule extends Command
                     ],
                 ],
             ]);
-            $service->spreadsheets->batchUpdate('1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY', $delete);
+            $service->spreadsheets->batchUpdate($spreadsheetId, $delete);
         }
     }
 }
