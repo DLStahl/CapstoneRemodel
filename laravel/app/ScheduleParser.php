@@ -30,10 +30,7 @@ class ScheduleParser
      */
     private static function getLineDate($line)
     {
-        $month = intval(substr($line[Constant::DATE], 0, 2));
-        $day = intval(substr($line[Constant::DATE], 3, 2));
-        $year = intval(substr($line[Constant::DATE], 6));
-        return $year . "-" . $month . "-" . $day;
+        return date("Y-m-d", strtotime($line[Constant::DATE]));
     }
 
     /**
@@ -46,13 +43,20 @@ class ScheduleParser
      */
     private static function getLineTime($line, $index)
     {
+        $time = "00:00:00";
+        $length = strlen($line[$index]);
         if (strcmp($line[$index], "") == 0) {
-            return null;
+            $time = null;
+        } elseif ($length == 4) {
+            $time = substr($line[$index], 0, 2) . ":" . substr($line[$index], 2) . ":00";
+        } elseif ($length == 3) {
+            $time = "0" . $line[$index][0] . ":" . substr($line[$index], 1) . ":00";
+        } elseif ($length == 2) {
+            $time = substr($line[$index], 0, 2) . ":00:00";
+        } else {
+            $time = "0" . $line[$index][0] . ":00:00";
         }
-        $hourInt = intval(substr($line[$index], 0, 2));
-        $minuteInt = intval(substr($line[$index], 2));
-
-        return $hourInt . ":" . $minuteInt . ":00";
+        return $time;
     }
 
     // Identify rotation based on surgeon
