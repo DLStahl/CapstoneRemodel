@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\Http\Controllers\AdminController;
 use App\Models\Milestone;
-use App\Models\Resident;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class AdminControllerTest extends TestCase
