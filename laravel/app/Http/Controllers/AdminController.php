@@ -82,8 +82,6 @@ class AdminController extends Controller
             $name = 'null';
         }
 
-        str_replace('%20', ' ', $name);
-
         $data = [
             'op' => $op,
             'role' => $role,
@@ -316,10 +314,6 @@ class AdminController extends Controller
             $old_full_name = $milestone->value('title');
             $old_detail = $milestone->value('detail');
         }
-
-        str_replace('%20', ' ', $abbr_name);
-        str_replace('%20', ' ', $full_name);
-        str_replace('%20', ' ', $detail);
 
         $data = [
             'op' => $op,
