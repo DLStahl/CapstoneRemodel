@@ -74,11 +74,11 @@ class PushSchedule extends Command
             $objectives = Option::where('id', $option_id)->value('objectives');
             $pref_anest_id = $assignment['anesthesiologist_id'];
             if ($pref_anest_id != null) {
-                $pref_anest_name =
-                    Anesthesiologist::where('id', $pref_anest_id)->value('first_name') .
-                    ' ' .
-                    Anesthesiologist::where('id', $pref_anest_id)->value('last_name');
-                $pref_anest_staff_key = Anesthesiologist::where('id', $pref_anest_id)->value('staff_key');
+                $anest = Anesthesiologist::where('id', $pref_anest_id);
+                $fname = $anest->value('first_name');
+                $lname = $anest->value('last_name');
+                $pref_anest_name = "$fname $lname";
+                $pref_anest_staff_key = $anest->value('staff_key');
             } else {
                 $pref_anest_name = 'No anesthesiologist assignment';
                 $pref_anest_staff_key = null;
