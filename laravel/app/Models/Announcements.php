@@ -11,7 +11,7 @@ class Announcements extends Model
      *
      * @var string
      */
-    protected $table = "announcements";
+    protected $table = 'announcements';
 
     /**
      * Indicates if the model should be timestamped.

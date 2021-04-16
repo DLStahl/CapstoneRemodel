@@ -13,12 +13,12 @@ class CreateStatusTable extends Migration
      */
     public function up()
     {
-        Schema::create("status", function (Blueprint $table) {
-            $table->increments("id");
-            $table->date("date");
-            $table->boolean("schedule")->default(0);
-            $table->boolean("assignment")->default(0);
-            $table->boolean("google")->default(0);
+        Schema::create('status', function (Blueprint $table) {
+            $table->increments('id');
+            $table->date('date');
+            $table->boolean('schedule')->default(0);
+            $table->boolean('assignment')->default(0);
+            $table->boolean('google')->default(0);
         });
     }
 
@@ -29,6 +29,6 @@ class CreateStatusTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists("status");
+        Schema::dropIfExists('status');
     }
 }

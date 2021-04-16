@@ -13,10 +13,10 @@ class CreateFilterRotationTable extends Migration
      */
     public function up()
     {
-        Schema::create("filter_rotation", function (Blueprint $table) {
-            $table->increments("id");
-            $table->text("surgeon");
-            $table->text("rotation");
+        Schema::create('filter_rotation', function (Blueprint $table) {
+            $table->increments('id');
+            $table->text('surgeon');
+            $table->text('rotation');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateFilterRotationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists("filter_rotation");
+        Schema::dropIfExists('filter_rotation');
     }
 }

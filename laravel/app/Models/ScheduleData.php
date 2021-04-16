@@ -11,7 +11,7 @@ class ScheduleData extends Model
      *
      * @var string
      */
-    protected $table = "schedule_data";
+    protected $table = 'schedule_data';
 
     /**
      * Indicates if the model should be timestamped.

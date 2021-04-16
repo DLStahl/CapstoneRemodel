@@ -6,17 +6,17 @@ class ResidentController extends Controller
 {
     public function getIndex()
     {
-        return view("schedules.resident.resident");
+        return view('schedules.resident.resident');
     }
 
     public function getInstructions()
     {
-        return view("schedules.resident.instructions");
+        return view('schedules.resident.instructions');
     }
 
     public function getSchedule()
     {
-        return view("schedules.resident.schedule");
+        return view('schedules.resident.schedule');
     }
 
     /**
@@ -24,6 +24,6 @@ class ResidentController extends Controller
      */
     public function getMessages()
     {
-        return view("schedules.resident.messages");
+        return view('schedules.resident.messages');
     }
 }

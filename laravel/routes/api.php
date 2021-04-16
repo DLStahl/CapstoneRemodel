@@ -16,7 +16,7 @@ use App\Http\Controllers\admin\DBEditorController;
 |
 */
 
-Route::middleware("auth:api")->get("/user", function (Request $request) {
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 

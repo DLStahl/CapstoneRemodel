@@ -27,7 +27,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middlewareGroups = [
-        "web" => [
+        'web' => [
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
@@ -37,7 +37,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
-        "api" => ["throttle:60,1", "bindings"],
+        'api' => ['throttle:60,1', 'bindings'],
     ];
 
     /**
@@ -48,14 +48,14 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        "auth" => \Illuminate\Auth\Middleware\Authenticate::class,
-        "auth.basic" => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        "bindings" => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        "cache.headers" => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-        "can" => \Illuminate\Auth\Middleware\Authorize::class,
-        "guest" => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        "signed" => \Illuminate\Routing\Middleware\ValidateSignature::class,
-        "throttle" => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 
         // user defined middlewares
         "resident" => \App\Http\Middleware\CheckResident::class,

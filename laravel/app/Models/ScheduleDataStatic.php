@@ -11,7 +11,7 @@ class ScheduleDataStatic extends Model
      *
      * @var string
      */
-    protected $table = "schedule_data_static";
+    protected $table = 'schedule_data_static';
 
     /**
      * Indicates if the model should be timestamped.

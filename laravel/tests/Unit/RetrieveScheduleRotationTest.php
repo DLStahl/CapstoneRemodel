@@ -16,8 +16,8 @@ class RetrieveScheduleRotationTest extends TestCase
     {
         $MHC = new MedhubController();
         $testPOST = json_decode($MHC->testPOST()->getBody(), true);
-        $response = $testPOST["response"];
-        $this->assertTrue($response == "success");
+        $response = $testPOST['response'];
+        $this->assertTrue($response == 'success');
     }
 
     /**

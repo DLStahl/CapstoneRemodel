@@ -15,10 +15,10 @@ class StaticOptionsController extends Controller
 
         $columns = $table->getTableColumns();
 
-        $data = ScheduleDataStatic::select("*")->get();
+        $data = ScheduleDataStatic::select('*')->get();
 
         $primaryKeyField = $table->getKeyName();
 
-        return view("crud.databasetable", compact("columns", "data", "primaryKeyField"));
+        return view('crud.databasetable', compact('columns', 'data', 'primaryKeyField'));
     }
 }

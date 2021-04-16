@@ -13,14 +13,14 @@ class AddAnesthesiologistIdToAssignmentTable extends Migration
      */
     public function up()
     {
-        Schema::table("assignment", function (Blueprint $table) {
-            $table->unsignedInteger("anesthesiologist_id")->nullable();
+        Schema::table('assignment', function (Blueprint $table) {
+            $table->unsignedInteger('anesthesiologist_id')->nullable();
 
             $table
-                ->foreign("anesthesiologist_id")
-                ->references("id")
-                ->on("anesthesiologists")
-                ->onDelete("cascade");
+                ->foreign('anesthesiologist_id')
+                ->references('id')
+                ->on('anesthesiologists')
+                ->onDelete('cascade');
         });
     }
 
@@ -31,9 +31,9 @@ class AddAnesthesiologistIdToAssignmentTable extends Migration
      */
     public function down()
     {
-        Schema::table("assignment", function (Blueprint $table) {
-            $table->dropForeign("assignment_anesthesiologist_id_foreign");
-            $table->dropColumn("anesthesiologist_id");
+        Schema::table('assignment', function (Blueprint $table) {
+            $table->dropForeign('assignment_anesthesiologist_id_foreign');
+            $table->dropColumn('anesthesiologist_id');
         });
     }
 }
