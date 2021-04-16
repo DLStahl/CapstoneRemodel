@@ -370,21 +370,21 @@ class EvaluationParser
         try {
             $peopleFound = json_decode(self::findPeopleOSU($firstName, $lastName)->getBody(), true);
         } catch (\Exception $e) {
-            Log::debug('Exception: Error in Find People OSU request for name (' . $name . '). Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
+            Log::debug("Exception: Error in Find People OSU request for name ($name) Exception code:" . $e->getCode() . " Exception Message: " . $e->getMessage());
         }
         if (sizeof($peopleFound) == 0) {
-            $emailMessage = 'No matches for ' . $userType . ' ' . $name . ' were found by OSU Find People. The ' . $userType . ' may be using a preffered name at OSU. Please check the information and add user to database manually.';
+            $emailMessage = "No matches for $userType $name were found by OSU Find People. The $userType may be using a preffered name at OSU. Please check the information and add user to database manually.";
         } else if (sizeof($peopleFound) == 1) {
             $osuEmail = $peopleFound[0]['email'];
             // check if person has Anesthesiology as part of their organization field
             if (sizeof($peopleFound[0]['appointments']) > 0 && strpos($peopleFound[0]['appointments'][0]['organization'], 'Anesthesiology') !== false) {
                 $participantFound = true;
-                $emailMessage = $userType . ' ' . $name . ' was found by OSU Find People with email address (' . $osuEmail . ').';
+                $emailMessage = "$userType $name was found by OSU Find People with email address ($osuEmail ).";
             } else {
-                $emailMessage = $userType . ' ' . $name . ' with email (' . $osuEmail . ') was found by OSU Find People but is not an Anesthesiology ' . $userType . '. Please check the information and add user to database manually.';
+                $emailMessage = "$userType $name with email ($osuEmail) was found by OSU Find People but is not an Anesthesiology $userType. Please check the information and add user to database manually.";
             }
         } else {
-            $emailMessage = 'Multiple matches for ' . $userType . ' ' . $name . ' were found by OSU Find People. Please check the information and add user to database manually. ';
+            $emailMessage = "Multiple matches for $userType $name were found by OSU Find People. Please check the information and add user to database manually.";
         }
         return [
             'found' => $participantFound,
@@ -470,7 +470,7 @@ class EvaluationParser
     // returns the data array to be used in the email for a given failed resident/attending
     public function getMailData($userType, $userName, $body)
     {
-        $heading = $userType . ' ' . $userName . ' needs to be added.';
+        $heading = "$userType $userName needs to be added.";
         return compact('heading', 'body');
     }
 

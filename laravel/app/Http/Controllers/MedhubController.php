@@ -73,23 +73,23 @@ class MedhubController extends Controller
             try {
                 $medhubMatches = json_decode(self::medhubPOST('users/facultySearch', json_encode(array('name' => $name)))->getBody(), true);
             } catch (\Exception $e) {
-                Log::debug('Exception: Error in Medhub request users/facultySearch for name (' . $name . '). Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
+                Log::debug("Exception: Error in Medhub request users/facultySearch for name ($name) Exception code: " . $e->getCode() . ' Exception Message: ' . $e->getMessage());
             }
         } else {
             try {
                 $medhubMatches = json_decode(self::medhubPOST('users/residentSearch', json_encode(array('name' => $name)))->getBody(), true);
             } catch (\Exception $e) {
-                Log::debug('Exception: Error in Medhub request users/residentSearch for name (' . $name . '). Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
+                Log::debug("Exception: Error in Medhub request users/residentSearch for name ($name)Exception code: " . $e->getCode() . ' Exception Message: ' . $e->getMessage());
             }
         }
         $emailMessage = '';
         if (sizeof($medhubMatches) == 1) {
             $medhubId = $medhubMatches[0]['userID'];
-            $emailMessage .=  $userType . ' ' . $name . ' with MedHubID ' . $medhubId . ' was found on MedHub. ';
+            $emailMessage .=  "$userType $name with MedHubID $medhubId was found on MedHub.";
         } elseif (sizeof($medhubMatches) == 0) {
-            $emailMessage .= 'No matches for ' . $userType . ' ' . $name . ' were found on MedHub. ';
+            $emailMessage .= "No matches for $userType $name were found on MedHub.";
         } else {
-            $emailMessage .= 'Multiple matches for ' . $userType . ' ' . $name . ' were found on MedHub. ';
+            $emailMessage .= "Multiple matches for $userType $name were found on MedHub.";
         }
         return [
             'medhubId' => $medhubId,

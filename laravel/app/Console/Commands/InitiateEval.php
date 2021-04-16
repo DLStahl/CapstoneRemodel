@@ -116,7 +116,7 @@ class InitiateEval extends Command
                 $evalsSent++;
             }
         } catch (\Exception $e) {
-            Log::debug('Failed to send evaluation: Attending Evaluating Resident. Resident: ' . $residentName . 'Resident ID: ' . $residentID . ' Attending: ' . $attendingName . ' Attending ID ' . $attendingID . ' Medhub Form ID: ' . $medhubFormId);
+            Log::debug("Failed to send evaluation: Attending Evaluating Resident. Resident: $residentName Resident ID: $residentID Attending: $attendingName Attending ID: $attendingID Medhub Form ID: $medhubFormId");
             Log::debug('Associated Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
         }
         // send resident an evaluation for an attending
@@ -126,7 +126,7 @@ class InitiateEval extends Command
                 $evalsSent++;
             }
         } catch (\Exception $e) {
-            Log::debug('Failed to send evaluation: Resident Evaluating Resident. Attending name: ' . $attendingName . ' Attending ID: ' . $attendingID . '  Resident Name ' . $residentName . ' Resident ID ' . $residentID);
+            Log::debug("Failed to send evaluation: Resident Evaluating Resident. Attending name: $attendingName Attending ID: $attendingID Resident Name: $residentName Resident ID: $residentID");
             Log::debug('Associated Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
         }
 
@@ -141,7 +141,7 @@ class InitiateEval extends Command
                     $evalsSent++;
                 }
             } catch (\Exception $e) {
-                Log::debug('Failed to send evaluation: REMODEL Evaluation.  Resident Name: ' . $residentName . ' Resident ID: ' . $residentID . ' Attending Name: ' . $attendingName . ' Attending ID: ' . $attendingID . ' Medhub form ID: ' . $medhubFormId);
+                Log::debug("Failed to send evaluation: REMODEL Evaluation. Resident Name: $residentName Resident ID: $residentID  Attending Name: $attendingName Attending ID: $attendingID Medhub form ID: $medhubFormId");
                 Log::debug('Associated Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
             }
         }
@@ -152,7 +152,7 @@ class InitiateEval extends Command
     public function initiateEvaluations()
     {
         $yesterday = date('Y-m-d', strtotime('yesterday'));
-        Log::info('initiate evaluations for ' . $yesterday . ' evaluation data');
+        Log::info("initiate evaluations for $yesterday evaluation data");
 
         $alwaysEvalServices = ['1', '2', '21', '23']; // hardcoded for now - needs to be changed when db updated
         $totalEvalsSent = 0;
@@ -179,7 +179,7 @@ class InitiateEval extends Command
             }
             
         }
-        Log::debug('Total Number of Evaluations Succesfully sent: ' . $totalEvalsSent);
+        Log::debug("Total Number of Evaluations Succesfully sent: $totalEvalsSent");
     }
 
     // return Resident and Attending pairs with total time worked together for a given date in the evaluation_data table
@@ -188,22 +188,22 @@ class InitiateEval extends Command
         $residentAndAttendingData = [];
         //get residents that have evaluation data in DB on day
         $residents = EvaluateData::where('date', $date)->pluck('rId', 'resident')->unique();
-        Log::info('Residents in Evaluation Data with date ' . $date . ':  ' . $residents);
+        Log::info("Residents in Evaluation Data with date $date: $residents");
         // for each resident get their active rotation service and create pairs of residents and attendings that worked together
         foreach ($residents as $residentName => $residentID) {
             //get Resident's active rotation service
             $activeService = 0;
             $activeRotation = Rotations::where('name', $residentName)->where('Start', '<=', $date)->where('End', '>=', $date)->first();
             if (is_null($activeRotation)) {
-                Log::info('Could not find an active rotation for Resident ' . $residentName . ' ID: ' . $residentID);
+                Log::info("Could not find an active rotation for Resident $residentName ID: $residentID");
             } else {
                 $activeService = $activeRotation['Service'];
             }
-            Log::info('Resident ' . $residentName . ' has active service id ' . $activeService);
+            Log::info("Resident $residentName has active service id $activeService");
             $attendings = EvaluateData::where('date', $date)->where('rId', $residentID)->pluck('aId', 'attending')->unique();
             foreach ($attendings as $attendingName => $attendingID) {
                 $overallTime = EvaluateData::where('date', $date)->where('rId', $residentID)->where('aId', $attendingID)->sum('diff');
-                Log::info('Resident: ' . $residentName . '(' . $residentID . ') Attending: ' . $attendingName . '(' . $attendingID . ') Total Time Together: ' . $overallTime);
+                Log::info("Resident:  $residentName ($residentID) Attending: $attendingName ($attendingID) Total Time Together: $overallTime");
                 $residentAndAttendingEvalData = [
                     'residentName' => $residentName,
                     'residentID' => $residentID,

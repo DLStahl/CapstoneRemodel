@@ -547,9 +547,9 @@ class ScheduleDataController extends Controller
             $choice = $choice . ' 3';
         }
         $subject = config('app.env') == 'production' ? '' : '(' .config('app.env') . ') ';
-        $subject .= 'REMODEL: Resident Preference ' . $choice . ' Overwritten for ' . $date;
-        $body = 'Resident $residentName has overwritten OR preferences  ' . $choice . ' for ' . $date . '. New preferences are now viewable on REMODEL website.';
-        $heading = 'Resident $residentName has overwritten OR preference ' . $choice;
+        $subject .= "REMODEL: Resident Preference  $choice Overwritten for $date";
+        $body = "Resident $residentName has overwritten OR preferences $choice for $date. New preferences are now viewable on REMODEL website.";
+        $heading = "Resident $residentName has overwritten OR preference $choice";
         $data = ['name' => $toName, 'heading' => $heading, 'body' => $body];
 
         Mail::send('emails.mail', $data, function ($message) use ($toName, $toEmail, $subject) {

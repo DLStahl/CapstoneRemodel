@@ -183,9 +183,9 @@ class ScheduleParser
     {
         Log::info('send email for schedule parser '. $date);
         $subject = config('app.env') == 'production' ? '' : '(' .config('app.env') . ') ';
-        $subject .= 'REMODEL: Please select new preferences for date ' . $date;
-        $body = 'Your previous preferences for date  $date were deleted because the schedule is updated. Please select new preferences on REMODEL website.'; 
-        $heading = 'Please select new preferences for date ' . $date;
+        $subject .= "REMODEL: Please select new preferences for date  $date";
+        $body = "Your previous preferences for date  $date were deleted because the schedule is updated. Please select new preferences on REMODEL website."; 
+        $heading = "Please select new preferences for date $date";
         $data = ['name' => $toName, 'heading' => $heading, 'body' => $body];
 
         Mail::send('emails.mail', $data, function ($message) use ($toName, $toEmail, $subject) {
