@@ -8,17 +8,17 @@ use App\Models\Resident;
 use App\Models\ScheduleData;
 use App\Models\Milestone;
 use App\Models\Anesthesiologist;
+
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+
 use Google_Client;
 use Google_Service_Sheets;
 use Google_Service_Sheets_ValueRange;
 use Google_Service_Sheets_BatchUpdateSpreadsheetRequest;
 
+// require Google's API
 require __DIR__ . '/../../../../google/vendor/autoload.php';
-/**
- * Returns an authorized API client.
- * @return Google_Client the authorized client object
- */
 
 class PushSchedule extends Command
 {
@@ -46,10 +46,10 @@ class PushSchedule extends Command
         parent::__construct();
     }
 
-    /*Takes the date of the assignments as a parameter.
-    Returns a nested array with all array elements being data
-    from that day's assignments to be printed to the Google Sheet
-	*/
+    /**
+     * @param string the date of the assignments
+     * @return Array daily assignments to be output to the Google Sheet
+     */
     public static function updateAssignments($date)
     {
         $all_assignments = [];
@@ -134,6 +134,8 @@ class PushSchedule extends Command
      */
     public function handle()
     {
+        Log::info('Begin PushSchedule');
+
         // connect to the api and our sheet
         $client = self::getClient();
         $service = new Google_Service_Sheets($client);
@@ -153,10 +155,9 @@ class PushSchedule extends Command
             ],
         ]);
         $service->spreadsheets->batchUpdate($spreadsheetId, $newSheet);
+        Log::info("Created sheet: $title");
 
         // setup today's sheet to be ready to be added to
-        $title = "\'" . $title . "\'!";
-
         $date = date('Y-m-d', strtotime('+1 day'));
 
         //Relative path for assignment sheet
@@ -191,29 +192,9 @@ class PushSchedule extends Command
 
         fclose($fp);
 
-        $column_name = '';
-
-        $count = count($all_assns) > 0 ? count($all_assns[0]) : 0;
-
-        //Algorithm link https://www.geeksforgeeks.org/find-excel-column-name-given-number/
-        while ($count > 0) {
-            $rem = $count % 26;
-            if ($rem == 0) {
-                $column_name .= 'Z';
-                $count = $count / 26 - 1;
-            } else {
-                $column_name .= chr($rem + ord('A')); // starts at A and counts up the alphabet from there
-                $count = $count / 26;
-                if ($count < 1) {
-                    $count = 0;
-                }
-            }
-        }
-
-        $column_name = strrev($column_name);
-        $row_number = count($all_assns) + 1;
-
-        $range = $title . 'A1:' . $column_name . $row_number;
+        // Request a VERY LARGE range of data.
+        // Realistically, REMODEL should never need more than this.
+        $range = "'$title'!A1:ZZZ1000";
 
         // get the values from the assignment file and save them to an array
         $path = '../downloads/assignment' . $date . '.csv';
@@ -232,6 +213,8 @@ class PushSchedule extends Command
         $params = [
             'valueInputOption' => 'USER_ENTERED',
         ];
+
+        Log::info('uploading spreadsheet');
         $result = $service->spreadsheets_values->update($spreadsheetId, $range, $body, $params);
 
         $response = $service->spreadsheets->get($spreadsheetId);
