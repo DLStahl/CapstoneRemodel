@@ -317,7 +317,7 @@ class ScheduleDataController extends Controller
         $resident = $current_resident[0]["id"];
 
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $schedule_data_ids[$i] = explode("_", $id);
+        $schedule_data_ids = explode("_", $id);
 
         for ($i = 0; $i < 3; $i++) {
             $resident_data[$i] = [
@@ -328,7 +328,11 @@ class ScheduleDataController extends Controller
                 $schedule_data[$i] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
                 $attending_string = $schedule_data[$i][0]["lead_surgeon"];
                 preg_match("/(.+) \[(\d+)\]/", $attending_string, $matches); // get name of the lead surgeon
-                $attending = $matches[1];
+                if (count($matches) > 1){
+                    $attending = $matches[1];
+                } else{
+                    $attending = "OORA";
+                }
                 $date = $schedule_data[$i][0]["date"];
                 $resident_data[$i]["schedule"] = $schedule_data[$i][0];
                 $resident_data[$i]["attending"] = $attending;
@@ -356,7 +360,7 @@ class ScheduleDataController extends Controller
         $current_resident = Resident::where("email", $_SERVER["HTTP_EMAIL"])->get();
         $resident = $current_resident[0]["id"];
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $schedule_data_ids[$i] = explode("_", $id);
+        $schedule_data_ids = explode("_", $id);
         for ($i = 0; $i < 3; $i++) {
             $resident_data[$i] = [
                 "schedule" => null,
@@ -370,7 +374,11 @@ class ScheduleDataController extends Controller
                 $schedule_data[$i] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
                 $attending_string = $schedule_data[$i][0]["lead_surgeon"];
                 preg_match("/(.+) \[(\d+)\]/", $attending_string, $matches); // get name of the lead surgeon
-                $attending = $matches[1];
+                if (count($matches) > 1){
+                    $attending = $matches[1];
+                } else{
+                    $attending = "OORA";
+                }
                 $date = $schedule_data[$i][0]["date"];
                 $resident_data[$i]["schedule"] = $schedule_data[$i][0];
                 $resident_data[$i]["attending"] = $attending;
@@ -429,14 +437,14 @@ class ScheduleDataController extends Controller
         $id = $_REQUEST["schedule_id"];
 
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $schedule_data_ids[$i] = explode("_", $id);
+        $schedule_data_ids = explode("_", $id);
 
         // Get resident
         $resident_data = Resident::where("email", $_SERVER["HTTP_EMAIL"])->get();
         $resident = $resident_data[0]["id"];
         $residentName = $resident_data[0]["name"];
 
-        $schedule_data[0] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
+        $schedule_data[0] = ScheduleData::where("id", $schedule_data_ids[0])->get();
         $attending_string = $schedule_data[0][0]["lead_surgeon"];
         $date = $schedule_data[0][0]["date"];
 
