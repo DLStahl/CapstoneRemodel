@@ -158,9 +158,7 @@ class InitiateEval extends Command
             if ($evaluateeService == 0) {
                 // $evalSent++;
                 // do nothing
-                Log::info(
-                    "No valid serviceID found for Resident Name: $evaluateeName. Resident ID: $evaluateeID."
-                );
+                Log::info("No valid serviceID found for Resident Name: $evaluateeName. Resident ID: $evaluateeID.");
             } else {
                 // grab the attending id
                 $evaluatorID = $attendingId[$i];

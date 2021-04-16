@@ -41,10 +41,10 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
     Route::get('acknowledgements', [PagesController::class, 'getAcknowledgements']);
     Route::get('schedule', [ResidentController::class, 'getSchedule']);
     Route::get('schedule/{day}', [ScheduleDataController::class, 'getDay']);
-    Route::get(
-        'schedule/{day}/filter/{room}/{leadSurgeon}/{rotation}/{starttime_endtime}',
-        [ScheduleDataController::class, 'getDay']
-    );
+    Route::get('schedule/{day}/filter/{room}/{leadSurgeon}/{rotation}/{starttime_endtime}', [
+        ScheduleDataController::class,
+        'getDay',
+    ]);
     Route::post('schedule/confirm', [ScheduleDataController::class, 'getChoice']);
     Route::get('schedule/milestones/{id}', [ScheduleDataController::class, 'selectMilestones']);
     Route::get('schedule/milestonesEdit/{id}', [ScheduleDataController::class, 'updateMilestones']);
@@ -71,14 +71,14 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('milestones', [AdminController::class, 'getMilestones']);
     Route::post('milestones/uploadConfirm', [AdminController::class, 'getUploadedMilestones']);
     Route::post('milestones/uploadUpdate', [AdminController::class, 'uploadMilestones']);
-    Route::post(
-        'milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}',
-        [AdminController::class, 'getUpdateMilestone']
-    );
-    Route::get(
-        'milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}',
-        [AdminController::class, 'getUpdateMilestone']
-    );
+    Route::post('milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}', [
+        AdminController::class,
+        'getUpdateMilestone',
+    ]);
+    Route::get('milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}', [
+        AdminController::class,
+        'getUpdateMilestone',
+    ]);
     Route::get('db/{table}', [DBEditorController::class, 'viewPage']);
     Route::get('schedules', [AdminController::class, 'getSchedules']);
     Route::post('updateDB', [AdminController::class, 'postUpdateDB']);

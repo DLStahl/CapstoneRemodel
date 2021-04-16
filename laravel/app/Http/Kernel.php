@@ -58,7 +58,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 
         // user defined middlewares
-        "resident" => \App\Http\Middleware\CheckResident::class,
-        "admin" => \App\Http\Middleware\CheckAdmin::class,
+        'resident' => \App\Http\Middleware\CheckResident::class,
+        'admin' => \App\Http\Middleware\CheckAdmin::class,
     ];
 }

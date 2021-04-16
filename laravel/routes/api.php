@@ -21,8 +21,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 // admin api
-Route::group(["prefix" => "admin", "middleware" => "admin"], function () {
-    Route::delete("db/delete", [DBEditorController::class, "api_delete"]);
-    Route::put("/db/update", [DBEditorController::class, "api_update"]);
-    Route::post("/db/add", [DBEditorController::class, "api_add"]);
+Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
+    Route::delete('db/delete', [DBEditorController::class, 'api_delete']);
+    Route::put('/db/update', [DBEditorController::class, 'api_update']);
+    Route::post('/db/add', [DBEditorController::class, 'api_add']);
 });

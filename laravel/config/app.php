@@ -38,7 +38,7 @@ return [
     |
     */
 
-    "debug" => (bool) env("APP_DEBUG", false),
+    'debug' => (bool) env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -53,7 +53,7 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    "asset_url" => env("ASSET_URL", null),
+    'asset_url' => env('ASSET_URL', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -105,7 +105,7 @@ return [
     |
     */
 
-    "faker_locale" => "en_US",
+    'faker_locale' => 'en_US',
 
     /*
     |--------------------------------------------------------------------------
