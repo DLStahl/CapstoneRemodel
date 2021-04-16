@@ -22,11 +22,11 @@ class InitiateEvalTest extends TestCase
             "diagnosis" => "Test",
             "procedure" => "Test",
             "ASA" => "Test",
-            "resident_id" => $data[2],
+            "rId" => $data[2],
             "resident" => $data[3],
-            "attending_id" => $data[4],
+            "aId" => $data[4],
             "attending" => $data[5],
-            "time_with_attending" => $data[6],
+            "diff" => $data[6],
         ]);
     }
 
@@ -69,7 +69,7 @@ class InitiateEvalTest extends TestCase
         Rotations::insert([
             "name" => $data[0],
             "level" => "1",
-            "evaluation_forms_id" => $data[1],
+            "service" => $data[1],
             "site" => "test",
             "start" => $data[2],
             "end" => $data[3],
