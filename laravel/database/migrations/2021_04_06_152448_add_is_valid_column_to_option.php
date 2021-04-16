@@ -28,7 +28,7 @@ class AddIsValidColumnToOption extends Migration
      */
     public function down()
     {
-        if (!Schema::hasColumn('option', 'isValid'))
+        if (Schema::hasColumn('option', 'isValid'))
         {
             Schema::table('option', function (Blueprint $table) {
                 $table->dropColumn('isValid');
