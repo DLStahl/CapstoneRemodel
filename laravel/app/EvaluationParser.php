@@ -69,20 +69,18 @@ class EvaluationParser
                                 $rName = $resident["dbName"];
                                 $aId = $attending["id"];
                                 $aName = $attending["dbName"];
-                                if(!is_null($rId) && !is_null($aId)){
-                                    EvaluateData::create([
-                                        "date" => $date,
-                                        "location" => $location,
-                                        "diagnosis" => $diagnosis,
-                                        "procedure" => $procedure,
-                                        "ASA" => $asa,
-                                        "resident_id" => $rId,
-                                        "resident" => $rName,
-                                        "attending_id" => $aId,
-                                        "attending" => $aName,
-                                        "time_with_attending" => $minutesOverlapped,
-                                    ]);
-                                }  
+                                EvaluateData::create([
+                                    "date" => $date,
+                                    "location" => $location,
+                                    "diagnosis" => $diagnosis,
+                                    "procedure" => $procedure,
+                                    "ASA" => $asa,
+                                    "rId" => $rId,
+                                    "resident" => $rName,
+                                    "aId" => $aId,
+                                    "attending" => $aName,
+                                    "diff" => $minutesOverlapped,
+                                ]);
                             }
                         }
                     }

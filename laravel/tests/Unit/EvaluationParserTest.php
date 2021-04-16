@@ -84,17 +84,16 @@ class EvaluationParserTest extends TestCase
         ];
         $parser = new EvaluationParser('20210328');
         $results = $parser->insertEvaluateData();
-        
         $this->assertEqualsCanonicalizing($expectedResults, $results);
         foreach($expectedDataInserted as $expectedEntry){
             $this->assertDatabaseHas('evaluation_data', 
                 [ 
                     "date" => date("2021-03-27"), 
-                    "resident_id" => $expectedEntry[0],
+                    "rId" => $expectedEntry[0],
                     "resident" => $expectedEntry[1], 
-                    "attending_id" => $expectedEntry[2],
+                    "aId" => $expectedEntry[2],
                     "attending" => $expectedEntry[3], 
-                    "time_with_attending" => $expectedEntry[4], 
+                    "diff" => $expectedEntry[4], 
                     "location" => $expectedEntry[5],
                     "diagnosis" => $expectedEntry[6],
                     "procedure" => $expectedEntry[7],
