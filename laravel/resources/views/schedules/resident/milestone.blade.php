@@ -10,7 +10,7 @@
                     <h5>Preference #{{ $loop->iteration }}: None</h5>
                 @else
                     <h5>Preference #{{ $loop->iteration }}: Room {{ $data['schedule']['room'] }} with
-                        {{ $data['attending'] }} </h5>
+                        {{ $data['lead_surgeon'] }} </h5>
 
                     <div class="form-group">
                         <label for="milestones{{ $loop->iteration }}">Select your Milestone:</label>

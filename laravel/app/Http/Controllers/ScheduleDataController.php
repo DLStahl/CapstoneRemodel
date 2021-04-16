@@ -243,8 +243,7 @@ class ScheduleDataController extends Controller
         );
     }
 
-    /* Affects schedule_confirm blade
-     */
+
     public function getChoice()
     {
         // Exclude Admin from selecting preferences
@@ -308,8 +307,7 @@ class ScheduleDataController extends Controller
         return $case;
     }
 
-    /* Affects Milestone blade
-     */
+
     public function selectMilestones($id)
     {
         // Get resident data
@@ -322,20 +320,16 @@ class ScheduleDataController extends Controller
         for ($i = 0; $i < 3; $i++) {
             $resident_data[$i] = [
                 "schedule" => null,
-                "attending" => null,
+                "lead_surgeon" => null,
             ];
             if ($schedule_data_ids[$i]) {
                 $schedule_data[$i] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
-                $attending_string = $schedule_data[$i][0]["lead_surgeon"];
-                preg_match("/(.+) \[(\d+)\]/", $attending_string, $matches); // get name of the lead surgeon
-                if (count($matches) > 1){
-                    $attending = $matches[1];
-                } else{
-                    $attending = "OORA";
-                }
+                $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
+                preg_match("/(.+) \[(\d+)\]/", $lead_surgeon_string, $matches); // get name of the lead surgeon
+                $lead_surgeon = (count($matches) > 1) ? $matches[1] : "OORA";
                 $date = $schedule_data[$i][0]["date"];
                 $resident_data[$i]["schedule"] = $schedule_data[$i][0];
-                $resident_data[$i]["attending"] = $attending;
+                $resident_data[$i]["lead_surgeon"] = $lead_surgeon;
             }
         }
 
@@ -352,8 +346,7 @@ class ScheduleDataController extends Controller
         );
     }
 
-    /* Affects Milestone blade
-     */
+
     public function updateMilestones($id)
     {
         // Get resident data
@@ -364,7 +357,7 @@ class ScheduleDataController extends Controller
         for ($i = 0; $i < 3; $i++) {
             $resident_data[$i] = [
                 "schedule" => null,
-                "attending" => null,
+                "lead_surgeon" => null,
                 "milestone" => null,
                 "objective" => null,
                 "pref_anest" => null,
@@ -372,16 +365,12 @@ class ScheduleDataController extends Controller
             if ($schedule_data_ids[$i]) {
                 $choice = $i + 1;
                 $schedule_data[$i] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
-                $attending_string = $schedule_data[$i][0]["lead_surgeon"];
-                preg_match("/(.+) \[(\d+)\]/", $attending_string, $matches); // get name of the lead surgeon
-                if (count($matches) > 1){
-                    $attending = $matches[1];
-                } else{
-                    $attending = "OORA";
-                }
+                $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
+                preg_match("/(.+) \[(\d+)\]/", $lead_surgeon_string, $matches); // get name of the lead surgeon
+                $lead_surgeon = (count($matches) > 1) ? $matches[1] : "OORA";
                 $date = $schedule_data[$i][0]["date"];
                 $resident_data[$i]["schedule"] = $schedule_data[$i][0];
-                $resident_data[$i]["attending"] = $attending;
+                $resident_data[$i]["lead_surgeon"] = $lead_surgeon;
                 $option[$i] = Option::where("date", $date)
                     ->where("resident", $resident)
                     ->where("option", $choice)
@@ -445,7 +434,7 @@ class ScheduleDataController extends Controller
         $residentName = $resident_data[0]["name"];
 
         $schedule_data[0] = ScheduleData::where("id", $schedule_data_ids[0])->get();
-        $attending_string = $schedule_data[0][0]["lead_surgeon"];
+        $lead_surgeon_string = $schedule_data[0][0]["lead_surgeon"];
         $date = $schedule_data[0][0]["date"];
 
         for ($i = 0; $i < 3; $i++) {
@@ -453,11 +442,10 @@ class ScheduleDataController extends Controller
             if ($schedule_data_ids[$i]) {
                 $pref_anest[$i] = null;
                 $schedule_data[$i] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
-                $attending_string = $schedule_data[$i][0]["lead_surgeon"];
+                $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
                 $date = $schedule_data[$i][0]["date"];
-                preg_match("/(.+) \[(\d+)\]/", $attending_string, $matches); // get id of lead surgeon
-                $attending = $matches[2];
-
+                preg_match("/(.+) \[(\d+)\]/", $lead_surgeon_string, $matches); // get id of lead surgeon
+                $lead_surgeon_medhub_id = (count($matches) > 2) ? $matches[2] : -1; // OORA case, sets medhub id to -1 as no lead surgeons are specified
                 if (isset($_REQUEST["pref_anest" . $choice]) && $_REQUEST["pref_anest" . $choice] != 0) {
                     // if they chose an anesthesiologist, add their ID to the DB, if not, add NULL
                     $pref_anest[$i] = $_REQUEST["pref_anest" . $choice];
@@ -477,7 +465,7 @@ class ScheduleDataController extends Controller
                         ->where("option", $choice)
                         ->update([
                             "schedule" => $schedule_data_ids[$i],
-                            "attending" => $attending,
+                            "attending" => $lead_surgeon_medhub_id,
                             "milestones" => $_REQUEST["milestones" . $choice],
                             "objectives" => $_REQUEST["objectives" . $choice],
                             "anesthesiologist_id" => $pref_anest[$i],
@@ -490,7 +478,7 @@ class ScheduleDataController extends Controller
                             "date" => $date,
                             "resident" => $resident,
                             "schedule" => $schedule_data_ids[$i],
-                            "attending" => $attending,
+                            "attending" => $lead_surgeon_medhub_id,
                             "option" => $choice,
                             "milestones" => $_REQUEST["milestones" . $choice],
                             "objectives" => $_REQUEST["objectives" . $choice],
@@ -524,6 +512,28 @@ class ScheduleDataController extends Controller
     public function postSubmit($day = null)
     {
         self::insertOption();
+        return view("schedules.resident.schedule_update");
+    }
+
+    public function clearOption($date)
+    {
+        $resident_data = Resident::where("email", $_SERVER["HTTP_EMAIL"])->get();
+        $resident = $resident_data[0]["id"];
+
+        for ($i = 0; $i < 3; $i++)
+        {
+        $choice = $i + 1;
+            if (Option::where("date", $date)
+                    ->where("resident", $resident)
+                    ->where("option", $choice)
+                    ->count() != 0) 
+            {
+                Option::where("date", $date)
+                    ->where("resident", $resident)
+                    ->where("option", $choice)
+                    ->delete();
+            }
+        }
         return view("schedules.resident.schedule_update");
     }
 }
