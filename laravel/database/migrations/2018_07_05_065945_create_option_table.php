@@ -14,19 +14,15 @@ class CreateOptionTable extends Migration
      */
     private function initialize()
     {
-        if (file_exists ( __DIR__.$_ENV["BACKUP_PATH"]."option.csv" )) {
+        if (file_exists(__DIR__ . $_ENV['BACKUP_PATH'] . 'option.csv')) {
+            // Read data from the backup file and add into database
+            $fp = fopen(__DIR__ . $_ENV['BACKUP_PATH'] . 'option.csv', 'r');
 
-            /**
-             * Read data from the backup file and add into database
-             */
-            $fp = fopen(__DIR__.$_ENV["BACKUP_PATH"]."option.csv", 'r');
-            
             // Read the first row
             fgetcsv($fp);
 
             // Read rows until null
-            while (($line = fgetcsv($fp)) !== false)
-            {
+            while (($line = fgetcsv($fp)) !== false) {
                 $id = $line[0];
                 $date = $line[1];
                 $resident = $line[2];
@@ -35,16 +31,16 @@ class CreateOptionTable extends Migration
                 $option = $line[5];
                 $milestones = $line[6];
                 $objectives = $line[7];
-                
+
                 DB::table('option')->insert([
-                    'id' => $id, 
+                    'id' => $id,
                     'date' => $date,
                     'resident' => $resident,
                     'schedule' => $schedule,
                     'attending' => $attending,
                     'option' => $option,
                     'milestones' => $milestones,
-                    'objectives' => $objectives
+                    'objectives' => $objectives,
                 ]);
             }
 
@@ -62,33 +58,18 @@ class CreateOptionTable extends Migration
      */
     private function backup()
     {
-        /** 
-         * Save data sets into a csv file
-         */        
-        $filename = __DIR__.$_ENV["BACKUP_PATH"]."option.csv";
+        // Save data sets into a csv file
+        $filename = __DIR__ . $_ENV['BACKUP_PATH'] . 'option.csv';
         $data = DB::table('option')->get();
-        
+
         // Erase existing file
-        if (file_exists ( $filename )) {
-            $output = fopen($filename, 'w');
-        }
-        else {
-            $output = fopen($filename, 'x');
-        }
+        $output = fopen($filename, file_exists($filename) ? 'w' : 'x');
+
         // Set up the first row
-        fputcsv($output, array(
-            'id', 
-            'date',
-            'resident',
-            'schedule',
-            'attending',
-            'option',
-            'milestones',
-            'objectives'
-        ));
+        fputcsv($output, ['id', 'date', 'resident', 'schedule', 'attending', 'option', 'milestones', 'objectives']);
         // Add all rows
         foreach ($data as $info) {
-            fputcsv($output, array(
+            fputcsv($output, [
                 $info['id'],
                 $info['date'],
                 $info['resident'],
@@ -96,13 +77,12 @@ class CreateOptionTable extends Migration
                 $info['attending'],
                 $info['option'],
                 $info['milestones'],
-                $info['objectives']
-            ));
+                $info['objectives'],
+            ]);
         }
 
         // Close file
         fclose($output);
-    
     }
 
     /**
@@ -116,11 +96,11 @@ class CreateOptionTable extends Migration
             $table->increments('id');
             $table->date('date');
             $table->unsignedInteger('resident');
-            $table->unsignedInteger('schedule');            
+            $table->unsignedInteger('schedule');
             $table->string('attending');
             $table->unsignedInteger('option');
             $table->longText('milestones')->nullable();
-            $table->longText('objectives')->nullable();          
+            $table->longText('objectives')->nullable();
             $table->timestamps();
         });
 

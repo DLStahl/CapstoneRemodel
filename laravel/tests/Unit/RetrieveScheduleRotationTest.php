@@ -3,12 +3,9 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
 use App\Http\Controllers\MedhubController;
 
-class RetrieveScheduleRotation extends TestCase
+class RetrieveScheduleRotationTest extends TestCase
 {
     /**
      * A basic test to check the connection to medhub api with TestPOST call
@@ -19,8 +16,8 @@ class RetrieveScheduleRotation extends TestCase
     {
         $MHC = new MedhubController();
         $testPOST = json_decode($MHC->testPOST()->getBody(), true);
-        $response = $testPOST["response"];
-        $this->assertTrue($response == "success");
+        $response = $testPOST['response'];
+        $this->assertTrue($response == 'success');
     }
 
     /**

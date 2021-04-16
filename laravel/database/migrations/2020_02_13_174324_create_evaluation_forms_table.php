@@ -15,9 +15,9 @@ class CreateEvaluationFormsTable extends Migration
     {
         Schema::create('evaluation_forms', function (Blueprint $table) {
             $table->increments('id');
-	    $table->text('form_type');
-	    $table->text('medhub_form_name');
-	    $table->integer('medhub_form_id');
+            $table->text('form_type');
+            $table->text('medhub_form_name');
+            $table->integer('medhub_form_id');
             $table->timestamps();
         });
     }

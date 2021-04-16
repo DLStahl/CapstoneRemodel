@@ -15,9 +15,9 @@ class CreateAttendingTimeDifferencesTable extends Migration
     {
         Schema::create('variables', function (Blueprint $table) {
             $table->increments('id');
-						$table->text('name');
-						$table->text('description');
-						$table->integer('value');
+            $table->text('name');
+            $table->text('description');
+            $table->integer('value');
             $table->timestamps();
         });
     }

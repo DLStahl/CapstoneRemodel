@@ -1,31 +1,26 @@
 @extends('main')
 @section('content')
-    <?php
+    @php
+    // url: survey/yearmonday
+    // e.g. survey/20180709
 
-        // url: survey/yearmonday
-        // e.g. survey/20180709
+    use App\Models\Resident;
+    use App\Models\Attending;
 
-        use App\Resident;
-        use App\Attending;
-
-        /**
-         * Determine the role of the current user
-         */
-        $email = $_SERVER['HTTP_EMAIL'];
-        $role = null;
-        $data = null;
-        if (Resident::where('email', $email)->exists())
-        {
-            $role = "Resident";
-            $data_ = Resident::where('email', $email)->get();
-            $data = $data_[0];
-        } else if (Attending::where('email', $email)->exists())
-        {
-            $role = "Attending";
-            $data_ = Attending::where('email', $email)->get();
-            $data = $data_[0];
-        }
-    ?>
+    // Determine the role of the current user
+    $email = $_SERVER['HTTP_EMAIL'];
+    $role = null;
+    $data = null;
+    if (Resident::where('email', $email)->exists()) {
+        $role = 'Resident';
+        $data_ = Resident::where('email', $email)->get();
+        $data = $data_[0];
+    } elseif (Attending::where('email', $email)->exists()) {
+        $role = 'Attending';
+        $data_ = Attending::where('email', $email)->get();
+        $data = $data_[0];
+    }
+    @endphp
 
     @if ($role == null)
         <h1>You do not have the permission to visit this page!</h1>
@@ -47,7 +42,7 @@
             <tr>
                 <td align="left">Email</td>
                 <td align="left">{{ $email }}</td>
-            </tr>           
+            </tr>
         </table>
     @endif
 @endsection

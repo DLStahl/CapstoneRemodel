@@ -3,13 +3,10 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MedhubController;
-use App\EvaluationParser;
-use App\Resident;
+use App\Models\Resident;
 
 class AdminAddUserTest extends TestCase
 {
@@ -21,26 +18,20 @@ class AdminAddUserTest extends TestCase
     public function testAddUserResidentTableHasData()
     {
         $AC = new AdminController();
-        $AC->getUpdateUsers(
-            "addUser",
-            "Resident",
-            "fakeRes@fak.com",
-            "true",
-            "FakeName"
-        );
-        $this->assertDatabaseHas("resident", ["email" => "fakeRes@fak.com"]);
-        $fakeData = Resident::where("email", "fakeRes@fak.com")->first();
+        $AC->getUpdateUsers('addUser', 'Resident', 'fakeRes@fak.com', 'true', 'FakeName');
+        $this->assertDatabaseHas('resident', ['email' => 'fakeRes@fak.com']);
+        $fakeData = Resident::where('email', 'fakeRes@fak.com')->first();
         $fakeData->delete();
     }
 
     public function testAddUserResidentTableHasCorrectNameData()
     {
-        $this->assertDatabaseHas("resident", ["name" => "Amy Baumann"]);
+        $this->assertDatabaseHas('resident', ['name' => 'Amy Baumann']);
     }
 
     public function testAddUserResidentTableHasCorrectIDData()
     {
-        $this->assertDatabaseHas("resident", ["medhubId" => "113643"]);
+        $this->assertDatabaseHas('resident', ['medhubId' => '113643']);
     }
 
     /**
@@ -52,14 +43,14 @@ class AdminAddUserTest extends TestCase
     {
         $MHC = new MedhubController();
         $testPOST = json_decode($MHC->testPOST()->getBody(), true);
-        $response = $testPOST["response"];
-        $this->assertTrue($response == "success");
+        $response = $testPOST['response'];
+        $this->assertTrue($response == 'success');
     }
 
     public function testAddUserFindPeople()
     {
         $mhc = new MedhubController();
-        $result = $mhc->findPeopleOSU("Michael", "Bragalone");
+        $result = $mhc->findPeopleOSU('Michael', 'Bragalone');
         $this->assertNotNull($result);
     }
 }

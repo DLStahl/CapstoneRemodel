@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,8 +19,11 @@ class FilterRotation extends Model
      * @var bool
      */
     public $timestamps = false;
-	
-	public function getTableColumns() {
-        return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
+
+    public function getTableColumns()
+    {
+        return $this->getConnection()
+            ->getSchemaBuilder()
+            ->getColumnListing($this->getTable());
     }
 }

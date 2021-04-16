@@ -1,16 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: shaw
- * Date: 10/12/18
- * Time: 3:50 PM
- */
 
 namespace App\Console\Commands;
-use App\Status;
+
+use App\Models\Status;
 use App\AutoAssignment;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
+
 class AutoAssign extends Command
 {
     /**
@@ -45,20 +40,17 @@ class AutoAssign extends Command
     public function handle()
     {
         //       Log::info('It works');
-        $tomorrow = date("Y-m-d", strtotime('+1 day'));
+        $tomorrow = date('Y-m-d', strtotime('+1 day'));
         if (Status::where('date', $tomorrow)->doesntExist()) {
             Status::insert([
-                'date' => $tomorrow
+                'date' => $tomorrow,
             ]);
         }
-        if ((int)Status::where('date', $tomorrow)->value('assignment') != 1) {
+        if ((int) Status::where('date', $tomorrow)->value('assignment') != 1) {
             AutoAssignment::assignment($tomorrow);
             Status::where('date', $tomorrow)->update([
-                'assignment' => 1
+                'assignment' => 1,
             ]);
         }
-
     }
-
-
 }

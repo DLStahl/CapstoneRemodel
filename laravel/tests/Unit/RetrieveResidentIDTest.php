@@ -3,9 +3,6 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
 use App\Http\Controllers\MedhubController;
 
 class RetrieveResidentIDTest extends TestCase
@@ -19,8 +16,8 @@ class RetrieveResidentIDTest extends TestCase
     {
         $MHC = new MedhubController();
         $testPOST = json_decode($MHC->testPOST()->getBody(), true);
-        $response = $testPOST["response"];
-        $this->assertTrue($response == "success");
+        $response = $testPOST['response'];
+        $this->assertTrue($response == 'success');
     }
 
     /**
@@ -42,8 +39,8 @@ class RetrieveResidentIDTest extends TestCase
      */
     public function testMedHubResidentTableFilled()
     {
-        $this->assertDatabaseHas("resident", [
-            "name" => "Priscilla Agbenyefia",
+        $this->assertDatabaseHas('resident', [
+            'name' => 'Priscilla Agbenyefia',
         ]);
     }
 

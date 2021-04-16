@@ -3,12 +3,8 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use App\Http\Controllers\AdminController;
-
-class ScheduleFileExistsandIsTxt extends TestCase
+class ScheduleFileExistsandIsTxtTest extends TestCase
 {
     /**
      * Test if the schedule file exists
@@ -17,9 +13,7 @@ class ScheduleFileExistsandIsTxt extends TestCase
 
     public function TestUploadSchedulePageHasAScheduleFile()
     {
-        $this->assertFileExists(
-            "/laravel/storage/app/ResidentRotationSchedule/medhub-report.txt"
-        );
+        $this->assertFileExists('/laravel/storage/app/ResidentRotationSchedule/medhub-report.txt');
     }
 
     public function TestUploadSchedulePageHasTxtFile()
@@ -27,8 +21,7 @@ class ScheduleFileExistsandIsTxt extends TestCase
         $reg = "^.*\.(txt)$^";
         $result = -1;
         $actual = 1;
-        $file =
-            "/laravel/storage/app/ResidentRotationSchedule/medhub-rotations.txt";
+        $file = '/laravel/storage/app/ResidentRotationSchedule/medhub-rotations.txt';
         if (preg_match($reg, $file)) {
             $result = 1;
         } else {
@@ -40,11 +33,10 @@ class ScheduleFileExistsandIsTxt extends TestCase
 
     public function TestFileNameAsMedhubReportTxtOnlyFile()
     {
-        $reg = "(medhub-report)\.(txt)";
+        $reg = '(medhub-report)\.(txt)';
         $result = -1;
         $actual = 1;
-        $file =
-            "/laravel/storage/app/ResidentRotationSchedule/medhub-rotations.txt";
+        $file = '/laravel/storage/app/ResidentRotationSchedule/medhub-rotations.txt';
 
         if (preg_match($reg, $file)) {
             $result = 1;
@@ -57,6 +49,6 @@ class ScheduleFileExistsandIsTxt extends TestCase
 
     public function testRotationTableHasData()
     {
-        $this->assertDatabaseHas("rotations", ["id" => "1"]);
+        $this->assertDatabaseHas('rotations', ['id' => '1']);
     }
 }

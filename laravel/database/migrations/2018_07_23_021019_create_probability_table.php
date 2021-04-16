@@ -14,31 +14,27 @@ class CreateProbabilityTable extends Migration
      */
     private function initialize()
     {
-        if (file_exists ( __DIR__.$_ENV["BACKUP_PATH"]."probability.csv" )) {
+        if (file_exists(__DIR__ . $_ENV['BACKUP_PATH'] . 'probability.csv')) {
+            // Read data from the backup file and add into database
+            $fp = fopen(__DIR__ . $_ENV['BACKUP_PATH'] . 'probability.csv', 'r');
 
-            /**
-             * Read data from the backup file and add into database
-             */
-            $fp = fopen(__DIR__.$_ENV["BACKUP_PATH"]."probability.csv", 'r');
-            
             // Read the first row
             fgetcsv($fp);
 
             // Read rows until null
-            while (($line = fgetcsv($fp)) !== false)
-            {
+            while (($line = fgetcsv($fp)) !== false) {
                 $id = $line[0];
                 $resident = $line[1];
                 $total = $line[2];
                 $selected = $line[3];
                 $probability = $line[4];
-                
+
                 DB::table('probability')->insert([
-                    'id' => $id, 
+                    'id' => $id,
                     'resident' => $resident,
                     'total' => $total,
                     'selected' => $selected,
-                    'probability' => $probability
+                    'probability' => $probability,
                 ]);
             }
 
@@ -56,41 +52,22 @@ class CreateProbabilityTable extends Migration
      */
     private function backup()
     {
-        /** 
-         * Save data sets into a csv file
-         */        
-        $filename = __DIR__.$_ENV["BACKUP_PATH"]."probability.csv";
+        // Save data sets into a csv file
+        $filename = __DIR__ . $_ENV['BACKUP_PATH'] . 'probability.csv';
         $data = DB::table('probability')->get();
-        
+
         // Erase existing file
-        if (file_exists ( $filename )) {
-            $output = fopen($filename, 'w');
-        }
-        else {
-            $output = fopen($filename, 'x');
-        }
+        $output = fopen($filename, file_exists($filename) ? 'w' : 'x');
+
         // Set up the first row
-        fputcsv($output, array(
-            'id',
-            'resident',
-            'total',
-            'selected',
-            'probability'
-        ));
+        fputcsv($output, ['id', 'resident', 'total', 'selected', 'probability']);
         // Add all rows
         foreach ($data as $info) {
-            fputcsv($output, array(
-                $info['id'],
-                $info['resident'],
-                $info['total'],
-                $info['selected'],
-                $info['probability']
-            ));
+            fputcsv($output, [$info['id'], $info['resident'], $info['total'], $info['selected'], $info['probability']]);
         }
 
         // Close file
         fclose($output);
-    
     }
 
     /**
@@ -103,7 +80,7 @@ class CreateProbabilityTable extends Migration
         Schema::create('probability', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('resident');
-            $table->unsignedInteger('total');            
+            $table->unsignedInteger('total');
             $table->unsignedInteger('selected');
             $table->double('probability', 15, 11);
             $table->timestamps();

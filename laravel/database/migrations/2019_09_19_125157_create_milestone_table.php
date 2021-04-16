@@ -16,7 +16,7 @@ class CreateMilestoneTable extends Migration
         Schema::create('milestone', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
-            $table->text('category')->nullable();  // Category of milestones: PC, PBLI, SBP, etc
+            $table->text('category')->nullable(); // Category of milestones: PC, PBLI, SBP, etc
             $table->longText('title')->nullable(); // detailed title of milestones
         });
     }

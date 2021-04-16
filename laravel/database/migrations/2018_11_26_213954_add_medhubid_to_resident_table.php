@@ -16,7 +16,6 @@ class AddMedhubidToResidentTable extends Migration
         Schema::table('resident', function (Blueprint $table) {
             $table->string('medhubId');
         });
-
     }
 
     /**

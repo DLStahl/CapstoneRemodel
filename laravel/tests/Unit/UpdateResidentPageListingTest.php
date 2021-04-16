@@ -3,11 +3,6 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-use App\ScheduleParser;
-use App\EvaluationParser;
 
 class UpdateResidentPageListingTest extends TestCase
 {
@@ -19,16 +14,16 @@ class UpdateResidentPageListingTest extends TestCase
 
     public function testListingResidentTableHasData()
     {
-        $this->assertDatabaseHas("resident", ["id" => "1"]);
+        $this->assertDatabaseHas('resident', ['id' => '1']);
     }
 
     public function testListingResidentTableHasCorrectNameData()
     {
-        $this->assertDatabaseHas("resident", ["name" => "Priscilla Agbenyefia"]);
+        $this->assertDatabaseHas('resident', ['name' => 'Priscilla Agbenyefia']);
     }
 
     public function testListingResidentTableHasCorrectIDData()
     {
-        $this->assertDatabaseHas("resident", ["medhubId" => "112342"]);
+        $this->assertDatabaseHas('resident', ['medhubId' => '112342']);
     }
 }

@@ -13,7 +13,7 @@ class AddOptionToAssignmentTable extends Migration
      */
     public function up()
     {
-        Schema::table('assignment', function($table) {
+        Schema::table('assignment', function ($table) {
             $table->unsignedInteger('option');
         });
     }

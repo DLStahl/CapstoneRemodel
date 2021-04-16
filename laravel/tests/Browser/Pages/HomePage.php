@@ -13,7 +13,7 @@ class HomePage extends Page
      */
     public function url()
     {
-        return "/";
+        return '/';
     }
 
     /**
@@ -35,7 +35,7 @@ class HomePage extends Page
     public function elements()
     {
         return [
-            "@element" => "#selector",
+            '@element' => '#selector',
         ];
     }
 }

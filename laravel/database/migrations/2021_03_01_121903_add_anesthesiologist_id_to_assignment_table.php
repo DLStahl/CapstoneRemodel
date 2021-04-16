@@ -16,7 +16,8 @@ class AddAnesthesiologistIdToAssignmentTable extends Migration
         Schema::table('assignment', function (Blueprint $table) {
             $table->unsignedInteger('anesthesiologist_id')->nullable();
 
-            $table->foreign('anesthesiologist_id')
+            $table
+                ->foreign('anesthesiologist_id')
                 ->references('id')
                 ->on('anesthesiologists')
                 ->onDelete('cascade');

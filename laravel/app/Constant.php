@@ -2,20 +2,16 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Constant extends Model
+class Constant
 {
     // Path used to open .csv files
-    const WEB_PATH = __DIR__."/../../resources/Resident_Education_Report.";
-    const CONSOLE_PATH = __DIR__."/../../resources/Resident_Education_Report.";
-    const EXTENSION = ".csv";
+    const WEB_PATH = __DIR__ . '/../../resources/Resident_Education_Report.';
+    const CONSOLE_PATH = __DIR__ . '/../../resources/Resident_Education_Report.';
+    const EXTENSION = '.csv';
 
-    const EVAL_REPORT_PATH=__DIR__."/../../../evaluation/Resident_Evaluation_Report.";
+    const EVAL_REPORT_PATH = __DIR__ . '/../../../evaluation/Resident_Evaluation_Report.';
 
-    /**
-     * .csv Columns Index
-     */
+    // .csv Columns Index
     const DATE = 0;
     const LOCATION = 1;
     const ROOM = 2;
@@ -25,9 +21,6 @@ class Constant extends Model
     const START_TIME = 6;
     const END_TIME = 7;
 
-    /**
-     * Output offset
-     */
+    // Output offset
     const OFFSET_PROCEDURE = 9;
-
 }

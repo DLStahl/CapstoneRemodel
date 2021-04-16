@@ -13,7 +13,7 @@ class AddDetailToMilestoneTable extends Migration
      */
     public function up()
     {
-        Schema::table('milestone', function($table) {
+        Schema::table('milestone', function ($table) {
             $table->longText('detail')->nullable();
         });
     }

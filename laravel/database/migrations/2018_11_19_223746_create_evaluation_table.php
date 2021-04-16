@@ -27,7 +27,6 @@ class CreateEvaluationTable extends Migration
             $table->unsignedBigInteger('diff')->nullable();
             $table->timestamps();
         });
-
     }
 
     /**

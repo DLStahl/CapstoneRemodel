@@ -3,11 +3,6 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-use App\ScheduleParser;
-use App\EvaluationParser;
 
 class UpdateParsedDataTest extends TestCase
 {
@@ -18,28 +13,28 @@ class UpdateParsedDataTest extends TestCase
      */
     public function testParsedAssignmentTableHasData()
     {
-        $this->assertDatabaseHas("assignment", ["id" => "1"]);
+        $this->assertDatabaseHas('assignment', ['id' => '1']);
     }
 
     public function testParsedEvaluationDataTableHasCorrectedNameData()
     {
-        $this->assertDatabaseHas("evaluation_data", [
-            "resident" => "Adam Thomas",
+        $this->assertDatabaseHas('evaluation_data', [
+            'resident' => 'Adam Thomas',
         ]);
     }
 
     public function testParsedEvaluationDataTableHasData()
     {
-        $this->assertDatabaseHas("evaluation_data", ["id" => "91"]);
+        $this->assertDatabaseHas('evaluation_data', ['id' => '91']);
     }
 
     public function testParsedResidentTableHasData()
     {
-        $this->assertDatabaseHas("resident", ["id" => "1"]);
+        $this->assertDatabaseHas('resident', ['id' => '1']);
     }
 
     public function testParsedResidentTableHasCorrectNameData()
     {
-        $this->assertDatabaseHas("resident", ["name" => "Amy Baumann"]);
+        $this->assertDatabaseHas('resident', ['name' => 'Amy Baumann']);
     }
 }

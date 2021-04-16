@@ -3,13 +3,8 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use App\ScheduleParser;
-use App\EvaluationParser;
-
-class EvaluateGenerateTimeIntervals extends TestCase
+class EvaluateGenerateTimeIntervalsTest extends TestCase
 {
     /**
      * A basic test example.
@@ -18,11 +13,11 @@ class EvaluateGenerateTimeIntervals extends TestCase
      */
     public function testAssignmentTableHasData()
     {
-        $this->assertDatabaseHas("assignment", ["id" => "1"]);
+        $this->assertDatabaseHas('assignment', ['id' => '1']);
     }
 
     public function testEvaluationDataTableHasData()
     {
-        $this->assertDatabaseHas("evaluation_data", ["id" => "71"]);
+        $this->assertDatabaseHas('evaluation_data', ['id' => '71']);
     }
 }

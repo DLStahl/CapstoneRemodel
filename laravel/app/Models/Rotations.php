@@ -1,17 +1,17 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Probability extends Model
+class Rotations extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'probability';
+    protected $table = 'rotations';
 
     /**
      * Indicates if the model should be timestamped.

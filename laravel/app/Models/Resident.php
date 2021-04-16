@@ -1,17 +1,17 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Rotations extends Model
+class Resident extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'rotations';
+    protected $table = 'resident';
 
     /**
      * Indicates if the model should be timestamped.
@@ -19,5 +19,4 @@ class Rotations extends Model
      * @var bool
      */
     public $timestamps = false;
-
 }

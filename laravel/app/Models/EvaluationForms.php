@@ -1,18 +1,17 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ScheduleDataStatic extends Model
+class EvaluationForms extends Model
 {
-    
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'schedule_data_static';
+    protected $table = 'evaluation_forms';
 
     /**
      * Indicates if the model should be timestamped.
@@ -20,8 +19,11 @@ class ScheduleDataStatic extends Model
      * @var bool
      */
     public $timestamps = true;
-	
-	public function getTableColumns() {
-        return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
+
+    public function getTableColumns()
+    {
+        return $this->getConnection()
+            ->getSchemaBuilder()
+            ->getColumnListing($this->getTable());
     }
 }

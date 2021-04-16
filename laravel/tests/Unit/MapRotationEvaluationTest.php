@@ -3,10 +3,8 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class MapRotationEvaluation extends TestCase
+class MapRotationEvaluationTest extends TestCase
 {
     /**
      * A basic test to check that the residents table has values
@@ -15,8 +13,8 @@ class MapRotationEvaluation extends TestCase
      */
     public function testResidentTableHasData()
     {
-        $this->assertDatabaseHas("resident", [
-            "name" => "Priscilla Agbenyefia",
+        $this->assertDatabaseHas('resident', [
+            'name' => 'Priscilla Agbenyefia',
         ]);
     }
     /**
@@ -26,7 +24,7 @@ class MapRotationEvaluation extends TestCase
      */
     public function testAttendingTableHasData()
     {
-        $this->assertDatabaseHas("attending", ["name" => "David Stahl"]);
+        $this->assertDatabaseHas('attending', ['name' => 'David Stahl']);
     }
     /**
      * A basic test to check that the residents table has values
@@ -35,8 +33,8 @@ class MapRotationEvaluation extends TestCase
      */
     public function testEvalTableHasData()
     {
-        $this->assertDatabaseHas("evaluation_data", [
-            "resident" => "Adam Thomas",
+        $this->assertDatabaseHas('evaluation_data', [
+            'resident' => 'Adam Thomas',
         ]);
     }
 }

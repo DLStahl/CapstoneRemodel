@@ -40,8 +40,7 @@ class AddEducationReportToDB extends Command
     {
         $parser = new ScheduleParser($this->argument('date'), true);
         $process_date = $this->option('process');
-        foreach($process_date as $date)
-        {
+        foreach ($process_date as $date) {
             $parser->processScheduleData($date);
         }
     }

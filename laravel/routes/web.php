@@ -16,12 +16,12 @@
  */
 Route::prefix('/')->group(function () {
     Route::get('', function () {
-	return redirect('/resident/schedule/secondday');
+        return redirect('/resident/schedule/secondday');
     });
     Route::get('about', 'PagesController@getAbout');
-    Route::get('contact','PagesController@getContact');
+    Route::get('contact', 'PagesController@getContact');
     Route::post('contact', 'PagesController@postContact');
-    Route::get('test','PagesController@test');
+    Route::get('test', 'PagesController@test');
     Route::get('acknowledgements', 'PagesController@getAcknowledgements');
 });
 
@@ -32,7 +32,7 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
     Route::get('/', 'ResidentController@getIndex');
     Route::get('home', 'PagesController@getIndex');
     Route::get('about', 'PagesController@getAbout');
-    Route::get('contact','PagesController@getContact');
+    Route::get('contact', 'PagesController@getContact');
     Route::post('contact', 'PagesController@postContact');
     Route::get('acknowledgements', 'PagesController@getAcknowledgements');
 
@@ -40,7 +40,10 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
 
     Route::get('schedule/{day}', 'ScheduleDataController@getDay');
 
-    Route::get('schedule/{day}/filter/{room}/{leadSurgeon}/{rotation}/{starttime_endtime}', 'ScheduleDataController@getDay');
+    Route::get(
+        'schedule/{day}/filter/{room}/{leadSurgeon}/{rotation}/{starttime_endtime}',
+        'ScheduleDataController@getDay'
+    );
 
     Route::post('schedule/confirm', 'ScheduleDataController@getChoice');
     Route::get('schedule/milestones/{id}', 'ScheduleDataController@selectMilestones');
@@ -50,14 +53,12 @@ Route::group(['prefix' => 'resident', 'middleware' => 'resident'], function () {
 
     Route::post('schedule/submit', 'ScheduleDataController@postSubmit');
 
-    Route::get('instructions','ResidentController@getInstructions');
-	
-	Route::get('postmessage', 'ResidentController@getMessages');
-	Route::post('announcement', 'PagesController@postAnnouncement');
-	Route::post('deleteannouncement', 'PagesController@deleteAnnouncement');
+    Route::get('instructions', 'ResidentController@getInstructions');
+
+    Route::get('postmessage', 'ResidentController@getMessages');
+    Route::post('announcement', 'PagesController@postAnnouncement');
+    Route::post('deleteannouncement', 'PagesController@deleteAnnouncement');
 });
-
-
 
 /**
  * Admin's page
@@ -66,7 +67,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('/', 'AdminController@getIndex');
     Route::get('home', 'PagesController@getIndex');
     Route::get('about', 'PagesController@getAbout');
-    Route::get('contact','PagesController@getContact');
+    Route::get('contact', 'PagesController@getContact');
     Route::post('contact', 'PagesController@postContact');
     Route::get('acknowledgements', 'PagesController@getAcknowledgements');
 
@@ -77,8 +78,14 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('milestones', 'AdminController@getMilestones');
     Route::post('milestones/uploadConfirm', 'AdminController@getUploadedMilestones');
     Route::post('milestones/uploadUpdate', 'AdminController@uploadMilestones');
-    Route::post('milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}', 'AdminController@getUpdateMilestone');
-    Route::get('milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}', 'AdminController@getUpdateMilestone');
+    Route::post(
+        'milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}',
+        'AdminController@getUpdateMilestone'
+    );
+    Route::get(
+        'milestones/{op}/{flag}/{id?}/{abbr_name?}/{full_name?}/{detail?}',
+        'AdminController@getUpdateMilestone'
+    );
 
     Route::get('db/{table}', 'admin\DBEditorController@viewPage');
 
@@ -92,17 +99,14 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('evaluation', 'AdminController@getEvaluation');
     Route::get('uploadForm', 'AdminController@uploadForm');
     Route::post('upload', 'AdminController@uploadFormPost');
-	
+
     // webssh went down, needed to update schedule
     Route::get('update_schedule_data', 'AdminController@updateScheduleData');
-
 
     /**
      * Medhub
      */
     Route::get('medhubtest', 'MedhubController@medhubConnect');
-
-
 });
 
 /**
@@ -111,6 +115,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
  * Authorization: residents and attendings
  *
  */
-Route::prefix('survey')->group(function() {
+Route::prefix('survey')->group(function () {
     Route::get('{date}', 'PagesController@getFeedback');
 });

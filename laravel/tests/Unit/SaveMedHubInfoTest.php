@@ -3,12 +3,9 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
 use App\Http\Controllers\MedhubController;
 
-class SaveMedHubInfo extends TestCase
+class SaveMedHubInfoTest extends TestCase
 {
     /**
      * A basic test example.
@@ -17,20 +14,20 @@ class SaveMedHubInfo extends TestCase
      */
     public function testMedHubResidentSavedData()
     {
-        $this->assertDatabaseHas("resident", ["medhubId" => "113643"]);
+        $this->assertDatabaseHas('resident', ['medhubId' => '113643']);
     }
 
     public function testMedHubAttendingSavedData()
     {
-        $this->assertDatabaseHas("attending", ["id" => "109589"]);
+        $this->assertDatabaseHas('attending', ['id' => '109589']);
     }
 
     public function testMedHubAPIConnection()
     {
         $MHC = new MedhubController();
         $testPOST = json_decode($MHC->testPOST()->getBody(), true);
-        $response = $testPOST["response"];
-        $this->assertTrue($response == "success");
+        $response = $testPOST['response'];
+        $this->assertTrue($response == 'success');
     }
 
     /**
