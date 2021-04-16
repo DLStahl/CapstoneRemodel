@@ -13,11 +13,11 @@ class CreateMilestoneTable extends Migration
      */
     public function up()
     {
-        Schema::create("milestone", function (Blueprint $table) {
-            $table->increments("id");
+        Schema::create('milestone', function (Blueprint $table) {
+            $table->increments('id');
             $table->timestamps();
-            $table->text("category")->nullable(); // Category of milestones: PC, PBLI, SBP, etc
-            $table->longText("title")->nullable(); // detailed title of milestones
+            $table->text('category')->nullable(); // Category of milestones: PC, PBLI, SBP, etc
+            $table->longText('title')->nullable(); // detailed title of milestones
         });
     }
 
@@ -28,6 +28,6 @@ class CreateMilestoneTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists("milestone");
+        Schema::dropIfExists('milestone');
     }
 }

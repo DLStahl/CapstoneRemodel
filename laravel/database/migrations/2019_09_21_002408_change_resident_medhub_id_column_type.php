@@ -14,9 +14,9 @@ class ChangeResidentMedhubIdColumnType extends Migration
     public function up()
     {
         //
-        Schema::table("resident", function (Blueprint $table) {
+        Schema::table('resident', function (Blueprint $table) {
             $table
-                ->string("medhubId")
+                ->string('medhubId')
                 ->nullable()
                 ->change();
         });
@@ -29,8 +29,8 @@ class ChangeResidentMedhubIdColumnType extends Migration
      */
     public function down()
     {
-        Schema::table("resident", function (Blueprint $table) {
-            $table->string("medhubId")->change();
+        Schema::table('resident', function (Blueprint $table) {
+            $table->string('medhubId')->change();
         });
     }
 }

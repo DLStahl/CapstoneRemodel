@@ -14,9 +14,9 @@ class CreateAttendingTable extends Migration
      */
     private function initialize()
     {
-        if (file_exists(__DIR__ . $_ENV["BACKUP_PATH"] . "attending.csv")) {
+        if (file_exists(__DIR__ . $_ENV['BACKUP_PATH'] . 'attending.csv')) {
             // Read data from the backup file and add into database
-            $fp = fopen(__DIR__ . $_ENV["BACKUP_PATH"] . "attending.csv", "r");
+            $fp = fopen(__DIR__ . $_ENV['BACKUP_PATH'] . 'attending.csv', 'r');
 
             // Read the first row
             fgetcsv($fp);
@@ -27,7 +27,7 @@ class CreateAttendingTable extends Migration
                 $name = $line[1];
                 $email = $line[2];
                 $exists = $line[3];
-                DB::table("attending")->insert(["id" => $id, "name" => $name, "email" => $email, "exists" => $exists]);
+                DB::table('attending')->insert(['id' => $id, 'name' => $name, 'email' => $email, 'exists' => $exists]);
             }
 
             // Close file
@@ -45,20 +45,17 @@ class CreateAttendingTable extends Migration
     private function backup()
     {
         // Save data sets into a csv file
-        $filename = __DIR__ . $_ENV["BACKUP_PATH"] . "attending.csv";
-        $data = DB::table("attending")->get();
+        $filename = __DIR__ . $_ENV['BACKUP_PATH'] . 'attending.csv';
+        $data = DB::table('attending')->get();
 
         // Erase existing file
-        if (file_exists($filename)) {
-            $output = fopen($filename, "w");
-        } else {
-            $output = fopen($filename, "x");
-        }
+        $output = fopen($filename, file_exists($filename) ? 'w' : 'x');
+
         // Set up the first row
-        fputcsv($output, ["id", "name", "email", "exists"]);
+        fputcsv($output, ['id', 'name', 'email', 'exists']);
         // Add all rows
         foreach ($data as $info) {
-            fputcsv($output, [$info["id"], $info["name"], $info["email"], $info["exists"]]);
+            fputcsv($output, [$info['id'], $info['name'], $info['email'], $info['exists']]);
         }
 
         // Close file
@@ -72,16 +69,16 @@ class CreateAttendingTable extends Migration
      */
     public function up()
     {
-        Schema::create("attending", function (Blueprint $table) {
+        Schema::create('attending', function (Blueprint $table) {
             // Primary Key
-            $table->string("id")->primary();
+            $table->string('id')->primary();
 
-            $table->string("name"); // Name of the attending
+            $table->string('name'); // Name of the attending
             $table
-                ->string("email")
+                ->string('email')
                 ->unique()
                 ->nullable(); // Email address of the attending
-            $table->boolean("exists")->default(1);
+            $table->boolean('exists')->default(1);
 
             // Add for future extension
             $table->timestamps();
@@ -98,6 +95,6 @@ class CreateAttendingTable extends Migration
     public function down()
     {
         self::backup();
-        Schema::dropIfExists("attending");
+        Schema::dropIfExists('attending');
     }
 }

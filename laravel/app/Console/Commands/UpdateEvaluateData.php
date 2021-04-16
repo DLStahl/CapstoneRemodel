@@ -12,14 +12,14 @@ class UpdateEvaluateData extends Command
      *
      * @var string
      */
-    protected $signature = "update:evaluate_data";
+    protected $signature = 'update:evaluate_data';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = "Command description";
+    protected $description = 'Command description';
 
     /**
      * Create a new command instance.
@@ -38,8 +38,8 @@ class UpdateEvaluateData extends Command
      */
     public function handle()
     {
-        $parser = new EvaluationParser(date("omd", strtotime("today")));
+        $parser = new EvaluationParser(date('omd', strtotime('today')));
         $failedUsersResult = $parser->insertEvaluateData();
-        $parser->notifyForAllFailedUsers($failedUsersResult, config("mail.admin.name"), config("mail.admin.email"));
+        $parser->notifyForAllFailedUsers($failedUsersResult, config('mail.admin.name'), config('mail.admin.email'));
     }
 }

@@ -11,7 +11,7 @@ class Attending extends Model
      *
      * @var string
      */
-    protected $table = "attending";
+    protected $table = 'attending';
 
     /**
      * The attributes that aren't mass assignable.

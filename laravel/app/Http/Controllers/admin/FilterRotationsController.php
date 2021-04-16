@@ -16,7 +16,7 @@ class FilterRotationsController extends Controller
         $columns = $table->getTableColumns();
 
         // remove 'id', 'created_at', and 'updated_at' from the columns, user should not worry about these
-        $invisibleColumns = ["id", "created_at", "updated_at"];
+        $invisibleColumns = ['id', 'created_at', 'updated_at'];
         foreach ($invisibleColumns as $invisibleColumn) {
             $indexInColumns = array_search($invisibleColumn, $columns);
             if ($indexInColumns !== false) {
@@ -24,13 +24,13 @@ class FilterRotationsController extends Controller
             }
         }
 
-        $data = FilterRotation::select("*")->get();
+        $data = FilterRotation::select('*')->get();
 
         $primaryKeyField = $table->getKeyName();
 
         // technically exposing file structure with this, but it's semi-necessary and not dangerous if we sanitize
-        $fullyQualifiedName = "filter_rotation";
+        $fullyQualifiedName = 'filter_rotation';
 
-        return view("crud.databasetable", compact("columns", "data", "primaryKeyField", "fullyQualifiedName"));
+        return view('crud.databasetable', compact('columns', 'data', 'primaryKeyField', 'fullyQualifiedName'));
     }
 }

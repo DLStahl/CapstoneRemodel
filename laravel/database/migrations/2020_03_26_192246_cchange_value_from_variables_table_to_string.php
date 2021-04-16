@@ -14,8 +14,8 @@ class CchangeValueFromVariablesTableToString extends Migration
     public function up()
     {
         //
-        Schema::table("variables", function (Blueprint $table) {
-            $table->string("value")->change();
+        Schema::table('variables', function (Blueprint $table) {
+            $table->string('value')->change();
         });
     }
 
@@ -27,8 +27,8 @@ class CchangeValueFromVariablesTableToString extends Migration
     public function down()
     {
         //
-        Schema::table("variables", function (Blueprint $table) {
-            $table->integer("value")->change();
+        Schema::table('variables', function (Blueprint $table) {
+            $table->integer('value')->change();
         });
     }
 }

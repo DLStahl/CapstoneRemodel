@@ -12,16 +12,16 @@ class ResidentFillsLearningObjectiveTest extends TestCase
      */
     public function testOptionTableHasLO1()
     {
-        $this->assertDatabaseHas("option", ["objectives" => "Test 1"]);
+        $this->assertDatabaseHas('option', ['objectives' => 'Test 1']);
     }
 
     public function testOptionTableHasLO2()
     {
-        $this->assertDatabaseHas("option", ["objectives" => "Test 2"]);
+        $this->assertDatabaseHas('option', ['objectives' => 'Test 2']);
     }
 
     public function testOptionTableHasLO3()
     {
-        $this->assertDatabaseHas("option", ["objectives" => "Test 3"]);
+        $this->assertDatabaseHas('option', ['objectives' => 'Test 3']);
     }
 }
