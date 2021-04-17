@@ -291,7 +291,7 @@ class EvaluationParser
         $medhubResults = $MHC->getMedhubId($userType, $oSUFindPeopleResults['name']);
         // if osu find people or medhub search failed - send message
         if (!$oSUFindPeopleResults['foundNameAndEmail'] || is_null($medhubResults['medhubId'])) {
-            $emailMessage = $medhubResults['emailMessage'] . $oSUFindPeopleResults['emailMessage'];
+            $emailMessage = $medhubResults['emailMessage'] . ' ' . $oSUFindPeopleResults['emailMessage'];
             $foundParticipant = false;
         } else {
             if (strcmp($userType, 'Resident') == 0) {
@@ -379,7 +379,7 @@ class EvaluationParser
             // check if person has Anesthesiology as part of their organization field
             if (sizeof($peopleFound[0]['appointments']) > 0 && strpos($peopleFound[0]['appointments'][0]['organization'], 'Anesthesiology') !== false) {
                 $participantFound = true;
-                $emailMessage = "$userType $name was found by OSU Find People with email address ($osuEmail ).";
+                $emailMessage = "$userType $name was found by OSU Find People with email address ($osuEmail).";
             } else {
                 $emailMessage = "$userType $name with email ($osuEmail) was found by OSU Find People but is not an Anesthesiology $userType. Please check the information and add user to database manually.";
             }

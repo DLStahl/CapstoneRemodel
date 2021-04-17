@@ -141,7 +141,7 @@ class InitiateEval extends Command
                     $evalsSent++;
                 }
             } catch (\Exception $e) {
-                Log::debug("Failed to send evaluation: REMODEL Evaluation. Resident Name: $residentName Resident ID: $residentID  Attending Name: $attendingName Attending ID: $attendingID Medhub form ID: $medhubFormId");
+                Log::debug("Failed to send evaluation: REMODEL Evaluation. Resident Name: $residentName Resident ID: $residentID Attending Name: $attendingName Attending ID: $attendingID Medhub form ID: $medhubFormId");
                 Log::debug('Associated Exception code: ' . $e->getCode() . ' Exception Message: ' . $e->getMessage());
             }
         }
@@ -203,7 +203,7 @@ class InitiateEval extends Command
             $attendings = EvaluateData::where('date', $date)->where('rId', $residentID)->pluck('aId', 'attending')->unique();
             foreach ($attendings as $attendingName => $attendingID) {
                 $overallTime = EvaluateData::where('date', $date)->where('rId', $residentID)->where('aId', $attendingID)->sum('diff');
-                Log::info("Resident:  $residentName ($residentID) Attending: $attendingName ($attendingID) Total Time Together: $overallTime");
+                Log::info("Resident: $residentName ($residentID) Attending: $attendingName ($attendingID) Total Time Together: $overallTime");
                 $residentAndAttendingEvalData = [
                     'residentName' => $residentName,
                     'residentID' => $residentID,
