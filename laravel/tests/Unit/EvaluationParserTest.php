@@ -64,10 +64,10 @@ class EvaluationParserTest extends TestCase
         self::addAllAttendings($attendings);
         $expectedResults = [
             "Failed Resident Name" => [
-                "No matches for Resident Failed Resident Name were found on MedHub. No matches for Resident Failed Resident Name were found by OSU Find People. The Resident may be using a preffered name at OSU. Please check the information and add user to database manually.",
+                "No matches for Resident Failed Resident Name were found on MedHub.No matches for Resident Failed Resident Name were found by OSU Find People. The Resident may be using a preffered name at OSU. Please check the information and add user to database manually.",
             ],
             "Failed Attendings" => [
-                "No matches for Attending Failed Attending were found on MedHub. No matches for Attending Failed Attending were found by OSU Find People. The Attending may be using a preffered name at OSU. Please check the information and add user to database manually.",
+                "No matches for Attending Failed Attending were found on MedHub.No matches for Attending Failed Attending were found by OSU Find People. The Attending may be using a preffered name at OSU. Please check the information and add user to database manually.",
             ],
         ];
         $expectedDataInserted = [
@@ -224,10 +224,10 @@ class EvaluationParserTest extends TestCase
     public function testUserFindPeople()
     {
         try {
-            $result = EvaluationParser::findPeopleOSU("Michael", "Bragalone");
-            $this->assertNotNull($result);
+            $result = EvaluationParser::findPeopleOSU("Michael", "Bragalone"); 
         } catch (\Exception $e) {
-            $this->expectException(\Exception::class);
+            echo "\nTESTING Evaluation Parser: Exception caught for find People OSU request for Michael Bragalone";
         }
+        $this->assertNotNull($result);
     }
 }
