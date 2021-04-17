@@ -64,10 +64,10 @@ class EvaluationParserTest extends TestCase
         self::addAllAttendings($attendings);
         $expectedResults = [
             "Failed Resident Name" => [
-                "No matches for Resident Failed Resident Name were found on MedHub.No matches for Resident Failed Resident Name were found by OSU Find People. The Resident may be using a preffered name at OSU. Please check the information and add user to database manually.",
+                "No matches for Resident Failed Resident Name were found on MedHub. No matches for Resident Failed Resident Name were found by OSU Find People. The Resident may be using a preffered name at OSU. Please check the information and add user to database manually.",
             ],
             "Failed Attendings" => [
-                "No matches for Attending Failed Attending were found on MedHub.No matches for Attending Failed Attending were found by OSU Find People. The Attending may be using a preffered name at OSU. Please check the information and add user to database manually.",
+                "No matches for Attending Failed Attending were found on MedHub. No matches for Attending Failed Attending were found by OSU Find People. The Attending may be using a preffered name at OSU. Please check the information and add user to database manually.",
             ],
         ];
         $expectedDataInserted = [

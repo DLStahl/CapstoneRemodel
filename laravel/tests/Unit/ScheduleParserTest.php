@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use App\ScheduleParser;
+use App\Models\FilterRotation;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
@@ -84,5 +85,31 @@ class ScheduleParserTest extends TestCase
         $date = $getDateMethod->invokeArgs($parser, [["3/22/2021"], 0]);
         $expectedDate = "2021-03-22";
         $this->assertEquals($expectedDate, $date);
+    }
+
+    public function testGetRotation(){
+        //insert mock data
+        FilterRotation::insert([
+            "surgeon" => "Testing Surgeon",
+            "rotation" => "Basic",
+        ]);
+        $parser = new ScheduleParser("12345678", true);
+        $getRotationMethod = $this->getPrivateMethod("\App\ScheduleParser", "getRotation");
+        $rotation = $getRotationMethod->invokeArgs($parser, ["Testing Surgeon"]);
+        $expectedRotation = "Basic";
+        $this->assertEquals($expectedRotation, $rotation);
+    }
+
+    public function testGetRotationGivenSurgeonMiddleName(){
+        //insert mock data
+        FilterRotation::insert([
+            "surgeon" => "Testing Surgeon",
+            "rotation" => "Basic",
+        ]);
+        $parser = new ScheduleParser("12345678", true);
+        $getRotationMethod = $this->getPrivateMethod("\App\ScheduleParser", "getRotation");
+        $rotation = $getRotationMethod->invokeArgs($parser, ["Testing M Surgeon"]);
+        $expectedRotation = "Basic";
+        $this->assertEquals($expectedRotation, $rotation);
     }
 }
