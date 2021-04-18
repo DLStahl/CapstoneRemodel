@@ -21,7 +21,6 @@ Route::prefix('/')->group(function () {
     Route::get('about', 'PagesController@getAbout');
     Route::get('contact', 'PagesController@getContact');
     Route::post('contact', 'PagesController@postContact');
-    Route::get('test', 'PagesController@test');
     Route::get('acknowledgements', 'PagesController@getAcknowledgements');
 });
 
