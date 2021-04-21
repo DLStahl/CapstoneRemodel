@@ -13,8 +13,8 @@ class AddRotationToEvaluationFormsTable extends Migration
      */
     public function up()
     {
-        Schema::table("evaluation_forms", function (Blueprint $table) {
-            $table->text("rotation")->nullable();
+        Schema::table('evaluation_forms', function (Blueprint $table) {
+            $table->text('rotation')->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddRotationToEvaluationFormsTable extends Migration
      */
     public function down()
     {
-        Schema::table("evaluation_forms", function (Blueprint $table) {
-            $table->dropColumn("rotation");
+        Schema::table('evaluation_forms', function (Blueprint $table) {
+            $table->dropColumn('rotation');
         });
     }
 }

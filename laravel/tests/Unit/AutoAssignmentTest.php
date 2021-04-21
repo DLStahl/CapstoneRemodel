@@ -94,7 +94,7 @@ class AutoAssignmentTest extends TestCase
     {
         $allCorrect = true;
         foreach ($expectedTotals as $expectedTotal) {
-            $total = Probability::where("resident", $expectedTotal[0])->value("total");
+            $total = Probability::where('resident', $expectedTotal[0])->value('total');
             $correctTotal = $total == $expectedTotal[1];
             $allCorrect = $allCorrect && $correctTotal;
         }
