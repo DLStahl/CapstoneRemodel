@@ -166,7 +166,8 @@ class PagesController extends Controller
 
         if ($schedule1 != null) {
             $first_choice = self::processSingleChoice($schedule1);
-            $day_arr['first'] = "First Choice: $first_choice\nMilestone: $milestone1C - $milestone1D\nObjective: $objective1\nAnesthesiologist Preference: $pref_anest1";
+            $first_choice = "First Choice: $first_choice\nMilestone: $milestone1C - $milestone1D\nObjective: $objective1\nAnesthesiologist Preference: $pref_anest1";
+            $day_arr['first'] = $first_choice;
             $day_arr['ids'] = $schedule1 . '_';
         } else {
             $day_arr['ids'] = '0_';
@@ -174,7 +175,8 @@ class PagesController extends Controller
 
         if ($schedule2 != null) {
             $second_choice = self::processSingleChoice($schedule2);
-            $day_arr['second'] = "\n\nSecond Choice: $second_choice\nMilestone: $milestone2C - $milestone2D\nObjective: $objective2\nAnesthesiologist Preference: $pref_anest2";
+            $second_choice = "\n\nSecond Choice: $second_choice\nMilestone: $milestone2C - $milestone2D\nObjective: $objective2\nAnesthesiologist Preference: $pref_anest2";
+            $day_arr['second'] = $second_choice;
             $day_arr['ids'] .= $schedule2 . '_';
         } else {
             $day_arr['ids'] .= '0_';
@@ -182,7 +184,8 @@ class PagesController extends Controller
 
         if ($schedule3 != null) {
             $third_choice = self::processSingleChoice($schedule3);
-            $day_arr['third'] = "\n\nThird Choice: $third_choice\nMilestone: $milestone3C - $milestone3D\nObjective: $objective3\nAnesthesiologist Preference: $pref_anest3";
+            $third_choice = "\n\nThird Choice: $third_choice\nMilestone: $milestone3C - $milestone3D\nObjective: $objective3\nAnesthesiologist Preference: $pref_anest3";
+            $day_arr['third'] = $third_choice;
             $day_arr['ids'] .= $schedule3 . '_';
         } else {
             $day_arr['ids'] .= '0_';

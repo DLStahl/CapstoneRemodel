@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
 
-class evaluationsTest extends TestCase
+class EvaluationsTest extends TestCase
 {
     /**
      * A basic test example.
