@@ -86,12 +86,17 @@ class InitiateEvalTest extends TestCase
     public function testMedHubAPIConnection()
     {
         $initiateEval = new InitiateEval();
-        $testPOST = json_decode(
-            $initiateEval->medhubPOST("info/test", json_encode(["programID" => 73]))->getBody(),
-            true
-        );
-        $response = $testPOST["response"];
-        $this->assertTrue($response == "success");
+        $response = "failure";
+        try {
+            $testPOST = json_decode(
+                $initiateEval->medhubPOST("info/test", json_encode(["programID" => 73]))->getBody(),
+                true
+            );
+            $response = $testPOST["response"];
+        } catch (\Exception $e) {
+            $this->fail("Exception Caught:" .  $e->getCode(). " " . $e->getMessage());
+        }
+        $this->assertEquals("success", $response);
     }
 
     public function testGetResidentAndAttendingEvalData()

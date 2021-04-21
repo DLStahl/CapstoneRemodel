@@ -226,7 +226,7 @@ class EvaluationParserTest extends TestCase
         try {
             $result = EvaluationParser::findPeopleOSU("Michael", "Bragalone"); 
         } catch (\Exception $e) {
-            echo "\nTESTING Evaluation Parser: Exception caught for find People OSU request for Michael Bragalone";
+            $this->fail("Exception caught for find People OSU request for Michael Bragalone:" .  $e->getCode(). " " . $e->getMessage());
         }
         $this->assertNotNull($result);
     }

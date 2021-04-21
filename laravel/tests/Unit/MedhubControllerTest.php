@@ -18,81 +18,80 @@ class MedhubControllerTest extends TestCase
             $testPOST = json_decode($MHC->testPOST()->getBody(), true);
         $response = $testPOST["response"];
         } catch (\Exception $e) {
-            echo "\nTESTING MedHub Controller test post: Exception caught" . $e->getCode() . " " . $e->getMessage();
+            $this->fail("Medhub Controller test post: Exception caught:" . $e->getCode() . " " . $e->getMessage());
         }
-        
-        $this->assertTrue($response == "success");
+        $this->assertEquals("success", $response);
     }
 
     public function testMedHubActiveResidentsPOST()
     {
+        $expectedKeys = ["userID", "name_last", "name_first", "email", "username", "employeeID", "typeID", "level", "programID"];
         $MHC = new MedhubController();
         try {
             $usersArr = json_decode($MHC->activeResidentsPOST()->getBody(), true);
+            $this->assertEqualsCanonicalizing(array_keys($usersArr[0]), $expectedKeys);
         } catch(\Exception $e) {
-            echo "\nTESTING MedHub Controller active residents post: Exception caught" . $e->getCode() . " " . $e->getMessage();
+            $this->fail("MedHub Controller active residents post: Exception caught:" . $e->getCode() . " " . $e->getMessage());
         }
-
-        $this->assertNotNull($usersArr);
     }
 
     public function testMedHubActiveFacultyPOST()
     {
+        $expectedKeys = ["userID", "name_last", "name_first", "email", "username", "employeeID"];
         $MHC = new MedhubController();
         try {
             $usersArr = json_decode($MHC->activeFacultyPOST()->getBody(), true);
+            $this->assertEqualsCanonicalizing(array_keys($usersArr[0]), $expectedKeys);
         } catch(\Exception $e) {
-            echo "\nTESTING MedHub Controller active faculty post: Exception caught" . $e->getCode() . " " . $e->getMessage();
+            $this->fail("MedHub Controller active faculty post: Exception caught:" .  $e->getCode(). " " . $e->getMessage());
         }
-        
-        $this->assertNotNull($usersArr);
     }
 
     public function testMedHubAcademicYearPOST()
     {
+        $expectedKeys = ["rotationsetID", "start_date", "end_date", "rotationset_title"];
         $MHC = new MedhubController();
         try {
-            $usersArr = json_decode($MHC->academicYearPOST()->getBody(), true);
+            $response = json_decode($MHC->academicYearPOST()->getBody(), true);
+            $this->assertEqualsCanonicalizing(array_keys($response[0]), $expectedKeys);
         } catch (\Exception $e) {
-            echo "\nTESTING MedHub Controller academic year post: Exception caught" . $e->getCode() . " " . $e->getMessage();
+            $this->fail("MedHub Controller academic year post: Exception caught:" .  $e->getCode(). " " . $e->getMessage());
         }
-        
-        $this->assertNotNull($usersArr);
     }
 
     public function testMedHubAPIEvalForms()
     {
+        $expectedKeys = ["evaluationID", "evaluation_title", "introduction", "questions_count", "types", "can_remove", "remove_req_comment"];
         $MHC = new MedhubController();
         try {
             $evalsForms = json_decode($MHC->evaluationFormsPOST()->getBody(), true);
+            $this->assertEqualsCanonicalizing(array_keys($evalsForms[0]), $expectedKeys);
         } catch (\Exception $e){
-            echo "\nTESTING MedHub Controller evaluation forms post: Exception caught" . $e->getCode() . " " . $e->getMessage();
+            $this->fail("MedHub Controller evaluation forms post: Exception caught:" .  $e->getCode(). " " . $e->getMessage());
         }
-        
-        $this->assertTrue(sizeof($evalsForms) > 0);
     }
 
     public function testMedHubSchedulePOST()
     {
+        $expectedKeys = ["scheduleID", "schedule_name", "levels"];
         $MHC = new MedhubController();
         try {
-            $usersArr = json_decode($MHC->schedulePOST()->getBody(), true);
+            $response = json_decode($MHC->schedulePOST()->getBody(), true);
+            $this->assertEqualsCanonicalizing(array_keys($response[0]), $expectedKeys);
         } catch (\Exception $e) {
-            echo "\nTESTING MedHub Controller schedule post: Exception caught" . $e->getCode() . " " . $e->getMessage();
-        }
-        
-        $this->assertNotNull($usersArr);
+            $this->fail("MedHub Controller schedule post: Exception caught:" .  $e->getCode(). " " . $e->getMessage());
+        }      
     }
 
     public function testMedHubRotationPOST()
     {
         $MHC = new MedhubController();
+        $expectedKeys = ["rotationID", "rotation_name", "start_date", "end_date"];
         try {
-            $usersArr = json_decode($MHC->rotationsPOST()->getBody(), true);
+            $response = json_decode($MHC->rotationsPOST()->getBody(), true);
+            $this->assertEqualsCanonicalizing(array_keys($response[0]), $expectedKeys);
         } catch (\Exception $e) {
-            echo "\nTESTING MedHub Controller rotations post: Exception caught" . $e->getCode() . " " . $e->getMessage();
+            $this->fail("MedHub Controller rotations post: Exception caught:" .  $e->getCode(). " " . $e->getMessage());
         }
-        
-        $this->assertNotNull($usersArr);
     }
 }
