@@ -256,7 +256,7 @@ class ScheduleDataController extends Controller
         // id is stored as id1_id2_id3, need to split it to get the individual ids
         $schedule_data_ids = explode("_", $id);
         // get current preferences
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++) {  //last element of schedule_data_ids is blank
             if ($schedule_data_ids[$i]) {
                 $schedule = ScheduleData::where("id", $schedule_data_ids[$i])->get();
                 $currentChoices[$i] = [
@@ -274,7 +274,7 @@ class ScheduleDataController extends Controller
         $date = $currentChoices[0]["schedule"][0]["date"];
         $previousChoices = [];
         $resident = Resident::where("email", $_SERVER["HTTP_EMAIL"])->value("id");
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++) {
             $previousOption = Option::where("date", $date)
                 ->where("resident", $resident)
                 ->where("option", $i + 1)
@@ -317,7 +317,7 @@ class ScheduleDataController extends Controller
         // id is stored as id1_id2_id3, need to split it to get the individual ids
         $schedule_data_ids = explode("_", $id);
 
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++) {
             $resident_data[$i] = [
                 "schedule" => null,
                 "lead_surgeon" => null,
@@ -354,7 +354,7 @@ class ScheduleDataController extends Controller
         $resident = $current_resident[0]["id"];
         // id is stored as id1_id2_id3, need to split it to get the individual ids
         $schedule_data_ids = explode("_", $id);
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++) {
             $resident_data[$i] = [
                 "schedule" => null,
                 "lead_surgeon" => null,
@@ -437,7 +437,7 @@ class ScheduleDataController extends Controller
         $lead_surgeon_string = $schedule_data[0][0]["lead_surgeon"];
         $date = $schedule_data[0][0]["date"];
 
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++) {
             $choice = $i + 1;
             if ($schedule_data_ids[$i]) {
                 $pref_anest[$i] = null;
@@ -520,7 +520,7 @@ class ScheduleDataController extends Controller
         $resident_data = Resident::where("email", $_SERVER["HTTP_EMAIL"])->get();
         $resident = $resident_data[0]["id"];
 
-        for ($i = 0; $i < 3; $i++)
+        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++)
         {
         $choice = $i + 1;
             if (Option::where("date", $date)
