@@ -255,10 +255,10 @@ class ScheduleDataController extends Controller
         $trimmed_id = trim($id, '_');
         $schedule_data_ids = explode('_', $trimmed_id);
         // get current preferences
-        foreach ($schedule_data_ids as $i => $id) {
+        foreach ($schedule_data_ids as $i => $schedule_data_id) {
             //last element of schedule_data_ids is blank
-            if ($id !== '' && $id !== '0') {
-                $schedule = ScheduleData::where('id', $schedule_data_ids[$i])->get();
+            if ($schedule_data_id !== '' && $schedule_data_id !== '0') {
+                $schedule = ScheduleData::where('id', $schedule_data_id)->get();
                 $currentChoices[$i] = [
                     'schedule' => $schedule,
                     'case_procedure' => $this->parseCaseProcedure($schedule[0]['case_procedure']),
@@ -274,7 +274,7 @@ class ScheduleDataController extends Controller
         $date = $currentChoices[0]['schedule'][0]['date'];
         $previousChoices = [];
         $resident = Resident::where('email', $_SERVER['HTTP_EMAIL'])->value('id');
-        foreach ($schedule_data_ids as $i => $id) {
+        foreach ($schedule_data_ids as $i => $schedule_data_id) {
             $previousOption = Option::where('date', $date)
                 ->where('resident', $resident)
                 ->where('option', $i + 1)
@@ -317,13 +317,13 @@ class ScheduleDataController extends Controller
         $trimmed_id = trim($id, '_');
         $schedule_data_ids = explode('_', $trimmed_id);
 
-        foreach ($schedule_data_ids as $i => $id) {
+        foreach ($schedule_data_ids as $i => $schedule_data_id) {
             $resident_data[$i] = [
                 'schedule' => null,
                 'lead_surgeon' => null,
             ];
-            if ($id !== '' && $id !== '0') {
-                $schedule_data[$i] = ScheduleData::where('id', $id)->get();
+            if ($schedule_data_id !== '' && $schedule_data_id !== '0') {
+                $schedule_data[$i] = ScheduleData::where('id', $schedule_data_id)->get();
                 $lead_surgeon_string = $schedule_data[$i][0]['lead_surgeon'];
                 preg_match('/(.+) \[(\d+)\]/', $lead_surgeon_string, $matches); // get name of the lead surgeon
                 $lead_surgeon = count($matches) > 1 ? $matches[1] : 'OORA';
@@ -350,7 +350,7 @@ class ScheduleDataController extends Controller
         // id is stored as id1_id2_id3, need to split it to get the individual ids
         $trimmed_id = trim($id, '_');
         $schedule_data_ids = explode('_', $trimmed_id);
-        foreach ($schedule_data_ids as $i => $id) {
+        foreach ($schedule_data_ids as $i => $schedule_data_id) {
             $resident_data[$i] = [
                 'schedule' => null,
                 'lead_surgeon' => null,
@@ -358,9 +358,9 @@ class ScheduleDataController extends Controller
                 'objective' => null,
                 'pref_anest' => null,
             ];
-            if ($id !== '' && $id !== '0') {
+            if ($schedule_data_id !== '' && $schedule_data_id !== '0') {
                 $choice = $i + 1;
-                $schedule_data[$i] = ScheduleData::where('id', $id)->get();
+                $schedule_data[$i] = ScheduleData::where('id', $schedule_data_id)->get();
                 $lead_surgeon_string = $schedule_data[$i][0]['lead_surgeon'];
                 preg_match('/(.+) \[(\d+)\]/', $lead_surgeon_string, $matches); // get name of the lead surgeon
                 $lead_surgeon = count($matches) > 1 ? $matches[1] : 'OORA';
@@ -428,11 +428,11 @@ class ScheduleDataController extends Controller
 
         $date = ScheduleData::where('id', $schedule_data_ids[0])->first()->date;
 
-        foreach ($schedule_data_ids as $i => $id) {
+        foreach ($schedule_data_ids as $i => $schedule_data_id) {
             $choice = $i + 1;
-            if ($id !== '' && $id !== '0') {
+            if ($schedule_data_id !== '' && $schedule_data_id !== '0') {
                 $pref_anest[$i] = null;
-                $schedule_data[$i] = ScheduleData::where('id', $id)->get();
+                $schedule_data[$i] = ScheduleData::where('id', $schedule_data_id)->get();
                 $lead_surgeon_string = $schedule_data[$i][0]['lead_surgeon'];
                 preg_match('/(.+) \[(\d+)\]/', $lead_surgeon_string, $matches); // get id of lead surgeon
                 $lead_surgeon_medhub_id = count($matches) > 2 ? $matches[2] : -1; // OORA case, sets medhub id to -1 as no lead surgeons are specified
@@ -453,7 +453,7 @@ class ScheduleDataController extends Controller
                         ->where('resident', $resident)
                         ->where('option', $choice)
                         ->update([
-                            'schedule' => $id,
+                            'schedule' => $schedule_data_id,
                             'attending' => $lead_surgeon_medhub_id,
                             'milestones' => $_REQUEST['milestones' . $choice],
                             'objectives' => $_REQUEST['objectives' . $choice],
@@ -466,7 +466,7 @@ class ScheduleDataController extends Controller
                         Option::insert([
                             'date' => $date,
                             'resident' => $resident,
-                            'schedule' => $id,
+                            'schedule' => $schedule_data_id,
                             'attending' => $lead_surgeon_medhub_id,
                             'option' => $choice,
                             'milestones' => $_REQUEST['milestones' . $choice],
