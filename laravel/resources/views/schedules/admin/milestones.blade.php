@@ -30,20 +30,16 @@
     <table id="users_table">
         <thead>
             <tr>
-                <th> Code </th>
-                <th> Category </th>
-                <th> Detail </th>
-                <th> Operation </th>
+                <th>Code</th>
+                <th>Category</th>
+                <th>Detail</th>
+                <th>Operation</th>
             </tr>
         </thead>
         <tbody>
-            @php
-                $codes = [];
-            @endphp
+            @php $codes = []; @endphp
             @foreach ($milestone as $mile)
-                @php
-                    $codes[$mile['id']] = $mile['category'];
-                @endphp
+                @php $codes[$mile['id']] = $mile['category']; @endphp
                 <tr id="{{ $mile['id'] }}">
 
                     <td align="left">
@@ -64,7 +60,6 @@
                         <input align="center" onclick="deleteMilestone({{ $mile['id'] }});" value="Delete" type="button"
                             class='btn btn-md btn-success'>
                     </td>
-
                 </tr>
             @endforeach
         </tbody>
@@ -85,6 +80,7 @@
                 }
             });
         }
+
         fileValidation();
         $('#InputFile').change(function() {
             fileValidation();
@@ -184,7 +180,7 @@
         }
 
         .b1 {
-            white-space: nowrap
+            white-space: nowrap;
         }
 
     </style>

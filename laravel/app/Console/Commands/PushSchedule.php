@@ -8,7 +8,6 @@ use App\Models\Resident;
 use App\Models\ScheduleData;
 use App\Models\Milestone;
 use App\Models\Anesthesiologist;
-
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -16,6 +15,8 @@ use Google_Client;
 use Google_Service_Sheets;
 use Google_Service_Sheets_ValueRange;
 use Google_Service_Sheets_BatchUpdateSpreadsheetRequest;
+use Google_Service_Sheets_Spreadsheet;
+use RuntimeException;
 
 // require Google's API
 require __DIR__ . '/../../../../google/vendor/autoload.php';
@@ -34,7 +35,27 @@ class PushSchedule extends Command
      *
      * @var string
      */
-    protected $description = 'push API';
+    protected $description = 'upload the schedule to Google Sheets';
+
+    /**
+     * Columns to write to the spreadsheet
+     */
+    private static $SPREADSHEET_COLUMN_NAMES = [
+        'date',
+        'room',
+        'case procedure',
+        'start time',
+        'end time',
+        'lead surgeon',
+        'resident',
+        'preference',
+        'milestones',
+        'objectives',
+        'anest staff key',
+        'anest name',
+    ];
+
+    private static $MAX_SPREADSHEETS = 30;
 
     /**
      * Create a new command instance.
@@ -47,15 +68,125 @@ class PushSchedule extends Command
     }
 
     /**
-     * @param string the date of the assignments
-     * @return Array daily assignments to be output to the Google Sheet
+     * Execute the console command.
+     *
+     * @return int
      */
-    public static function updateAssignments($date)
+    public function handle()
+    {
+        // connect to the api and our sheet
+        $client = self::getClient();
+        $service = new Google_Service_Sheets($client);
+
+        // TODO: environment variable
+        $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
+
+        $tomorrow = date('Y-m-d', strtotime('+1 day'));
+        $title = $tomorrow;
+
+        // create new sheet for today
+        $newSheet = new Google_Service_Sheets_Spreadsheet([
+            'properties' => [
+                'title' => $title,
+                'index' => 0,
+            ],
+        ]);
+        $newSheet = $service->spreadsheets->create($newSheet, ['fields' => 'spreadsheetId']);
+        Log::info("Created spreadsheet: \"$title\" with ID: $newSheet->spreadsheetId");
+
+        // get the array that contains all assigments for day + 1.
+        $all_assns = self::getAssignments($tomorrow);
+
+        // relative path for assignment sheet
+        $assignmentCSVPath = "../downloads/assignment$tomorrow.csv";
+        $mode = file_exists($assignmentCSVPath) ? 'w' : 'c';
+        $fp = fopen($assignmentCSVPath, $mode);
+
+        // print header for sheet
+        fputcsv($fp, PushSchedule::$SPREADSHEET_COLUMN_NAMES);
+        // print all assignments to path
+        foreach ($all_assns as $assignemnts) {
+            fputcsv($fp, $assignemnts);
+        }
+
+        fclose($fp);
+
+        $range = "'$title'!A1:ZZZ1000";
+
+        // get the values from the assignment file and save them to an array
+        $file = fopen($assignmentCSVPath, 'r');
+        $csv = [];
+        while (($line = fgetcsv($file)) !== false) {
+            // $line is an array of the csv elements
+            $csv[] = $line;
+        }
+        fclose($file);
+
+        // create the correct update to send back to google sheets to fill the sheet with the array created above
+        $body = new Google_Service_Sheets_ValueRange(['values' => $csv]);
+        $params = ['valueInputOption' => 'USER_ENTERED'];
+        $result = $service->spreadsheets_values->update($spreadsheetId, $range, $body, $params);
+
+        // remove the oldest spreadsheet if there are over MAX_SPREADSHEETS spreadsheets
+        $response = $service->spreadsheets->get($spreadsheetId);
+        if (count($response) > PushSchedule::$MAX_SPREADSHEETS) {
+            $lastEntry = $response[count($response) - 1];
+            $lastSheetId = $lastEntry['properties']['sheetId'];
+            $delete = new Google_Service_Sheets_BatchUpdateSpreadsheetRequest([
+                'requests' => [
+                    'deleteSheet' => [
+                        'sheetId' => $lastSheetId,
+                    ],
+                ],
+            ]);
+            $service->spreadsheets->batchUpdate($spreadsheetId, $delete);
+        }
+
+        return 0;
+    }
+
+    /**
+     * https:// developers.google.com/sheets/api/quickstart/php#step_3_set_up_the_sample
+     *
+     * @return Google_Client the authorized client object
+     */
+    public static function getClient()
+    {
+        $client = new Google_Client();
+        $client->setApplicationName('REMODEL');
+        $client->setScopes([
+            Google_Service_Sheets::DRIVE,
+            Google_Service_Sheets::DRIVE_FILE,
+            Google_Service_Sheets::SPREADSHEETS,
+        ]);
+        $authConfigPath = base_path('../REMODEL-0dfb917af5de.json');
+        $client->setAuthConfig($authConfigPath);
+
+        // Load previously authorized token from a file.
+        $tokenPath = '/htdocs/token.json';
+        if (file_exists($tokenPath)) {
+            $accessToken = json_decode(file_get_contents($tokenPath), true);
+            $client->setAccessToken($accessToken);
+        } else {
+            Log::error('Google API token file not found');
+            throw new RuntimeException('Google API token file not found');
+        }
+
+        return $client;
+    }
+
+    /**
+     * get assignments for Google Sheets output
+     *
+     * @param string $date date to find assignments for
+     * @return Array daily assignment information
+     */
+    public static function getAssignments($date)
     {
         $all_assignments = [];
-        $assignments = ($date == null ? Assignment::orderBy('date', 'desc') : Assignment::where('date', $date))->get();
+        $assignments = Assignment::where('date', $date)->get();
 
-        //find all relavant data for the assignments
+        // find all relavant data for the assignments
         foreach ($assignments as $assignment) {
             $resident_id = $assignment['resident'];
             $schedule_id = $assignment['schedule'];
@@ -74,11 +205,11 @@ class PushSchedule extends Command
             $objectives = Option::where('id', $option_id)->value('objectives');
             $pref_anest_id = $assignment['anesthesiologist_id'];
             if ($pref_anest_id != null) {
-                $anest = Anesthesiologist::where('id', $pref_anest_id);
-                $fname = $anest->value('first_name');
-                $lname = $anest->value('last_name');
-                $pref_anest_name = "$fname $lname";
-                $pref_anest_staff_key = $anest->value('staff_key');
+                $anesthesiologist = Anesthesiologist::find($pref_anest_id);
+                $first_name = $anesthesiologist->first_name;
+                $last_name = $anesthesiologist->last_name;
+                $pref_anest_name = "$first_name $last_name";
+                $pref_anest_staff_key = $anesthesiologist->staff_key;
             } else {
                 $pref_anest_name = 'No anesthesiologist assignment';
                 $pref_anest_staff_key = null;
@@ -102,138 +233,5 @@ class PushSchedule extends Command
             array_push($all_assignments, $cur_assignment);
         }
         return $all_assignments;
-    }
-
-    /**
-     * Returns an authorized API client.
-     * @return Google_Client the authorized client object
-     */
-
-    public function getClient()
-    {
-        $client = new Google_Client();
-        $client->setApplicationName('REMODEL');
-        $client->setScopes(Google_Service_Sheets::DRIVE);
-        $client->addScope(Google_Service_Sheets::DRIVE_FILE);
-        $client->addScope(Google_Service_Sheets::SPREADSHEETS);
-        $client->setAuthConfig('/usr/local/webs/remodel.anesthesiology/htdocs/REMODEL-0dfb917af5de.json');
-
-        // Load previously authorized token from a file, if it exists.
-        $tokenPath = '/htdocs/token.json';
-        if (file_exists($tokenPath)) {
-            $accessToken = json_decode(file_get_contents($tokenPath), true);
-            $client->setAccessToken($accessToken);
-        }
-        return $client;
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
-    {
-        Log::info('Begin PushSchedule');
-
-        // connect to the api and our sheet
-        $client = self::getClient();
-        $service = new Google_Service_Sheets($client);
-        $spreadsheetId = '1npNBs_j6BvmZO29GHlEJ-mROGhtBEqM7_KNKdAnNLxY';
-        $title = date('Y-m-d', strtotime('+1 day'));
-        $index = 0;
-
-        // create new sheet for today
-        $newSheet = new Google_Service_Sheets_BatchUpdateSpreadsheetRequest([
-            'requests' => [
-                'addSheet' => [
-                    'properties' => [
-                        'title' => $title,
-                        'index' => $index,
-                    ],
-                ],
-            ],
-        ]);
-        $service->spreadsheets->batchUpdate($spreadsheetId, $newSheet);
-        Log::info("Created sheet: $title");
-
-        // setup today's sheet to be ready to be added to
-        $date = date('Y-m-d', strtotime('+1 day'));
-
-        //Relative path for assignment sheet
-        $dir = '../downloads/assignment' . $date . '.csv';
-
-        $mode = file_exists($dir) ? 'w' : 'c';
-        $fp = fopen($dir, $mode);
-
-        //print header for sheet
-        fputcsv($fp, [
-            'date',
-            'room',
-            'case procedure',
-            'start time',
-            'end time',
-            'lead surgeon',
-            'resident',
-            'preference',
-            'milestones',
-            'objectives',
-            'anest staff key',
-            'anest name',
-        ]);
-
-        //Get the array that contains all assigments for day + 1.
-        $all_assns = self::updateAssignments($date);
-
-        //print all assignments to path
-        foreach ($all_assns as $assignemnts) {
-            fputcsv($fp, $assignemnts);
-        }
-
-        fclose($fp);
-
-        // Request a VERY LARGE range of data.
-        // Realistically, REMODEL should never need more than this.
-        $range = "'$title'!A1:ZZZ1000";
-
-        // get the values from the assignment file and save them to an array
-        $path = '../downloads/assignment' . $date . '.csv';
-        $file = fopen($path, 'r');
-        $csv = [];
-        while (($line = fgetcsv($file)) !== false) {
-            //$line is an array of the csv elements
-            $csv[] = $line;
-        }
-        fclose($file);
-
-        // create the correct update to send back to google sheets to fill the sheet with the array created above
-        $body = new Google_Service_Sheets_ValueRange([
-            'values' => $csv,
-        ]);
-        $params = [
-            'valueInputOption' => 'USER_ENTERED',
-        ];
-
-        Log::info('uploading spreadsheet');
-        $result = $service->spreadsheets_values->update($spreadsheetId, $range, $body, $params);
-
-        $response = $service->spreadsheets->get($spreadsheetId);
-
-        if (count($response) > 30) {
-            $lastEntry = $response[count($response) - 1];
-
-            $properties = $lastEntry['properties'];
-
-            $sheetId = $properties['sheetId'];
-
-            $delete = new Google_Service_Sheets_BatchUpdateSpreadsheetRequest([
-                'requests' => [
-                    'deleteSheet' => [
-                        'sheetId' => $sheetId,
-                    ],
-                ],
-            ]);
-            $service->spreadsheets->batchUpdate($spreadsheetId, $delete);
-        }
     }
 }
