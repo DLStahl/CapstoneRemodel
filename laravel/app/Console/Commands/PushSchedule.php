@@ -68,94 +68,6 @@ class PushSchedule extends Command
     }
 
     /**
-     * get assignments for Google Sheets output
-     *
-     * @param string $date date to find assignments for
-     * @return Array daily assignment information
-     */
-    public static function getAssignments($date)
-    {
-        $all_assignments = [];
-        $assignments = Assignment::where('date', $date)->get();
-
-        // find all relavant data for the assignments
-        foreach ($assignments as $assignment) {
-            $resident_id = $assignment['resident'];
-            $schedule_id = $assignment['schedule'];
-
-            $date = $assignment['date'];
-            $room = ScheduleData::where('id', $schedule_id)->value('room');
-            $case_procedure = ScheduleData::where('id', $schedule_id)->value('case_procedure');
-            $start_time = ScheduleData::where('id', $schedule_id)->value('start_time');
-            $end_time = ScheduleData::where('id', $schedule_id)->value('end_time');
-            $lead_surgeon = ScheduleData::where('id', $schedule_id)->value('lead_surgeon');
-            $resident = Resident::where('id', $resident_id)->value('name');
-            $option_id = $assignment['option'];
-            $milestone_id = Option::where('id', $option_id)->value('milestones');
-            $preference = Option::where('id', $option_id)->value('option');
-            $milestones = Milestone::where('id', $milestone_id)->value('category');
-            $objectives = Option::where('id', $option_id)->value('objectives');
-            $pref_anest_id = $assignment['anesthesiologist_id'];
-            if ($pref_anest_id != null) {
-                $anesthesiologist = Anesthesiologist::find($pref_anest_id);
-                $pref_anest_name = "$anesthesiologist->first_name $anesthesiologist->last_name";
-                $pref_anest_staff_key = $anesthesiologist->staff_key;
-            } else {
-                $pref_anest_name = 'No anesthesiologist assignment';
-                $pref_anest_staff_key = null;
-            }
-
-            $cur_assignment = [
-                $date,
-                $room,
-                $case_procedure,
-                $start_time,
-                $end_time,
-                $lead_surgeon,
-                $resident,
-                $preference,
-                $milestones,
-                $objectives,
-                $pref_anest_staff_key,
-                $pref_anest_name,
-            ];
-
-            array_push($all_assignments, $cur_assignment);
-        }
-        return $all_assignments;
-    }
-
-    /**
-     * https:// developers.google.com/sheets/api/quickstart/php#step_3_set_up_the_sample
-     *
-     * @return Google_Client the authorized client object
-     */
-    public static function getClient()
-    {
-        $client = new Google_Client();
-        $client->setApplicationName('REMODEL');
-        $client->setScopes([
-            Google_Service_Sheets::DRIVE,
-            Google_Service_Sheets::DRIVE_FILE,
-            Google_Service_Sheets::SPREADSHEETS,
-        ]);
-        $authConfigPath = base_path('../REMODEL-0dfb917af5de.json');
-        $client->setAuthConfig($authConfigPath);
-
-        // Load previously authorized token from a file.
-        $tokenPath = '/htdocs/token.json';
-        if (file_exists($tokenPath)) {
-            $accessToken = json_decode(file_get_contents($tokenPath), true);
-            $client->setAccessToken($accessToken);
-        } else {
-            Log::error('Google API token file not found');
-            throw new RuntimeException('Google API token file not found');
-        }
-
-        return $client;
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
@@ -231,5 +143,93 @@ class PushSchedule extends Command
         }
 
         return 0;
+    }
+
+    /**
+     * https:// developers.google.com/sheets/api/quickstart/php#step_3_set_up_the_sample
+     *
+     * @return Google_Client the authorized client object
+     */
+    public static function getClient()
+    {
+        $client = new Google_Client();
+        $client->setApplicationName('REMODEL');
+        $client->setScopes([
+            Google_Service_Sheets::DRIVE,
+            Google_Service_Sheets::DRIVE_FILE,
+            Google_Service_Sheets::SPREADSHEETS,
+        ]);
+        $authConfigPath = base_path('../REMODEL-0dfb917af5de.json');
+        $client->setAuthConfig($authConfigPath);
+
+        // Load previously authorized token from a file.
+        $tokenPath = '/htdocs/token.json';
+        if (file_exists($tokenPath)) {
+            $accessToken = json_decode(file_get_contents($tokenPath), true);
+            $client->setAccessToken($accessToken);
+        } else {
+            Log::error('Google API token file not found');
+            throw new RuntimeException('Google API token file not found');
+        }
+
+        return $client;
+    }
+
+    /**
+     * get assignments for Google Sheets output
+     *
+     * @param string $date date to find assignments for
+     * @return Array daily assignment information
+     */
+    public static function getAssignments($date)
+    {
+        $all_assignments = [];
+        $assignments = Assignment::where('date', $date)->get();
+
+        // find all relavant data for the assignments
+        foreach ($assignments as $assignment) {
+            $resident_id = $assignment['resident'];
+            $schedule_id = $assignment['schedule'];
+
+            $date = $assignment['date'];
+            $room = ScheduleData::where('id', $schedule_id)->value('room');
+            $case_procedure = ScheduleData::where('id', $schedule_id)->value('case_procedure');
+            $start_time = ScheduleData::where('id', $schedule_id)->value('start_time');
+            $end_time = ScheduleData::where('id', $schedule_id)->value('end_time');
+            $lead_surgeon = ScheduleData::where('id', $schedule_id)->value('lead_surgeon');
+            $resident = Resident::where('id', $resident_id)->value('name');
+            $option_id = $assignment['option'];
+            $milestone_id = Option::where('id', $option_id)->value('milestones');
+            $preference = Option::where('id', $option_id)->value('option');
+            $milestones = Milestone::where('id', $milestone_id)->value('category');
+            $objectives = Option::where('id', $option_id)->value('objectives');
+            $pref_anest_id = $assignment['anesthesiologist_id'];
+            if ($pref_anest_id != null) {
+                $anesthesiologist = Anesthesiologist::find($pref_anest_id);
+                $pref_anest_name = "$anesthesiologist->first_name $anesthesiologist->last_name";
+                $pref_anest_staff_key = $anesthesiologist->staff_key;
+            } else {
+                $pref_anest_name = 'No anesthesiologist assignment';
+                $pref_anest_staff_key = null;
+            }
+
+            $cur_assignment = [
+                $date,
+                $room,
+                $case_procedure,
+                $start_time,
+                $end_time,
+                $lead_surgeon,
+                $resident,
+                $preference,
+                $milestones,
+                $objectives,
+                $pref_anest_staff_key,
+                $pref_anest_name,
+            ];
+
+            array_push($all_assignments, $cur_assignment);
+        }
+        return $all_assignments;
     }
 }
