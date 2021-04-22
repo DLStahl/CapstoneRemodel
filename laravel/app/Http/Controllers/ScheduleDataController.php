@@ -252,11 +252,12 @@ class ScheduleDataController extends Controller
         $id = $_REQUEST['schedule_id'];
         $choiceTypes = ['First', 'Second', 'Third'];
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $schedule_data_ids = explode("_", $id);
+        $trimmed_id = trim($id, '_');
+        $schedule_data_ids = explode("_", $trimmed_id);
         // get current preferences
         foreach ($schedule_data_ids as $i => $id) {
             //last element of schedule_data_ids is blank
-            if ($id) {
+            if ($id !== '' && $id !== '0') {
                 $schedule = ScheduleData::where("id", $schedule_data_ids[$i])->get();
                 $currentChoices[$i] = [
                     "schedule" => $schedule,
@@ -313,14 +314,15 @@ class ScheduleDataController extends Controller
         $resident = $current_resident[0]["id"];
 
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $schedule_data_ids = explode("_", $id);
+        $trimmed_id = trim($id, '_');
+        $schedule_data_ids = explode("_", $trimmed_id);
 
         foreach ($schedule_data_ids as $i => $id) {
             $resident_data[$i] = [
                 "schedule" => null,
                 "lead_surgeon" => null,
             ];
-            if ($id) {
+            if ($id !== '' && $id !== '0') {
                 $schedule_data[$i] = ScheduleData::where("id", $id)->get();
                 $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
                 preg_match("/(.+) \[(\d+)\]/", $lead_surgeon_string, $matches); // get name of the lead surgeon
@@ -346,7 +348,8 @@ class ScheduleDataController extends Controller
         $current_resident = Resident::where("email", $_SERVER["HTTP_EMAIL"])->get();
         $resident = $current_resident[0]["id"];
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $schedule_data_ids = explode("_", $id);
+        $trimmed_id = trim($id, '_');
+        $schedule_data_ids = explode("_", $trimmed_id);
         foreach ($schedule_data_ids as $i => $id) {
             $resident_data[$i] = [
                 "schedule" => null,
@@ -355,7 +358,7 @@ class ScheduleDataController extends Controller
                 "objective" => null,
                 "pref_anest" => null,
             ];
-            if ($id) {
+            if ($id !== '' && $id !== '0') {
                 $choice = $i + 1;
                 $schedule_data[$i] = ScheduleData::where("id", $id)->get();
                 $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
@@ -415,24 +418,22 @@ class ScheduleDataController extends Controller
         $id = $_REQUEST['schedule_id'];
 
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $schedule_data_ids = explode("_", $id);
+        $trimmed_id = trim($id, '_');
+        $schedule_data_ids = explode("_", $trimmed_id);
 
         // Get resident
         $resident_data = Resident::where('email', $_SERVER['HTTP_EMAIL'])->get();
         $resident = $resident_data[0]['id'];
         $residentName = $resident_data[0]['name'];
 
-        $schedule_data[0] = ScheduleData::where("id", $schedule_data_ids[0])->get();
-        $lead_surgeon_string = $schedule_data[0][0]["lead_surgeon"];
-        $date = $schedule_data[0][0]["date"];
+        $date = ScheduleData::where("id", $schedule_data_ids[0])->first()->date;
 
         foreach ($schedule_data_ids as $i => $id) {
             $choice = $i + 1;
-            if ($id) {
+            if ($id !== '' && $id !== '0') {
                 $pref_anest[$i] = null;
                 $schedule_data[$i] = ScheduleData::where("id", $id)->get();
                 $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
-                $date = $schedule_data[$i][0]["date"];
                 preg_match("/(.+) \[(\d+)\]/", $lead_surgeon_string, $matches); // get id of lead surgeon
                 $lead_surgeon_medhub_id = count($matches) > 2 ? $matches[2] : -1; // OORA case, sets medhub id to -1 as no lead surgeons are specified
                 if (isset($_REQUEST["pref_anest" . $choice]) && $_REQUEST["pref_anest" . $choice] != 0) {
