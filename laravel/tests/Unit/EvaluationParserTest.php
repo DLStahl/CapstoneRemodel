@@ -49,6 +49,7 @@ class EvaluationParserTest extends TestCase
             ]);
         }
     }
+    
     public function testEvaluationParser()
     {
         // insert residents and attendings
@@ -229,11 +230,15 @@ class EvaluationParserTest extends TestCase
     // Test user find people request
     public function testUserFindPeople()
     {
-        $result = null;
         try {
             $result = EvaluationParser::findPeopleOSU('Michael', 'Bragalone');
         } catch (\Exception $e) {
-            echo "\nTESTING AdminAddUserTest: Exception caught for find People OSU request for Michael Bragalone";
+            $this->fail(
+                'Exception caught for find People OSU request for Michael Bragalone:' .
+                    $e->getCode() .
+                    ' ' .
+                    $e->getMessage()
+            );
         }
         $this->assertNotNull($result);
     }

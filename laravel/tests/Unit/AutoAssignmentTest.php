@@ -7,65 +7,72 @@ use Tests\TestCase;
 use App\Models\Option;
 use App\Models\Assignment;
 use App\Models\Probability;
+use App\Models\ScheduleData;
+use App\Models\Milestone;
+use App\Models\Resident;
+
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class AutoAssignmentTest extends TestCase
 {
+    use DatabaseTransactions;
+
     public static $date = '2021-03-03';
-    public static $residentA = 113;
-    public static $residentB = 270;
-    public static $residentC = 300;
-    public static $residentD = 881;
-    public static $CCCT10 = 143907;
-    public static $CCCT10Attending = '051011';
-    public static $CCCT14 = 143910;
-    public static $CCCT14Attending = '033548';
-    public static $CCCT11 = 143914;
-    public static $CCCT11Attending = '368563';
-    public static $EP05 = 143908;
-    public static $EP05Attending = '745117';
-    public static $UH19 = 143905;
-    public static $UH19Attending = '363283';
-    public static $UH2 = 143909;
-    public static $UH2Attending = '420596';
-    public static $UH16 = 143912;
-    public static $UH16Attending = '328666';
-    public static $CCCTLeasingUH = 143924;
-    public static $CCCTLeasingUHAttending = '035089';
+    private $autoAssignment;
+    private $CCCT10;
+    private $CCCT14;
+    private $CCCT11;
+    private $EP05;
+    private $UH19;
+    private $UH2;
+    private $UH16;
+    private $CCCT19LeasingUH7;
+    private $residentA;
+    private $residentB;
+    private $residentC;
+    private $residentD;
+    private $milestone_id;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $rooms = ['CCCT 10', 'CCCT 14', 'CCCT 11', 'EP 05', 'UH 19', 'UH 2', 'UH 16', 'CCCT 19 Leasing UH7'];
+        foreach ($rooms as $room) {
+            $this->{str_replace(' ', '', $room)} = ScheduleData::insertGetId([
+                'date' => self::$date,
+                'room' => $room,
+            ]);
+        }
+        $residents = ['resident A', 'resident B', 'resident C', 'resident D'];
+        foreach ($residents as $resident) {
+            $this->{str_replace(' ', '', $resident)} = Resident::insertGetId([
+                'name' => $resident,
+                'email' => $resident . '@email',
+            ]);
+            Probability::insert([
+                'resident' => $this->{str_replace(' ', '', $resident)},
+                'total' => 0,
+                'selected' => 0,
+                'probability' => 0,
+            ]);
+        }
+        $this->autoAssignment = new AutoAssignment();
+        $this->milestone_id = Milestone::first()->value('id');
+    }
 
     public function addOptionsToDatabase($optionsDataArrays)
     {
-        $optionIds = [];
         foreach ($optionsDataArrays as $optionDataArray) {
-            $optionId = Option::insertGetId([
+            Option::insert([
                 'date' => self::$date,
                 'resident' => $optionDataArray[0],
                 'schedule' => $optionDataArray[1],
-                'attending' => 349746,
                 'option' => $optionDataArray[2],
                 'isValid' => 1,
                 'anesthesiologist_id' => $optionDataArray[3],
+                'milestones' => $optionDataArray[4],
+                'attending' => 1,
             ]);
-            array_push($optionIds, $optionId);
-        }
-        return $optionIds;
-    }
-
-    public function deleteOptionsInDatabase($options)
-    {
-        foreach ($options as $option) {
-            Option::find($option)->delete();
-        }
-    }
-
-    public function deleteExpectedAssignments($expectedAssignments)
-    {
-        foreach ($expectedAssignments as $expectedAssignment) {
-            Assignment::where('date', self::$date)
-                ->where('resident', $expectedAssignment[0])
-                ->where('schedule', $expectedAssignment[1])
-                ->where('anesthesiologist_id', $expectedAssignment[2])
-                ->where('attending', $expectedAssignment[3])
-                ->delete();
         }
     }
 
@@ -77,7 +84,6 @@ class AutoAssignmentTest extends TestCase
                 ->where('resident', $expectedAssignment[0])
                 ->where('schedule', $expectedAssignment[1])
                 ->where('anesthesiologist_id', $expectedAssignment[2])
-                ->where('attending', $expectedAssignment[3])
                 ->exists();
             $allCorrect = $allCorrect && $assignmentExists;
         }
@@ -95,398 +101,324 @@ class AutoAssignmentTest extends TestCase
         return $allCorrect;
     }
 
-    public function callAssignmentMethod()
-    {
-        $autoAssignment = new AutoAssignment();
-        $autoAssignment->assignment(self::$date);
-    }
-
     // Tests for ticketing given types assignments
-
     public function testPreferenceTicketingWithAnestsGranted()
     {
         $options = [
-            [self::$residentA, self::$CCCT10, 1, 1],
-            [self::$residentB, self::$CCCT10, 1, 1],
-            [self::$residentB, self::$CCCT14, 2, 2],
-            [self::$residentC, self::$CCCT10, 1, 1],
-            [self::$residentC, self::$CCCT14, 2, 2],
-            [self::$residentC, self::$CCCT11, 3, 3],
+            [$this->residentA, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 2, 2, $this->milestone_id],
+            [$this->residentC, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 2, 2, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 3, 3, $this->milestone_id],
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$CCCT10, 1, self::$CCCT10Attending],
-            [self::$residentB, self::$CCCT14, 2, self::$CCCT14Attending],
-            [self::$residentC, self::$CCCT11, 3, self::$CCCT11Attending],
+            [$this->residentA, $this->CCCT10, 1],
+            [$this->residentB, $this->CCCT14, 2],
+            [$this->residentC, $this->CCCT11, 3],
         ];
-        $expectedProbTotals = [[self::$residentA, 2], [self::$residentB, 3], [self::$residentC, 4]];
+        $expectedProbTotals = [[$this->residentA, 2], [$this->residentB, 3], [$this->residentC, 4]];
 
-        $optionIds = self::addOptionsToDatabase($options);
-        Probability::where('resident', self::$residentA)->update(['total' => 2]);
-        Probability::where('resident', self::$residentB)->update(['total' => 1]);
-        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+        self::addOptionsToDatabase($options);
+        Probability::where('resident', $this->residentA)->update(['total' => 2]);
+        Probability::where('resident', $this->residentB)->update(['total' => 1]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
-        self::callAssignmentMethod();
+        $this->autoAssignment->assignment(self::$date);
 
-        $correctAssignments = self::correctAssignments($expectedAssignments);
-        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
-
-        self::deleteOptionsInDatabase($optionIds);
-        self::deleteExpectedAssignments($expectedAssignments);
-
-        $this->assertTrue($correctAssignments);
-        $this->assertTrue($correctProbabilityTotals);
+        $this->assertTrue(self::correctAssignments($expectedAssignments));
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
     }
 
     public function testPreferenceTicketingWithAnestsNotGranted()
     {
         $options = [
-            [self::$residentA, self::$EP05, 1, 1],
-            [self::$residentB, self::$CCCT10, 1, 1],
-            [self::$residentC, self::$CCCT10, 1, 1],
-            [self::$residentC, self::$CCCT14, 2, 1],
-            [self::$residentD, self::$CCCT10, 1, 1],
-            [self::$residentD, self::$CCCT14, 2, 1],
-            [self::$residentD, self::$CCCT11, 3, 1],
+            [$this->residentA, $this->EP05, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 2, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT14, 2, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT11, 3, 1, $this->milestone_id],
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$EP05, 1, self::$EP05Attending],
-            [self::$residentB, self::$CCCT10, null, self::$CCCT10Attending],
-            [self::$residentC, self::$CCCT14, null, self::$CCCT14Attending],
-            [self::$residentD, self::$CCCT11, null, self::$CCCT11Attending],
+            [$this->residentA, $this->EP05, 1],
+            [$this->residentB, $this->CCCT10, null],
+            [$this->residentC, $this->CCCT14, null],
+            [$this->residentD, $this->CCCT11, null],
         ];
         $expectedProbTotals = [
-            [self::$residentA, 0],
-            [self::$residentB, 3],
-            [self::$residentC, 4],
-            [self::$residentD, 5],
+            [$this->residentA, 0],
+            [$this->residentB, 3],
+            [$this->residentC, 4],
+            [$this->residentD, 5],
         ];
 
-        $optionIds = self::addOptionsToDatabase($options);
-        Probability::where('resident', self::$residentA)->update(['total' => 0]);
-        Probability::where('resident', self::$residentB)->update(['total' => 2]);
-        Probability::where('resident', self::$residentC)->update(['total' => 1]);
-        Probability::where('resident', self::$residentD)->update(['total' => 0]);
+        self::addOptionsToDatabase($options);
+        Probability::where('resident', $this->residentA)->update(['total' => 0]);
+        Probability::where('resident', $this->residentB)->update(['total' => 2]);
+        Probability::where('resident', $this->residentC)->update(['total' => 1]);
+        Probability::where('resident', $this->residentD)->update(['total' => 0]);
 
-        self::callAssignmentMethod();
+        $this->autoAssignment->assignment(self::$date);
 
-        $correctAssignments = self::correctAssignments($expectedAssignments);
-        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
-
-        self::deleteOptionsInDatabase($optionIds);
-        self::deleteExpectedAssignments($expectedAssignments);
-
-        $this->assertTrue($correctAssignments);
-        $this->assertTrue($correctProbabilityTotals);
+        $this->assertTrue(self::correctAssignments($expectedAssignments));
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
     }
 
     public function testPreferenceTicketingNoAnestsPreferences()
     {
         $options = [
-            [self::$residentA, self::$CCCT10, 1, null],
-            [self::$residentB, self::$CCCT10, 1, null],
-            [self::$residentB, self::$CCCT14, 2, null],
-            [self::$residentC, self::$CCCT10, 1, null],
-            [self::$residentC, self::$CCCT14, 2, null],
-            [self::$residentC, self::$CCCT11, 3, null],
+            [$this->residentA, $this->CCCT10, 1, null, $this->milestone_id],
+            [$this->residentB, $this->CCCT10, 1, null, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 2, null, $this->milestone_id],
+            [$this->residentC, $this->CCCT10, 1, null, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 2, null, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 3, null, $this->milestone_id],
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$CCCT10, null, self::$CCCT10Attending],
-            [self::$residentB, self::$CCCT14, null, self::$CCCT14Attending],
-            [self::$residentC, self::$CCCT11, null, self::$CCCT11Attending],
+            [$this->residentA, $this->CCCT10, null],
+            [$this->residentB, $this->CCCT14, null],
+            [$this->residentC, $this->CCCT11, null],
         ];
-        $expectedProbTotals = [[self::$residentA, 2], [self::$residentB, 3], [self::$residentC, 4]];
+        $expectedProbTotals = [[$this->residentA, 2], [$this->residentB, 3], [$this->residentC, 4]];
 
-        $optionIds = self::addOptionsToDatabase($options);
-        Probability::where('resident', self::$residentA)->update(['total' => 2]);
-        Probability::where('resident', self::$residentB)->update(['total' => 1]);
-        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+        self::addOptionsToDatabase($options);
+        Probability::where('resident', $this->residentA)->update(['total' => 2]);
+        Probability::where('resident', $this->residentB)->update(['total' => 1]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
-        self::callAssignmentMethod();
+        $this->autoAssignment->assignment(self::$date);
 
-        $correctAssignments = self::correctAssignments($expectedAssignments);
-        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
-
-        self::deleteOptionsInDatabase($optionIds);
-        self::deleteExpectedAssignments($expectedAssignments);
-
-        $this->assertTrue($correctAssignments);
-        $this->assertTrue($correctProbabilityTotals);
+        $this->assertTrue(self::correctAssignments($expectedAssignments));
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
     }
 
     public function testPreferenceTicketingForUnassignedResidents()
     {
         $options = [
-            [self::$residentA, self::$CCCT14, 1, 1],
-            [self::$residentB, self::$CCCT14, 1, 1],
-            [self::$residentC, self::$CCCT14, 1, 1],
-            [self::$residentC, self::$CCCT14, 2, 1],
-            [self::$residentD, self::$CCCT14, 1, 1],
-            [self::$residentD, self::$CCCT14, 2, 1],
-            [self::$residentD, self::$CCCT14, 3, 1],
+            [$this->residentA, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 2, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT14, 2, 1, $this->milestone_id],
+            [$this->residentD, $this->CCCT14, 3, 1, $this->milestone_id],
         ];
-        $expectedAssignments = [[self::$residentA, self::$CCCT14, 1, self::$CCCT14Attending]];
+        $expectedAssignments = [[$this->residentA, $this->CCCT14, 1]];
         $expectedProbTotals = [
-            [self::$residentA, 1],
-            [self::$residentB, 6],
-            [self::$residentC, 6],
-            [self::$residentD, 6],
+            [$this->residentA, 1],
+            [$this->residentB, 6],
+            [$this->residentC, 6],
+            [$this->residentD, 6],
         ];
 
-        $optionIds = self::addOptionsToDatabase($options);
-        Probability::where('resident', self::$residentA)->update(['total' => 1]);
-        Probability::where('resident', self::$residentB)->update(['total' => 0]);
-        Probability::where('resident', self::$residentC)->update(['total' => 0]);
-        Probability::where('resident', self::$residentD)->update(['total' => 0]);
+        self::addOptionsToDatabase($options);
+        Probability::where('resident', $this->residentA)->update(['total' => 1]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
+        Probability::where('resident', $this->residentD)->update(['total' => 0]);
 
-        self::callAssignmentMethod();
+        $this->autoAssignment->assignment(self::$date);
 
-        $correctAssignments = self::correctAssignments($expectedAssignments);
-        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
-
-        self::deleteOptionsInDatabase($optionIds);
-        self::deleteExpectedAssignments($expectedAssignments);
-
-        $this->assertTrue($correctAssignments);
-        $this->assertTrue($correctProbabilityTotals);
+        $this->assertTrue(self::correctAssignments($expectedAssignments));
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
     }
 
     // Tests for Anesthesiologist Preference Assignment
-
     public function testAnestAssignedOnce()
     {
-        $options = [[self::$residentA, self::$EP05, 1, 1], [self::$residentB, self::$CCCT14, 1, 1]];
-        $expectedAssignments = [
-            [self::$residentA, self::$EP05, 1, self::$EP05Attending],
-            [self::$residentB, self::$CCCT14, null, self::$CCCT14Attending],
+        $options = [
+            [$this->residentA, $this->EP05, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 1, 1, $this->milestone_id],
         ];
-        $expectedProbTotals = [[self::$residentA, 0], [self::$residentB, 1]];
+        $expectedAssignments = [[$this->residentA, $this->EP05, 1], [$this->residentB, $this->CCCT14, null]];
+        $expectedProbTotals = [[$this->residentA, 0], [$this->residentB, 1]];
 
-        $optionIds = self::addOptionsToDatabase($options);
-        Probability::where('resident', self::$residentA)->update(['total' => 0]);
-        Probability::where('resident', self::$residentB)->update(['total' => 0]);
+        self::addOptionsToDatabase($options);
+        Probability::where('resident', $this->residentA)->update(['total' => 0]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
 
-        self::callAssignmentMethod();
+        $this->autoAssignment->assignment(self::$date);
 
-        $correctAssignments = self::correctAssignments($expectedAssignments);
-        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
-
-        self::deleteOptionsInDatabase($optionIds);
-        self::deleteExpectedAssignments($expectedAssignments);
-
-        $this->assertTrue($correctAssignments);
-        $this->assertTrue($correctProbabilityTotals);
+        $this->assertTrue(self::correctAssignments($expectedAssignments));
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
     }
 
     public function testAnestDoubleAssignedCCCT()
     {
         $options = [
-            [self::$residentA, self::$CCCT10, 1, 1],
-            [self::$residentB, self::$CCCT14, 1, 1],
-            [self::$residentC, self::$CCCT11, 1, 1],
+            [$this->residentA, $this->CCCT10, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 1, 1, $this->milestone_id],
         ];
         $expectedAssignments1 = [
-            [self::$residentA, self::$CCCT10, 1, self::$CCCT10Attending],
-            [self::$residentB, self::$CCCT14, 1, self::$CCCT14Attending],
-            [self::$residentC, self::$CCCT11, null, self::$CCCT11Attending],
+            [$this->residentA, $this->CCCT10, 1],
+            [$this->residentB, $this->CCCT14, 1],
+            [$this->residentC, $this->CCCT11, null],
         ];
-        $expectedProbTotals1 = [[self::$residentA, 0], [self::$residentB, 0], [self::$residentC, 1]];
+        $expectedProbTotals1 = [[$this->residentA, 0], [$this->residentB, 0], [$this->residentC, 1]];
         $expectedAssignments2 = [
-            [self::$residentA, self::$CCCT10, 1, self::$CCCT10Attending],
-            [self::$residentB, self::$CCCT14, null, self::$CCCT14Attending],
-            [self::$residentC, self::$CCCT11, 1, self::$CCCT11Attending],
+            [$this->residentA, $this->CCCT10, 1],
+            [$this->residentB, $this->CCCT14, null],
+            [$this->residentC, $this->CCCT11, 1],
         ];
-        $expectedProbTotals2 = [[self::$residentA, 0], [self::$residentB, 1], [self::$residentC, 0]];
+        $expectedProbTotals2 = [[$this->residentA, 0], [$this->residentB, 1], [$this->residentC, 0]];
 
-        $optionIds = self::addOptionsToDatabase($options);
-        Probability::where('resident', self::$residentA)->update(['total' => 0]);
-        Probability::where('resident', self::$residentB)->update(['total' => 0]);
-        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+        self::addOptionsToDatabase($options);
+        Probability::where('resident', $this->residentA)->update(['total' => 0]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
-        self::callAssignmentMethod();
+        $this->autoAssignment->assignment(self::$date);
 
-        $bGotAnest = self::correctAssignments($expectedAssignments1);
-        $cGotAnest = self::correctAssignments($expectedAssignments2);
-
-        self::deleteOptionsInDatabase($optionIds);
-        if ($bGotAnest) {
-            self::deleteExpectedAssignments($expectedAssignments1);
-            $this->assertTrue(self::correctProbTotals($expectedProbTotals1));
-        } else {
-            self::deleteExpectedAssignments($expectedAssignments2);
-            $this->assertTrue(self::correctProbTotals($expectedProbTotals2));
-        }
-        $this->assertTrue($bGotAnest || $cGotAnest);
+        $this->assertTrue(
+            self::correctAssignments($expectedAssignments1) || self::correctAssignments($expectedAssignments2)
+        );
+        $this->assertTrue(
+            self::correctProbTotals($expectedProbTotals1) || self::correctProbTotals($expectedProbTotals2)
+        );
     }
 
     public function testAnestDoubleAssignedUH()
     {
         $options = [
-            [self::$residentA, self::$UH19, 1, 1],
-            [self::$residentB, self::$UH2, 1, 1],
-            [self::$residentC, self::$UH16, 1, 1],
+            [$this->residentA, $this->UH19, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->UH2, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->UH16, 1, 1, $this->milestone_id],
         ];
         $expectedAssignments1 = [
-            [self::$residentA, self::$UH19, 1, self::$UH19Attending],
-            [self::$residentB, self::$UH2, 1, self::$UH2Attending],
-            [self::$residentC, self::$UH16, null, self::$UH16Attending],
+            [$this->residentA, $this->UH19, 1],
+            [$this->residentB, $this->UH2, 1],
+            [$this->residentC, $this->UH16, null],
         ];
-        $expectedProbTotals1 = [[self::$residentA, 0], [self::$residentB, 0], [self::$residentC, 1]];
+        $expectedProbTotals1 = [[$this->residentA, 0], [$this->residentB, 0], [$this->residentC, 1]];
         $expectedAssignments2 = [
-            [self::$residentA, self::$UH19, 1, self::$UH19Attending],
-            [self::$residentB, self::$UH2, null, self::$UH2Attending],
-            [self::$residentC, self::$UH16, 1, self::$UH16Attending],
+            [$this->residentA, $this->UH19, 1],
+            [$this->residentB, $this->UH2, null],
+            [$this->residentC, $this->UH16, 1],
         ];
-        $expectedProbTotals2 = [[self::$residentA, 0], [self::$residentB, 1], [self::$residentC, 0]];
+        $expectedProbTotals2 = [[$this->residentA, 0], [$this->residentB, 1], [$this->residentC, 0]];
 
-        $optionIds = self::addOptionsToDatabase($options);
-        Probability::where('resident', self::$residentA)->update(['total' => 0]);
-        Probability::where('resident', self::$residentB)->update(['total' => 0]);
-        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+        self::addOptionsToDatabase($options);
+        Probability::where('resident', $this->residentA)->update(['total' => 0]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
-        self::callAssignmentMethod();
+        $this->autoAssignment->assignment(self::$date);
 
-        $bGotAnest = self::correctAssignments($expectedAssignments1);
-        $cGotAnest = self::correctAssignments($expectedAssignments2);
-
-        self::deleteOptionsInDatabase($optionIds);
-        if ($bGotAnest) {
-            self::deleteExpectedAssignments($expectedAssignments1);
-            $this->assertTrue(self::correctProbTotals($expectedProbTotals1));
-        } else {
-            self::deleteExpectedAssignments($expectedAssignments2);
-            $this->assertTrue(self::correctProbTotals($expectedProbTotals2));
-        }
-
-        $this->assertTrue($bGotAnest || $cGotAnest);
+        $this->assertTrue(
+            self::correctAssignments($expectedAssignments1) || self::correctAssignments($expectedAssignments2)
+        );
+        $this->assertTrue(
+            self::correctProbTotals($expectedProbTotals1) || self::correctProbTotals($expectedProbTotals2)
+        );
     }
 
     public function testAnestDoubleAssignedCCCTLeasingUHGivenCCCTAssignment()
     {
         $options = [
-            [self::$residentA, self::$CCCT14, 1, 1],
-            [self::$residentB, self::$CCCTLeasingUH, 1, 1],
-            [self::$residentC, self::$CCCT14, 1, 1],
-            [self::$residentC, self::$CCCT11, 2, 1],
+            [$this->residentA, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT19LeasingUH7, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 2, 1, $this->milestone_id],
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$CCCT14, 1, self::$CCCT14Attending],
-            [self::$residentB, self::$CCCTLeasingUH, 1, self::$CCCTLeasingUHAttending],
-            [self::$residentC, self::$CCCT11, null, self::$CCCT11Attending],
+            [$this->residentA, $this->CCCT14, 1],
+            [$this->residentB, $this->CCCT19LeasingUH7, 1],
+            [$this->residentC, $this->CCCT11, null],
         ];
-        $expectedProbTotals = [[self::$residentA, 1], [self::$residentB, 0], [self::$residentC, 3]];
+        $expectedProbTotals = [[$this->residentA, 1], [$this->residentB, 0], [$this->residentC, 3]];
 
-        $optionIds = self::addOptionsToDatabase($options);
-        Probability::where('resident', self::$residentA)->update(['total' => 1]);
-        Probability::where('resident', self::$residentB)->update(['total' => 0]);
-        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+        self::addOptionsToDatabase($options);
+        Probability::where('resident', $this->residentA)->update(['total' => 1]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
-        self::callAssignmentMethod();
+        $this->autoAssignment->assignment(self::$date);
 
-        $correctAssignments = self::correctAssignments($expectedAssignments);
-        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
-
-        self::deleteOptionsInDatabase($optionIds);
-        self::deleteExpectedAssignments($expectedAssignments);
-
-        $this->assertTrue($correctAssignments);
-        $this->assertTrue($correctProbabilityTotals);
+        $this->assertTrue(self::correctAssignments($expectedAssignments));
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
     }
 
     public function testAnestDoubleAssignedCCCTGivenCCCTLeasingUHAssignment()
     {
         $options = [
-            [self::$residentA, self::$CCCTLeasingUH, 1, 1],
-            [self::$residentB, self::$CCCT14, 1, 1],
-            [self::$residentC, self::$CCCT14, 1, 1],
-            [self::$residentC, self::$CCCT11, 2, 1],
+            [$this->residentA, $this->CCCT19LeasingUH7, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT14, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 2, 1, $this->milestone_id],
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$CCCTLeasingUH, 1, self::$CCCTLeasingUHAttending],
-            [self::$residentB, self::$CCCT14, 1, self::$CCCT14Attending],
-            [self::$residentC, self::$CCCT11, null, self::$CCCT11Attending],
+            [$this->residentA, $this->CCCT19LeasingUH7, 1],
+            [$this->residentB, $this->CCCT14, 1],
+            [$this->residentC, $this->CCCT11, null],
         ];
-        $expectedProbTotals = [[self::$residentA, 0], [self::$residentB, 1], [self::$residentC, 3]];
+        $expectedProbTotals = [[$this->residentA, 0], [$this->residentB, 1], [$this->residentC, 3]];
 
-        $optionIds = self::addOptionsToDatabase($options);
-        Probability::where('resident', self::$residentA)->update(['total' => 0]);
-        Probability::where('resident', self::$residentB)->update(['total' => 1]);
-        Probability::where('resident', self::$residentC)->update(['total' => 0]);
-        self::callAssignmentMethod();
+        self::addOptionsToDatabase($options);
+        Probability::where('resident', $this->residentA)->update(['total' => 0]);
+        Probability::where('resident', $this->residentB)->update(['total' => 1]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
-        $correctAssignments = self::correctAssignments($expectedAssignments);
-        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
+        $this->autoAssignment->assignment(self::$date);
 
-        self::deleteOptionsInDatabase($optionIds);
-        self::deleteExpectedAssignments($expectedAssignments);
-
-        $this->assertTrue($correctAssignments);
-        $this->assertTrue($correctProbabilityTotals);
+        $this->assertTrue(self::correctAssignments($expectedAssignments));
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
     }
 
     public function testAnestDoubleAssignedCCCTLeasingUHGivenUHAssignment()
     {
         $options = [
-            [self::$residentA, self::$UH19, 1, 1],
-            [self::$residentB, self::$UH19, 1, 1],
-            [self::$residentB, self::$CCCTLeasingUH, 2, 1],
-            [self::$residentC, self::$UH19, 1, 1],
-            [self::$residentC, self::$CCCTLeasingUH, 2, 1],
-            [self::$residentC, self::$UH2, 3, 1],
+            [$this->residentA, $this->UH19, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->UH19, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT19LeasingUH7, 2, 1, $this->milestone_id],
+            [$this->residentC, $this->UH19, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT19LeasingUH7, 2, 1, $this->milestone_id],
+            [$this->residentC, $this->UH2, 3, 1, $this->milestone_id],
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$UH19, 1, self::$UH19Attending],
-            [self::$residentB, self::$CCCTLeasingUH, null, self::$CCCTLeasingUHAttending],
-            [self::$residentC, self::$UH2, 1, self::$UH2Attending],
+            [$this->residentA, $this->UH19, 1],
+            [$this->residentB, $this->CCCT19LeasingUH7, null],
+            [$this->residentC, $this->UH2, 1],
         ];
-        $expectedProbTotals = [[self::$residentA, 2], [self::$residentB, 4], [self::$residentC, 4]];
+        $expectedProbTotals = [[$this->residentA, 2], [$this->residentB, 4], [$this->residentC, 4]];
 
-        $optionIds = self::addOptionsToDatabase($options);
-        Probability::where('resident', self::$residentA)->update(['total' => 2]);
-        Probability::where('resident', self::$residentB)->update(['total' => 1]);
-        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+        self::addOptionsToDatabase($options);
+        Probability::where('resident', $this->residentA)->update(['total' => 2]);
+        Probability::where('resident', $this->residentB)->update(['total' => 1]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
-        self::callAssignmentMethod();
+        $this->autoAssignment->assignment(self::$date);
 
-        $correctAssignments = self::correctAssignments($expectedAssignments);
-        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
-
-        self::deleteOptionsInDatabase($optionIds);
-        self::deleteExpectedAssignments($expectedAssignments);
-
-        $this->assertTrue($correctAssignments);
-        $this->assertTrue($correctProbabilityTotals);
+        $this->assertTrue(self::correctAssignments($expectedAssignments));
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
     }
 
     public function testAnestDoubleAssignedUHGivenCCCTLeasingUHAssignment()
     {
         $options = [
-            [self::$residentA, self::$CCCTLeasingUH, 1, 1],
-            [self::$residentB, self::$CCCTLeasingUH, 1, 1],
-            [self::$residentB, self::$UH19, 2, 1],
-            [self::$residentC, self::$CCCTLeasingUH, 1, 1],
-            [self::$residentC, self::$CCCT11, 2, 1],
+            [$this->residentA, $this->CCCT19LeasingUH7, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->CCCT19LeasingUH7, 1, 1, $this->milestone_id],
+            [$this->residentB, $this->UH19, 2, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT19LeasingUH7, 1, 1, $this->milestone_id],
+            [$this->residentC, $this->CCCT11, 2, 1, $this->milestone_id],
         ];
         $expectedAssignments = [
-            [self::$residentA, self::$CCCTLeasingUH, 1, self::$CCCTLeasingUHAttending],
-            [self::$residentB, self::$UH19, null, self::$UH19Attending],
-            [self::$residentC, self::$CCCT11, 1, self::$CCCT11Attending],
+            [$this->residentA, $this->CCCT19LeasingUH7, 1],
+            [$this->residentB, $this->UH19, null],
+            [$this->residentC, $this->CCCT11, 1],
         ];
-        $expectedProbTotals = [[self::$residentA, 1], [self::$residentB, 3], [self::$residentC, 2]];
+        $expectedProbTotals = [[$this->residentA, 1], [$this->residentB, 3], [$this->residentC, 2]];
 
-        $optionIds = self::addOptionsToDatabase($options);
-        Probability::where('resident', self::$residentA)->update(['total' => 1]);
-        Probability::where('resident', self::$residentB)->update(['total' => 0]);
-        Probability::where('resident', self::$residentC)->update(['total' => 0]);
+        self::addOptionsToDatabase($options);
+        Probability::where('resident', $this->residentA)->update(['total' => 1]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
-        self::callAssignmentMethod();
+        $this->autoAssignment->assignment(self::$date);
 
-        $correctAssignments = self::correctAssignments($expectedAssignments);
-        $correctProbabilityTotals = self::correctProbTotals($expectedProbTotals);
-
-        self::deleteOptionsInDatabase($optionIds);
-        self::deleteExpectedAssignments($expectedAssignments);
-
-        $this->assertTrue($correctAssignments);
-        $this->assertTrue($correctProbabilityTotals);
+        $this->assertTrue(self::correctAssignments($expectedAssignments));
+        $this->assertTrue(self::correctProbTotals($expectedProbTotals));
     }
 }
