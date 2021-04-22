@@ -256,7 +256,6 @@ class ScheduleDataController extends Controller
         $schedule_data_ids = explode('_', $trimmed_id);
         // get current preferences
         foreach ($schedule_data_ids as $i => $schedule_data_id) {
-            //last element of schedule_data_ids is blank
             if ($schedule_data_id !== '' && $schedule_data_id !== '0') {
                 $schedule = ScheduleData::where('id', $schedule_data_id)->get();
                 $currentChoices[$i] = [
