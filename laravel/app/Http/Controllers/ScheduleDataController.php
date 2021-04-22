@@ -407,7 +407,6 @@ class ScheduleDataController extends Controller
     private function insertOption()
     {
         // variables to track if the use has overwritten a preference
-        $notify = false;
         $overwrittenChoices = [];
 
         // get the id from the form
@@ -445,7 +444,6 @@ class ScheduleDataController extends Controller
                         ->where("option", $choice)
                         ->count() != 0
                 ) {
-                    $notify = true;
                     array_push($overwrittenChoices, $i + 1);
 
                     Option::where("date", $date)
@@ -484,7 +482,7 @@ class ScheduleDataController extends Controller
         }
 
         // if data was overwritten, send a notification
-        if ($notify == true) {
+        if (count($overwrittenChoices) > 0) {
             $this->notifyResidentOverwrittenPreferences(
                 $residentName,
                 $_SERVER["HTTP_EMAIL"],
