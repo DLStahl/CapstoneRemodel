@@ -109,12 +109,6 @@ class ScheduleDataController extends Controller
             ]);
         }
 
-        #echo gettype($schedule);
-        #echo $schedule[0]['room'];
-        #$element = array_pop($schedule);
-        #array_unshift($schedule, $element);
-        #echo $schedule[0]['room'];
-
         $result = [
             'minTime' => $minTime,
             'maxTime' => $maxTime,
@@ -161,7 +155,6 @@ class ScheduleDataController extends Controller
         $schedule = ScheduleData::where('date', $date)
             ->whereNotNull('start_time')
             ->whereNotNull('end_time');
-        // [{room: 'Room name'}, {room: 'Room name'}, {room: 'Room name'}, ...]
         $roomsData = $schedule->select('room')->get();
         $rooms = [];
         foreach ($roomsData as $room) {
@@ -206,7 +199,6 @@ class ScheduleDataController extends Controller
     /**
      * Public functions
      */
-
     public function getDay(
         $day = null,
         $room = null,
@@ -222,7 +214,6 @@ class ScheduleDataController extends Controller
             'thirdday' => 3,
         ];
 
-        // TODO: refactor all the firstday secondday thirdday stuff out
         if (!array_key_exists($day, $day_translation_array)) {
             abort(404);
         }
@@ -241,7 +232,7 @@ class ScheduleDataController extends Controller
         $minTime = $TimeRange_ScheduleData['minTime'];
         $maxTime = $TimeRange_ScheduleData['maxTime'];
         $schedule_data = $TimeRange_ScheduleData['schedule'];
-        $filter_options = self::getFilterOptions($date);
+        $filter_options = $this->getFilterOptions($date);
         $rotation_options = FilterRotation::select('rotation')
             ->distinct()
             ->get();
@@ -261,15 +252,15 @@ class ScheduleDataController extends Controller
         $id = $_REQUEST['schedule_id'];
         $choiceTypes = ['First', 'Second', 'Third'];
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $split = explode('_', $id);
+        $trimmed_id = trim($id, '_');
+        $schedule_data_ids = explode('_', $trimmed_id);
         // get current preferences
-        $currentChoices = [];
-        for ($i = 0; $i < 3; $i++) {
-            if ($split[$i] != 0) {
-                $schedule = ScheduleData::where('id', $split[$i])->get();
+        foreach ($schedule_data_ids as $i => $schedule_data_id) {
+            if ($schedule_data_id !== '' && $schedule_data_id !== '0') {
+                $schedule = ScheduleData::where('id', $schedule_data_id)->get();
                 $currentChoices[$i] = [
                     'schedule' => $schedule,
-                    'case_procedure' => self::parseCaseProcedure($schedule[0]['case_procedure']),
+                    'case_procedure' => $this->parseCaseProcedure($schedule[0]['case_procedure']),
                     'milestone' => Milestone::where('id', $_REQUEST['milestones' . ($i + 1)])->get(),
                     'objective' => $_REQUEST['objectives' . ($i + 1)],
                     'anesthesiologist_pref' => Anesthesiologist::where('id', $_REQUEST['pref_anest' . ($i + 1)])->get(),
@@ -282,7 +273,7 @@ class ScheduleDataController extends Controller
         $date = $currentChoices[0]['schedule'][0]['date'];
         $previousChoices = [];
         $resident = Resident::where('email', $_SERVER['HTTP_EMAIL'])->value('id');
-        for ($i = 0; $i < 3; $i++) {
+        foreach ($schedule_data_ids as $i => $schedule_data_id) {
             $previousOption = Option::where('date', $date)
                 ->where('resident', $resident)
                 ->where('option', $i + 1)
@@ -290,15 +281,13 @@ class ScheduleDataController extends Controller
                 ->get();
             if (sizeof($previousOption) > 0) {
                 $schedule = ScheduleData::where('id', $previousOption[0]['schedule'])->get();
+                $pref_anest = Anesthesiologist::where('id', $previousOption[0]['anesthesiologist_id'])->get();
                 $previousChoices[$i] = [
                     'schedule' => $schedule,
-                    'case_procedure' => self::parseCaseProcedure($schedule[0]['case_procedure']),
+                    'case_procedure' => $this->parseCaseProcedure($schedule[0]['case_procedure']),
                     'milestone' => Milestone::where('id', $previousOption[0]['milestones'])->get(),
                     'objective' => $previousOption[0]['objectives'],
-                    'anesthesiologist_pref' => Anesthesiologist::where(
-                        'id',
-                        $previousOption[0]['anesthesiologist_id']
-                    )->get(),
+                    'anesthesiologist_pref' => $pref_anest,
                 ];
             } else {
                 $previousChoices[$i] = null;
@@ -320,72 +309,27 @@ class ScheduleDataController extends Controller
     public function selectMilestones($id)
     {
         // Get resident data
-        $resident_data = Resident::where('email', $_SERVER['HTTP_EMAIL'])->get();
-        $resident = $resident_data[0]['id'];
+        $current_resident = Resident::where('email', $_SERVER['HTTP_EMAIL'])->get();
+        $resident = $current_resident[0]['id'];
 
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $split = explode('_', $id);
+        $trimmed_id = trim($id, '_');
+        $schedule_data_ids = explode('_', $trimmed_id);
 
-        //Initiate first choice data
-        $data1 = [
-            'schedule' => null,
-            'attending' => null,
-        ];
-        // get information for first choice
-        $choice = 1;
-        $schedule_data1 = ScheduleData::where('id', $split[0])->get();
-        $attending_string = $schedule_data1[0]['lead_surgeon'];
-        $attending = substr(
-            $attending_string,
-            strpos($attending_string, '[') + 1,
-            strpos($attending_string, ']') - (strpos($attending_string, '[') + 1)
-        );
-        $attending1 = substr($attending_string, 0, strpos($attending_string, '['));
-        // Store first choice data
-        $date = $schedule_data1[0]['date'];
-        $data1['schedule'] = $schedule_data1[0];
-        $data1['attending'] = $attending1;
-
-        //Initiate second choice data
-        $data2 = [
-            'schedule' => null,
-            'attending' => null,
-        ];
-        $choice++;
-        // If the second choice exists, get information for second choice
-        if ($split[1] != 0) {
-            $schedule_data2 = ScheduleData::where('id', $split[1])->get();
-            $attending_string = $schedule_data2[0]['lead_surgeon'];
-            $attending = substr(
-                $attending_string,
-                strpos($attending_string, '[') + 1,
-                strpos($attending_string, ']') - (strpos($attending_string, '[') + 1)
-            );
-            $attending2 = substr($attending_string, 0, strpos($attending_string, '['));
-            // Store second choice data
-            $data2['schedule'] = $schedule_data2[0];
-            $data2['attending'] = $attending2;
-        }
-
-        //Initiate second choice data
-        $data3 = [
-            'schedule' => null,
-            'attending' => null,
-        ];
-        $choice++;
-        // If the third choice exists, get information for third choice
-        if ($split[2] != 0) {
-            $schedule_data3 = ScheduleData::where('id', $split[2])->get();
-            $attending_string = $schedule_data3[0]['lead_surgeon'];
-            $attending = substr(
-                $attending_string,
-                strpos($attending_string, '[') + 1,
-                strpos($attending_string, ']') - (strpos($attending_string, '[') + 1)
-            );
-            $attending3 = substr($attending_string, 0, strpos($attending_string, '['));
-            // Store second choice data
-            $data3['schedule'] = $schedule_data3[0];
-            $data3['attending'] = $attending3;
+        foreach ($schedule_data_ids as $i => $schedule_data_id) {
+            $resident_choices[$i] = [
+                'schedule' => null,
+                'lead_surgeon' => null,
+            ];
+            if ($schedule_data_id !== '' && $schedule_data_id !== '0') {
+                $schedule_data[$i] = ScheduleData::where('id', $schedule_data_id)->get();
+                $lead_surgeon_string = $schedule_data[$i][0]['lead_surgeon'];
+                preg_match('/(.+) \[(\d+)\]/', $lead_surgeon_string, $matches); // get name of the lead surgeon
+                $lead_surgeon = count($matches) > 1 ? $matches[1] : 'OORA';
+                $date = $schedule_data[$i][0]['date'];
+                $resident_choices[$i]['schedule'] = $schedule_data[$i][0];
+                $resident_choices[$i]['lead_surgeon'] = $lead_surgeon;
+            }
         }
 
         $milestones = Milestone::where('exists', 1)->get();
@@ -394,130 +338,47 @@ class ScheduleDataController extends Controller
             ->orderBy('last_name')
             ->get();
 
-        $datas = compact('data1', 'data2', 'data3');
-
-        return view('schedules.resident.milestone', compact('id', 'milestones', 'datas', 'anesthesiologists'));
+        return view('schedules.resident.milestone', compact('id', 'milestones', 'resident_choices', 'anesthesiologists'));
     }
 
     public function updateMilestones($id)
     {
         // Get resident data
-        $resident_data = Resident::where('email', $_SERVER['HTTP_EMAIL'])->get();
-        $resident = $resident_data[0]['id'];
-
+        $current_resident = Resident::where('email', $_SERVER['HTTP_EMAIL'])->first();
+        $resident_id = $current_resident['id'];
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $split = explode('_', $id);
+        $trimmed_id = trim($id, '_');
+        $schedule_data_ids = explode('_', $trimmed_id);
+        foreach ($schedule_data_ids as $i => $schedule_data_id) {
+            $resident_choices[$i] = [
+                'schedule' => null,
+                'lead_surgeon' => null,
+                'milestone' => null,
+                'objective' => null,
+                'pref_anest' => null,
+            ];
+            if ($schedule_data_id !== '' && $schedule_data_id !== '0') {
+                $choice = $i + 1;
+                $schedule_data[$i] = ScheduleData::where('id', $schedule_data_id)->get();
+                $lead_surgeon_string = $schedule_data[$i][0]['lead_surgeon'];
+                preg_match('/(.+) \[(\d+)\]/', $lead_surgeon_string, $matches); // get name of the lead surgeon
+                $lead_surgeon = count($matches) > 1 ? $matches[1] : 'OORA';
+                $date = $schedule_data[$i][0]['date'];
+                $resident_choices[$i]['schedule'] = $schedule_data[$i][0];
+                $resident_choices[$i]['lead_surgeon'] = $lead_surgeon;
+                $option[$i] = Option::where('date', $date)
+                    ->where('resident', $resident_id)
+                    ->where('option', $choice)
+                    ->get();
 
-        //Initiate first choice data
-        $data1 = [
-            'schedule' => null,
-            'attending' => null,
-            'milestone' => null,
-            'objective' => null,
-            'pref_anest' => null,
-        ];
-        // get information for first choice
-        $choice = 1;
-        $schedule_data1 = ScheduleData::where('id', $split[0])->get();
-        $attending_string = $schedule_data1[0]['lead_surgeon'];
-        $attending = substr(
-            $attending_string,
-            strpos($attending_string, '[') + 1,
-            strpos($attending_string, ']') - (strpos($attending_string, '[') + 1)
-        );
-        $attending1 = substr($attending_string, 0, strpos($attending_string, '['));
-
-        // Store first choice data
-        $date = $schedule_data1[0]['date'];
-        $data1['schedule'] = $schedule_data1[0];
-        $data1['attending'] = $attending1;
-        // Find previous milestone and educational objective
-        $option1 = Option::where('date', $date)
-            ->where('resident', $resident)
-            ->where('option', 1)
-            ->get();
-        if (sizeof($option1) > 0) {
-            $milestone1 = Milestone::where('id', $option1[0]['milestones'])->get();
-            if (sizeof($milestone1) > 0) {
-                $data1['milestone'] = $milestone1[0];
-            }
-            $data1['objective'] = $option1[0]['objectives'];
-            $data1['pref_anest'] = $option1[0]['anesthesiologist_id'];
-        }
-
-        //Initiate second choice data
-        $data2 = [
-            'schedule' => null,
-            'attending' => null,
-            'milestone' => null,
-            'objective' => null,
-            'pref_anest' => null,
-        ];
-        $choice++;
-        // If the second choice exists, get information for second choice
-        if ($split[1] != 0) {
-            $schedule_data2 = ScheduleData::where('id', $split[1])->get();
-            $attending_string = $schedule_data2[0]['lead_surgeon'];
-            $attending = substr(
-                $attending_string,
-                strpos($attending_string, '[') + 1,
-                strpos($attending_string, ']') - (strpos($attending_string, '[') + 1)
-            );
-            $attending2 = substr($attending_string, 0, strpos($attending_string, '['));
-
-            // Store second choice data
-            $data2['schedule'] = $schedule_data2[0];
-            $data2['attending'] = $attending2;
-            // Find previous milestone and educational objective
-            $option2 = Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', 2)
-                ->get();
-            if (sizeof($option2) > 0) {
-                $milestone2 = Milestone::where('id', $option2[0]['milestones'])->get();
-                if (sizeof($milestone2) > 0) {
-                    $data2['milestone'] = $milestone2[0];
+                if (sizeof($option[$i]) > 0) {
+                    $milestone[$i] = Milestone::where('id', $option[$i][0]['milestones'])->get();
+                    if (sizeof($milestone[$i]) > 0) {
+                        $resident_choices[$i]['milestone'] = $milestone[$i][0];
+                    }
+                    $resident_choices[$i]['objective'] = $option[$i][0]['objectives'];
+                    $resident_choices[$i]['pref_anest'] = $option[$i][0]['anesthesiologist_id'];
                 }
-                $data2['objective'] = $option2[0]['objectives'];
-                $data2['pref_anest'] = $option2[0]['anesthesiologist_id'];
-            }
-        }
-
-        //Initiate second choice data
-        $data3 = [
-            'schedule' => null,
-            'attending' => null,
-            'milestone' => null,
-            'objective' => null,
-            'pref_anest' => null,
-        ];
-        $choice++;
-        // If the third choice exists, get information for third choice
-        if ($split[2] != 0) {
-            $schedule_data3 = ScheduleData::where('id', $split[2])->get();
-            $attending_string = $schedule_data3[0]['lead_surgeon'];
-            $attending = substr(
-                $attending_string,
-                strpos($attending_string, '[') + 1,
-                strpos($attending_string, ']') - (strpos($attending_string, '[') + 1)
-            );
-            $attending3 = substr($attending_string, 0, strpos($attending_string, '['));
-
-            // Store second choice data
-            $data3['schedule'] = $schedule_data3[0];
-            $data3['attending'] = $attending3;
-            // Find previous milestone and educational objective
-            $option3 = Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', 3)
-                ->get();
-            if (sizeof($option3) > 0) {
-                $milestone3 = Milestone::where('id', $option3[0]['milestones'])->get();
-                if (sizeof($milestone3) > 0) {
-                    $data3['milestone'] = $milestone3[0];
-                }
-                $data3['objective'] = $option3[0]['objectives'];
-                $data3['pref_anest'] = $option3[0]['anesthesiologist_id'];
             }
         }
 
@@ -527,330 +388,129 @@ class ScheduleDataController extends Controller
             ->orderBy('last_name')
             ->get();
 
-        $datas = compact('data1', 'data2', 'data3');
-
-        return view('schedules.resident.milestone', compact('id', 'milestones', 'datas', 'anesthesiologists'));
+        return view('schedules.resident.milestone', compact('id', 'milestones', 'resident_choices', 'anesthesiologists'));
     }
 
     public function notifyResidentOverwrittenPreferences($toName, $toEmail, $residentName, $date, $overwrittenChoices)
     {
-        $choice = '';
-        if ($overwrittenChoices[0] == 1) {
-            $choice = '1';
-        }
+        $choice = implode(', ', $overwrittenChoices);
 
-        if ($overwrittenChoices[1] == 2) {
-            $choice = $choice . ' 2';
-        }
-
-        if ($overwrittenChoices[2] == 3) {
-            $choice = $choice . ' 3';
-        }
-
-        $subject = 'REMODEL: Resident Preference ' . $choice . ' Overwritten for ' . $date;
-        $body =
-            "Resident $residentName has overwritten OR preferences  " .
-            $choice .
-            ' for ' .
-            $date .
-            '. New preferences are now viewable on REMODEL website.';
-        $heading = "Resident $residentName has overwritten OR preference " . $choice;
+        $subject = config('app.env') == 'production' ? '' : '(' . config('app.env') . ') ';
+        $subject .= "REMODEL: Resident Preference $choice Overwritten for $date";
+        $body = "Resident $residentName has overwritten OR preferences $choice for $date. New preferences are now viewable on REMODEL website.";
+        $heading = "Resident $residentName has overwritten OR preference $choice";
         $data = ['name' => $toName, 'heading' => $heading, 'body' => $body];
 
         Mail::send('emails.mail', $data, function ($message) use ($toName, $toEmail, $subject) {
             $message->to($toEmail, $toName)->subject($subject);
-            $message->from('OhioStateAnesthesiology@gmail.com');
+            $message->from(config('mail.username'));
         });
-        return true;
     }
 
     // Insert options if no preference exists.
-    // Update options when overwriting preferences.
     private function insertOption()
     {
-        $pref_anest1 = null;
-        $pref_anest2 = null;
-        $pref_anest3 = null;
         // variables to track if the use has overwritten a preference
-        $notify = false;
         $overwrittenChoices = [];
 
         // get the id from the form
         $id = $_REQUEST['schedule_id'];
 
         // id is stored as id1_id2_id3, need to split it to get the individual ids
-        $split = explode('_', $id);
-
-        // get the schedule data for the first choice
-        $schedule_data1 = ScheduleData::where('id', $split[0])->get();
+        $trimmed_id = trim($id, '_');
+        $schedule_data_ids = explode('_', $trimmed_id);
 
         // Get resident
-        $resident_data = Resident::where('email', $_SERVER['HTTP_EMAIL'])->get();
-        $resident = $resident_data[0]['id'];
-        $residentName = $resident_data[0]['name'];
+        $resident = Resident::where('email', $_SERVER['HTTP_EMAIL'])->first();
+        $resident_id = $resident['id'];
+        $residentName = $resident['name'];
 
-        // Get date. (Dates are the same for 3 preferences)
-        $date = $schedule_data1[0]['date'];
+        $date = ScheduleData::where('id', $schedule_data_ids[0])->first()->date;
 
-        //insert first choice data
-        $choice = 1;
-        // Get attending id
-        $attending_string = $schedule_data1[0]['lead_surgeon'];
-        $attending = substr(
-            $attending_string,
-            strpos($attending_string, '[') + 1,
-            strpos($attending_string, ']') - (strpos($attending_string, '[') + 1)
-        );
+        foreach ($schedule_data_ids as $i => $schedule_data_id) {
+            $choice = $i + 1;
+            if ($schedule_data_id !== '' && $schedule_data_id !== '0') {
+                $pref_anest[$i] = null;
+                $schedule_data[$i] = ScheduleData::where('id', $schedule_data_id)->get();
+                $lead_surgeon_string = $schedule_data[$i][0]['lead_surgeon'];
+                preg_match('/(.+) \[(\d+)\]/', $lead_surgeon_string, $matches); // get id of lead surgeon
+                $lead_surgeon_medhub_id = count($matches) > 2 ? $matches[2] : -1; // OORA case, sets medhub id to -1 as no lead surgeons are specified
+                if (isset($_REQUEST['pref_anest' . $choice]) && $_REQUEST['pref_anest' . $choice] != 0) {
+                    // if they chose an anesthesiologist, add their ID to the DB, if not, add NULL
+                    $pref_anest[$i] = $_REQUEST['pref_anest' . $choice];
+                }
 
-        if (isset($_REQUEST['pref_anest1'])) {
-            // if they chose an anesthesiologist, add their ID to the DB, if not, add NULL
-            if ($_REQUEST['pref_anest1'] != 0) {
-                $pref_anest1 = $_REQUEST['pref_anest1'];
-            }
-        }
+                if (
+                    Option::where('date', $date)
+                        ->where('resident', $resident_id)
+                        ->where('option', $choice)
+                        ->count() != 0
+                ) {
+                    array_push($overwrittenChoices, $i + 1);
 
-        // Update or insert option 1 data
-        if (
-            Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', $choice)
-                ->count() != 0
-        ) {
-            // generate notification and delete data
-            $notify = true;
-            $overwrittenChoices[0] = 1;
-
-            Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', $choice)
-                ->update([
-                    'schedule' => $split[0],
-                    'attending' => $attending,
-                    'milestones' => $_REQUEST['milestones1'],
-                    'objectives' => $_REQUEST['objectives1'],
-                    'anesthesiologist_id' => $pref_anest1,
-                    'isValid' => 1,
-                ]);
-        } else {
-            $overwrittenChoices[0] = 0;
-            // Insert data
-            Option::insert([
-                'date' => $date,
-                'resident' => $resident,
-                'schedule' => $split[0],
-                'attending' => $attending,
-                'option' => $choice,
-                'milestones' => $_REQUEST['milestones1'],
-                'objectives' => $_REQUEST['objectives1'],
-                'anesthesiologist_id' => $pref_anest1,
-                'isValid' => 1,
-            ]);
-        }
-
-        //Update second choice data
-        $choice++;
-        $schedule_data2 = null;
-        $attending = null;
-        // Insert second choice data if it exists
-        if ($split[1] != 0) {
-            // Get schedule data of the 2nd preference
-            $schedule_data2 = ScheduleData::where('id', $split[1])->get();
-            // Get attending id
-            $attending_string = $schedule_data2[0]['lead_surgeon'];
-            $attending = substr(
-                $attending_string,
-                strpos($attending_string, '[') + 1,
-                strpos($attending_string, ']') - (strpos($attending_string, '[') + 1)
-            );
-        }
-
-        if (isset($_REQUEST['pref_anest2'])) {
-            if ($_REQUEST['pref_anest2'] != 0) {
-                $pref_anest2 = $_REQUEST['pref_anest2'];
-            }
-        }
-
-        // Update/Insert option 2 data
-        if (
-            Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', $choice)
-                ->count() != 0
-        ) {
-            // generate notification and update/delete data
-            $nofity = true;
-            $overwrittenChoices[1] = 2;
-            // If user enters 2nd choice, update option 2 data; otherwise, delete old 2nd choice data.
-            if (!is_null($schedule_data2)) {
-                Option::where('date', $date)
-                    ->where('resident', $resident)
-                    ->where('option', $choice)
-                    ->update([
-                        'schedule' => $split[1],
-                        'attending' => $attending,
-                        'milestones' => $_REQUEST['milestones2'],
-                        'objectives' => $_REQUEST['objectives2'],
-                        'anesthesiologist_id' => $pref_anest2,
-                        'isValid' => 1,
-                    ]);
+                    Option::where('date', $date)
+                        ->where('resident', $resident_id)
+                        ->where('option', $choice)
+                        ->update([
+                            'schedule' => $schedule_data_id,
+                            'attending' => $lead_surgeon_medhub_id,
+                            'milestones' => $_REQUEST['milestones' . $choice],
+                            'objectives' => $_REQUEST['objectives' . $choice],
+                            'anesthesiologist_id' => $pref_anest[$i],
+                            'isValid' => 1,
+                        ]);
+                } else {
+                    // Insert data
+                    if (!is_null($schedule_data[$i])) {
+                        Option::insert([
+                            'date' => $date,
+                            'resident' => $resident_id,
+                            'schedule' => $schedule_data_id,
+                            'attending' => $lead_surgeon_medhub_id,
+                            'option' => $choice,
+                            'milestones' => $_REQUEST['milestones' . $choice],
+                            'objectives' => $_REQUEST['objectives' . $choice],
+                            'anesthesiologist_id' => $pref_anest[$i],
+                            'isValid' => 1,
+                        ]);
+                    }
+                }
             } else {
                 Option::where('date', $date)
-                    ->where('resident', $resident)
+                    ->where('resident', $resident_id)
                     ->where('option', $choice)
                     ->delete();
             }
-        } else {
-            $overwrittenChoices[1] = 0;
-            if (!is_null($schedule_data2)) {
-                // Insert data
-                Option::insert([
-                    'date' => $date,
-                    'resident' => $resident,
-                    'schedule' => $split[1],
-                    'attending' => $attending,
-                    'option' => $choice,
-                    'milestones' => $_REQUEST['milestones2'],
-                    'objectives' => $_REQUEST['objectives2'],
-                    'anesthesiologist_id' => $pref_anest2,
-                    'isValid' => 1,
-                ]);
-            }
         }
 
-        //Third choice data
-        $choice++;
-        $schedule_data3 = null;
-        $attending = null;
-        // Insert third choice data if it exists
-        if ($split[2] != 0) {
-            $schedule_data3 = ScheduleData::where('id', $split[2])->get();
-            // Get attending id
-            $attending_string = $schedule_data3[0]['lead_surgeon'];
-            $attending = substr(
-                $attending_string,
-                strpos($attending_string, '[') + 1,
-                strpos($attending_string, ']') - (strpos($attending_string, '[') + 1)
-            );
-        }
-
-        if (isset($_REQUEST['pref_anest3'])) {
-            if ($_REQUEST['pref_anest3'] != 0) {
-                $pref_anest3 = $_REQUEST['pref_anest3'];
-            }
-        }
-
-        //Insert/Update old option 3 data
-        if (
-            Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', $choice)
-                ->count() != 0
-        ) {
-            // generate notification and delete data
-            $nofity = true;
-            $overwrittenChoices[2] = 3;
-            // If user enters 3rd choice, update option 3 data; otherwise, make old 3nd choice data invalid.
-            if (!is_null($schedule_data3)) {
-                Option::where('date', $date)
-                    ->where('resident', $resident)
-                    ->where('option', $choice)
-                    ->update([
-                        'schedule' => $split[2],
-                        'attending' => $attending,
-                        'milestones' => $_REQUEST['milestones3'],
-                        'objectives' => $_REQUEST['objectives3'],
-                        'anesthesiologist_id' => $pref_anest3,
-                        'isValid' => 1,
-                    ]);
-            } else {
-                Option::where('date', $date)
-                    ->where('resident', $resident)
-                    ->where('option', $choice)
-                    ->delete();
-                // ->update(['isValid'=>0]);
-            }
-        } else {
-            $overwrittenChoices[2] = 0;
-            if (!is_null($schedule_data3)) {
-                // Insert data
-                Option::insert([
-                    'date' => $date,
-                    'resident' => $resident,
-                    'schedule' => $split[2],
-                    'attending' => $attending,
-                    'option' => $choice,
-                    'milestones' => $_REQUEST['milestones3'],
-                    'objectives' => $_REQUEST['objectives3'],
-                    'anesthesiologist_id' => $pref_anest3,
-                    'isValid' => 1,
-                ]);
-            }
-        }
-
-        // data was overwritten, send a notification
-        if ($notify == true) {
-            // please make sure to change the email here
-            self::notifyResidentOverwrittenPreferences(
-                '',
+        // if data was overwritten, send a notification
+        if (count($overwrittenChoices) > 0) {
+            $this->notifyResidentOverwrittenPreferences(
+                $residentName,
                 $_SERVER['HTTP_EMAIL'],
                 $residentName,
                 $date,
                 $overwrittenChoices
             );
         }
-    }
 
-    public function clearOption($date)
-    {
-        // Get resident
-        $resident_data = Resident::where('email', $_SERVER['HTTP_EMAIL'])->get();
-        $resident = $resident_data[0]['id'];
-
-        //delete first choice data
-        $choice = 1;
-        if (
-            Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', $choice)
-                ->count() != 0
-        ) {
-            Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', $choice)
-                ->delete();
-        }
-        //delete second choice data
-        $choice++;
-        if (
-            Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', $choice)
-                ->count() != 0
-        ) {
-            Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', $choice)
-                ->delete();
-        }
-        //delete third choice data
-        $choice++;
-        if (
-            Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', $choice)
-                ->count() != 0
-        ) {
-            Option::where('date', $date)
-                ->where('resident', $resident)
-                ->where('option', $choice)
-                ->delete();
-        }
         return view('schedules.resident.schedule_update');
     }
 
     public function postSubmit($day = null)
     {
-        self::insertOption();
+        $this->insertOption();
+        return view('schedules.resident.schedule_update');
+    }
+
+    public function clearOption($date)
+    {
+        $resident_id = Resident::where('email', $_SERVER['HTTP_EMAIL'])->first()->id;
+
+        Option::where('date', $date)
+            ->where('resident', $resident_id)
+            ->delete();
+
         return view('schedules.resident.schedule_update');
     }
 }

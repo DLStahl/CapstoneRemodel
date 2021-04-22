@@ -2,26 +2,30 @@
 @section('content')
     @if (strcmp($data['op'], 'add') == 0)
         <h4>This milestone will be added:</h4>
-        <p><strong>Code: </strong>{{ $data['abbr_name'] }}<br>
+        <p>
+            <strong>Code: </strong>{{ $data['abbr_name'] }}<br>
             <strong>Category: </strong>{{ $data['full_name'] }}<br>
             <strong>Detail: </strong>{{ $data['detail'] }}
         </p>
     @elseif(strcmp($data['op'], 'delete')==0)
         <h4>This milestone will be deleted:</h4>
-        <p><strong>Code: </strong>{{ $data['old_abbr_name'] }}<br>
+        <p>
+            <strong>Code: </strong>{{ $data['old_abbr_name'] }}<br>
             <strong>Category: </strong>{{ $data['old_full_name'] }}<br>
             <strong>Detail: </strong>{{ $data['old_detail'] }}
         </p>
     @elseif(strcmp($data['op'], 'update')==0)
         <h4>Previous milestone:</h4>
-        <p><strong>Code: </strong>{{ $data['old_abbr_name'] }}<br>
+        <p>
+            <strong>Code: </strong>{{ $data['old_abbr_name'] }}<br>
             <strong>Category: </strong>{{ $data['old_full_name'] }}<br>
             <strong>Detail: </strong>{{ $data['old_detail'] }}
         </p>
 
         <br>
         <h4>Current milestone:</h4>
-        <p><strong>Code: </strong>{{ $data['abbr_name'] }}<br>
+        <p>
+            <strong>Code: </strong>{{ $data['abbr_name'] }}<br>
             <strong>Category: </strong>{{ $data['full_name'] }}<br>
             <strong>Detail: </strong>{{ $data['detail'] }}
         </p>

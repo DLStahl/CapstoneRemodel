@@ -331,7 +331,7 @@ class PagesController extends Controller
 
         Mail::send('emails.contact', $data, function ($message) use ($data) {
             $message->from($data['email']);
-            $message->to('David.Stahl@osumc.edu');
+            $message->to(config('mail.admin.email'));
             $message->subject($data['subject']);
         });
 
@@ -353,11 +353,5 @@ class PagesController extends Controller
         $data_date = $year . '-' . $mon . '-' . $day;
 
         return view('pages.feedback', compact('data_date'));
-    }
-
-    public function test()
-    {
-        $parser = new EvaluationParser(date('omd', strtotime('today')), true);
-        return 'test1';
     }
 }

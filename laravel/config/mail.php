@@ -117,4 +117,9 @@ return [
 
         'paths' => [resource_path('views/vendor/mail')],
     ],
+
+    'admin' => [
+        'name' => env('ADMIN_PRIMARY_NAME', 'Admin'),
+        'email' => env('ADMIN_PRIMARY_EMAIL', 'Ohiostateanesthesiology@gmail.com'),
+    ],
 ];
