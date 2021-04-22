@@ -14,32 +14,32 @@ class AdminControllerTest extends TestCase
     public function testAdminAddMilestone()
     {
         $AC = new AdminController();
-        $AC->getUpdateMilestone("add", "true", null, "FakeAbbreviation", "FakeFullName", "FakeDetail");
-        $this->assertDatabaseHas("milestone", [
-            "category" => "FakeAbbreviation",
-            "title" => "FakeFullName",
-            "detail" => "FakeDetail",
-            "exists" => "1",
+        $AC->getUpdateMilestone('add', 'true', null, 'FakeAbbreviation', 'FakeFullName', 'FakeDetail');
+        $this->assertDatabaseHas('milestone', [
+            'category' => 'FakeAbbreviation',
+            'title' => 'FakeFullName',
+            'detail' => 'FakeDetail',
+            'exists' => '1',
         ]);
     }
 
     public function testAdminDeleteMilestone()
     {
         $milestoneId = Milestone::insertGetId([
-            "category" => "test",
+            'category' => 'test',
         ]);
         $AC = new AdminController();
-        $AC->getUpdateMilestone("delete", "true", $milestoneId, "FakeAbbreviation", "FakeFullName", "FakeDetail");
-        $this->assertDatabaseHas("milestone", ["exists" => "0"]);
+        $AC->getUpdateMilestone('delete', 'true', $milestoneId, 'FakeAbbreviation', 'FakeFullName', 'FakeDetail');
+        $this->assertDatabaseHas('milestone', ['exists' => '0']);
     }
 
     public function testAddUserResidentTableHasData()
     {
         $AC = new AdminController();
-        $AC->getUpdateUsers("addUser", "Resident", "fakeRes@fak.com", "true", "FakeName");
-        $this->assertDatabaseHas("resident", [
-            "name" => "FakeName",
-            "email" => "fakeRes@fak.com"
+        $AC->getUpdateUsers('addUser', 'Resident', 'fakeRes@fak.com', 'true', 'FakeName');
+        $this->assertDatabaseHas('resident', [
+            'name' => 'FakeName',
+            'email' => 'fakeRes@fak.com',
         ]);
     }
 }

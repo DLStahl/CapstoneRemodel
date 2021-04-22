@@ -17,7 +17,7 @@ class AutoAssignmentTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public static $date = "2021-03-03";
+    public static $date = '2021-03-03';
     private $autoAssignment;
     private $CCCT10;
     private $CCCT14;
@@ -36,42 +36,42 @@ class AutoAssignmentTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $rooms = ["CCCT 10", "CCCT 14", "CCCT 11", "EP 05", "UH 19", "UH 2", "UH 16", "CCCT 19 Leasing UH7"];
+        $rooms = ['CCCT 10', 'CCCT 14', 'CCCT 11', 'EP 05', 'UH 19', 'UH 2', 'UH 16', 'CCCT 19 Leasing UH7'];
         foreach ($rooms as $room) {
-            $this->{str_replace(" ", "", $room)} = ScheduleData::insertGetId([
-                "date" => self::$date,
-                "room" => $room,
+            $this->{str_replace(' ', '', $room)} = ScheduleData::insertGetId([
+                'date' => self::$date,
+                'room' => $room,
             ]);
         }
-        $residents = ["resident A", "resident B", "resident C", "resident D"];
+        $residents = ['resident A', 'resident B', 'resident C', 'resident D'];
         foreach ($residents as $resident) {
-            $this->{str_replace(" ", "", $resident)} = Resident::insertGetId([
-                "name" => $resident,
-                "email" => $resident . "@email",
+            $this->{str_replace(' ', '', $resident)} = Resident::insertGetId([
+                'name' => $resident,
+                'email' => $resident . '@email',
             ]);
             Probability::insert([
-                "resident" => $this->{str_replace(" ", "", $resident)},
-                "total" => 0,
-                "selected" => 0,
-                "probability" => 0,
+                'resident' => $this->{str_replace(' ', '', $resident)},
+                'total' => 0,
+                'selected' => 0,
+                'probability' => 0,
             ]);
         }
         $this->autoAssignment = new AutoAssignment();
-        $this->milestone_id = Milestone::first()->value("id");
+        $this->milestone_id = Milestone::first()->value('id');
     }
 
     public function addOptionsToDatabase($optionsDataArrays)
     {
         foreach ($optionsDataArrays as $optionDataArray) {
             Option::insert([
-                "date" => self::$date,
-                "resident" => $optionDataArray[0],
-                "schedule" => $optionDataArray[1],
-                "option" => $optionDataArray[2],
-                "isValid" => 1,
-                "anesthesiologist_id" => $optionDataArray[3],
-                "milestones" => $optionDataArray[4],
-                "attending" => 1,
+                'date' => self::$date,
+                'resident' => $optionDataArray[0],
+                'schedule' => $optionDataArray[1],
+                'option' => $optionDataArray[2],
+                'isValid' => 1,
+                'anesthesiologist_id' => $optionDataArray[3],
+                'milestones' => $optionDataArray[4],
+                'attending' => 1,
             ]);
         }
     }
@@ -80,10 +80,10 @@ class AutoAssignmentTest extends TestCase
     {
         $allCorrect = true;
         foreach ($expectedAssignments as $expectedAssignment) {
-            $assignmentExists = Assignment::where("date", self::$date)
-                ->where("resident", $expectedAssignment[0])
-                ->where("schedule", $expectedAssignment[1])
-                ->where("anesthesiologist_id", $expectedAssignment[2])
+            $assignmentExists = Assignment::where('date', self::$date)
+                ->where('resident', $expectedAssignment[0])
+                ->where('schedule', $expectedAssignment[1])
+                ->where('anesthesiologist_id', $expectedAssignment[2])
                 ->exists();
             $allCorrect = $allCorrect && $assignmentExists;
         }
@@ -120,9 +120,9 @@ class AutoAssignmentTest extends TestCase
         $expectedProbTotals = [[$this->residentA, 2], [$this->residentB, 3], [$this->residentC, 4]];
 
         self::addOptionsToDatabase($options);
-        Probability::where("resident", $this->residentA)->update(["total" => 2]);
-        Probability::where("resident", $this->residentB)->update(["total" => 1]);
-        Probability::where("resident", $this->residentC)->update(["total" => 0]);
+        Probability::where('resident', $this->residentA)->update(['total' => 2]);
+        Probability::where('resident', $this->residentB)->update(['total' => 1]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
         $this->autoAssignment->assignment(self::$date);
 
@@ -155,10 +155,10 @@ class AutoAssignmentTest extends TestCase
         ];
 
         self::addOptionsToDatabase($options);
-        Probability::where("resident", $this->residentA)->update(["total" => 0]);
-        Probability::where("resident", $this->residentB)->update(["total" => 2]);
-        Probability::where("resident", $this->residentC)->update(["total" => 1]);
-        Probability::where("resident", $this->residentD)->update(["total" => 0]);
+        Probability::where('resident', $this->residentA)->update(['total' => 0]);
+        Probability::where('resident', $this->residentB)->update(['total' => 2]);
+        Probability::where('resident', $this->residentC)->update(['total' => 1]);
+        Probability::where('resident', $this->residentD)->update(['total' => 0]);
 
         $this->autoAssignment->assignment(self::$date);
 
@@ -184,9 +184,9 @@ class AutoAssignmentTest extends TestCase
         $expectedProbTotals = [[$this->residentA, 2], [$this->residentB, 3], [$this->residentC, 4]];
 
         self::addOptionsToDatabase($options);
-        Probability::where("resident", $this->residentA)->update(["total" => 2]);
-        Probability::where("resident", $this->residentB)->update(["total" => 1]);
-        Probability::where("resident", $this->residentC)->update(["total" => 0]);
+        Probability::where('resident', $this->residentA)->update(['total' => 2]);
+        Probability::where('resident', $this->residentB)->update(['total' => 1]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
         $this->autoAssignment->assignment(self::$date);
 
@@ -214,10 +214,10 @@ class AutoAssignmentTest extends TestCase
         ];
 
         self::addOptionsToDatabase($options);
-        Probability::where("resident", $this->residentA)->update(["total" => 1]);
-        Probability::where("resident", $this->residentB)->update(["total" => 0]);
-        Probability::where("resident", $this->residentC)->update(["total" => 0]);
-        Probability::where("resident", $this->residentD)->update(["total" => 0]);
+        Probability::where('resident', $this->residentA)->update(['total' => 1]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
+        Probability::where('resident', $this->residentD)->update(['total' => 0]);
 
         $this->autoAssignment->assignment(self::$date);
 
@@ -236,8 +236,8 @@ class AutoAssignmentTest extends TestCase
         $expectedProbTotals = [[$this->residentA, 0], [$this->residentB, 1]];
 
         self::addOptionsToDatabase($options);
-        Probability::where("resident", $this->residentA)->update(["total" => 0]);
-        Probability::where("resident", $this->residentB)->update(["total" => 0]);
+        Probability::where('resident', $this->residentA)->update(['total' => 0]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
 
         $this->autoAssignment->assignment(self::$date);
 
@@ -266,9 +266,9 @@ class AutoAssignmentTest extends TestCase
         $expectedProbTotals2 = [[$this->residentA, 0], [$this->residentB, 1], [$this->residentC, 0]];
 
         self::addOptionsToDatabase($options);
-        Probability::where("resident", $this->residentA)->update(["total" => 0]);
-        Probability::where("resident", $this->residentB)->update(["total" => 0]);
-        Probability::where("resident", $this->residentC)->update(["total" => 0]);
+        Probability::where('resident', $this->residentA)->update(['total' => 0]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
         $this->autoAssignment->assignment(self::$date);
 
@@ -301,9 +301,9 @@ class AutoAssignmentTest extends TestCase
         $expectedProbTotals2 = [[$this->residentA, 0], [$this->residentB, 1], [$this->residentC, 0]];
 
         self::addOptionsToDatabase($options);
-        Probability::where("resident", $this->residentA)->update(["total" => 0]);
-        Probability::where("resident", $this->residentB)->update(["total" => 0]);
-        Probability::where("resident", $this->residentC)->update(["total" => 0]);
+        Probability::where('resident', $this->residentA)->update(['total' => 0]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
         $this->autoAssignment->assignment(self::$date);
 
@@ -331,9 +331,9 @@ class AutoAssignmentTest extends TestCase
         $expectedProbTotals = [[$this->residentA, 1], [$this->residentB, 0], [$this->residentC, 3]];
 
         self::addOptionsToDatabase($options);
-        Probability::where("resident", $this->residentA)->update(["total" => 1]);
-        Probability::where("resident", $this->residentB)->update(["total" => 0]);
-        Probability::where("resident", $this->residentC)->update(["total" => 0]);
+        Probability::where('resident', $this->residentA)->update(['total' => 1]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
         $this->autoAssignment->assignment(self::$date);
 
@@ -357,9 +357,9 @@ class AutoAssignmentTest extends TestCase
         $expectedProbTotals = [[$this->residentA, 0], [$this->residentB, 1], [$this->residentC, 3]];
 
         self::addOptionsToDatabase($options);
-        Probability::where("resident", $this->residentA)->update(["total" => 0]);
-        Probability::where("resident", $this->residentB)->update(["total" => 1]);
-        Probability::where("resident", $this->residentC)->update(["total" => 0]);
+        Probability::where('resident', $this->residentA)->update(['total' => 0]);
+        Probability::where('resident', $this->residentB)->update(['total' => 1]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
         $this->autoAssignment->assignment(self::$date);
 
@@ -385,9 +385,9 @@ class AutoAssignmentTest extends TestCase
         $expectedProbTotals = [[$this->residentA, 2], [$this->residentB, 4], [$this->residentC, 4]];
 
         self::addOptionsToDatabase($options);
-        Probability::where("resident", $this->residentA)->update(["total" => 2]);
-        Probability::where("resident", $this->residentB)->update(["total" => 1]);
-        Probability::where("resident", $this->residentC)->update(["total" => 0]);
+        Probability::where('resident', $this->residentA)->update(['total' => 2]);
+        Probability::where('resident', $this->residentB)->update(['total' => 1]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
         $this->autoAssignment->assignment(self::$date);
 
@@ -412,9 +412,9 @@ class AutoAssignmentTest extends TestCase
         $expectedProbTotals = [[$this->residentA, 1], [$this->residentB, 3], [$this->residentC, 2]];
 
         self::addOptionsToDatabase($options);
-        Probability::where("resident", $this->residentA)->update(["total" => 1]);
-        Probability::where("resident", $this->residentB)->update(["total" => 0]);
-        Probability::where("resident", $this->residentC)->update(["total" => 0]);
+        Probability::where('resident', $this->residentA)->update(['total' => 1]);
+        Probability::where('resident', $this->residentB)->update(['total' => 0]);
+        Probability::where('resident', $this->residentC)->update(['total' => 0]);
 
         $this->autoAssignment->assignment(self::$date);
 
