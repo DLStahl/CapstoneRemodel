@@ -233,7 +233,7 @@ class ScheduleDataController extends Controller
         $minTime = $TimeRange_ScheduleData["minTime"];
         $maxTime = $TimeRange_ScheduleData["maxTime"];
         $schedule_data = $TimeRange_ScheduleData["schedule"];
-        $filter_options = self::getFilterOptions($date);
+        $filter_options = $this->getFilterOptions($date);
         $rotation_options = FilterRotation::select("rotation")
             ->distinct()
             ->get();
@@ -256,12 +256,12 @@ class ScheduleDataController extends Controller
         // id is stored as id1_id2_id3, need to split it to get the individual ids
         $schedule_data_ids = explode("_", $id);
         // get current preferences
-        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++) {  //last element of schedule_data_ids is blank
-            if ($schedule_data_ids[$i]) {
+        foreach ($schedule_data_ids as $i => $id) {  //last element of schedule_data_ids is blank
+            if ($id) {
                 $schedule = ScheduleData::where("id", $schedule_data_ids[$i])->get();
                 $currentChoices[$i] = [
                     "schedule" => $schedule,
-                    "case_procedure" => self::parseCaseProcedure($schedule[0]["case_procedure"]),
+                    "case_procedure" => $this->parseCaseProcedure($schedule[0]["case_procedure"]),
                     "milestone" => Milestone::where("id", $_REQUEST["milestones" . ($i + 1)])->get(),
                     "objective" => $_REQUEST["objectives" . ($i + 1)],
                     "anesthesiologist_pref" => Anesthesiologist::where("id", $_REQUEST["pref_anest" . ($i + 1)])->get(),
@@ -274,7 +274,7 @@ class ScheduleDataController extends Controller
         $date = $currentChoices[0]["schedule"][0]["date"];
         $previousChoices = [];
         $resident = Resident::where("email", $_SERVER["HTTP_EMAIL"])->value("id");
-        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++) {
+        foreach ($schedule_data_ids as $i => $id) {
             $previousOption = Option::where("date", $date)
                 ->where("resident", $resident)
                 ->where("option", $i + 1)
@@ -285,7 +285,7 @@ class ScheduleDataController extends Controller
                 $pref_anest = Anesthesiologist::where("id", $previousOption[0]["anesthesiologist_id"])->get();
                 $previousChoices[$i] = [
                     "schedule" => $schedule,
-                    "case_procedure" => self::parseCaseProcedure($schedule[0]["case_procedure"]),
+                    "case_procedure" => $this->parseCaseProcedure($schedule[0]["case_procedure"]),
                     "milestone" => Milestone::where("id", $previousOption[0]["milestones"])->get(),
                     "objective" => $previousOption[0]["objectives"],
                     "anesthesiologist_pref" => $pref_anest,
@@ -317,13 +317,13 @@ class ScheduleDataController extends Controller
         // id is stored as id1_id2_id3, need to split it to get the individual ids
         $schedule_data_ids = explode("_", $id);
 
-        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++) {
+        foreach ($schedule_data_ids as $i => $id) {
             $resident_data[$i] = [
                 "schedule" => null,
                 "lead_surgeon" => null,
             ];
-            if ($schedule_data_ids[$i]) {
-                $schedule_data[$i] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
+            if ($id) {
+                $schedule_data[$i] = ScheduleData::where("id", $id)->get();
                 $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
                 preg_match("/(.+) \[(\d+)\]/", $lead_surgeon_string, $matches); // get name of the lead surgeon
                 $lead_surgeon = (count($matches) > 1) ? $matches[1] : "OORA";
@@ -354,7 +354,7 @@ class ScheduleDataController extends Controller
         $resident = $current_resident[0]["id"];
         // id is stored as id1_id2_id3, need to split it to get the individual ids
         $schedule_data_ids = explode("_", $id);
-        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++) {
+        foreach ($schedule_data_ids as $i => $id) {
             $resident_data[$i] = [
                 "schedule" => null,
                 "lead_surgeon" => null,
@@ -362,9 +362,9 @@ class ScheduleDataController extends Controller
                 "objective" => null,
                 "pref_anest" => null,
             ];
-            if ($schedule_data_ids[$i]) {
+            if ($id) {
                 $choice = $i + 1;
-                $schedule_data[$i] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
+                $schedule_data[$i] = ScheduleData::where("id", $id)->get();
                 $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
                 preg_match("/(.+) \[(\d+)\]/", $lead_surgeon_string, $matches); // get name of the lead surgeon
                 $lead_surgeon = (count($matches) > 1) ? $matches[1] : "OORA";
@@ -437,11 +437,11 @@ class ScheduleDataController extends Controller
         $lead_surgeon_string = $schedule_data[0][0]["lead_surgeon"];
         $date = $schedule_data[0][0]["date"];
 
-        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++) {
+        foreach ($schedule_data_ids as $i => $id) {
             $choice = $i + 1;
-            if ($schedule_data_ids[$i]) {
+            if ($id) {
                 $pref_anest[$i] = null;
-                $schedule_data[$i] = ScheduleData::where("id", $schedule_data_ids[$i])->get();
+                $schedule_data[$i] = ScheduleData::where("id", $id)->get();
                 $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
                 $date = $schedule_data[$i][0]["date"];
                 preg_match("/(.+) \[(\d+)\]/", $lead_surgeon_string, $matches); // get id of lead surgeon
@@ -464,7 +464,7 @@ class ScheduleDataController extends Controller
                         ->where("resident", $resident)
                         ->where("option", $choice)
                         ->update([
-                            "schedule" => $schedule_data_ids[$i],
+                            "schedule" => $id,
                             "attending" => $lead_surgeon_medhub_id,
                             "milestones" => $_REQUEST["milestones" . $choice],
                             "objectives" => $_REQUEST["objectives" . $choice],
@@ -477,7 +477,7 @@ class ScheduleDataController extends Controller
                         Option::insert([
                             "date" => $date,
                             "resident" => $resident,
-                            "schedule" => $schedule_data_ids[$i],
+                            "schedule" => $id,
                             "attending" => $lead_surgeon_medhub_id,
                             "option" => $choice,
                             "milestones" => $_REQUEST["milestones" . $choice],
@@ -497,7 +497,7 @@ class ScheduleDataController extends Controller
 
         // if data was overwritten, send a notification
         if ($notify == true) {
-            self::notifyResidentOverwrittenPreferences(
+            $this->notifyResidentOverwrittenPreferences(
                 $residentName,
                 $_SERVER["HTTP_EMAIL"],
                 $residentName,
@@ -511,29 +511,18 @@ class ScheduleDataController extends Controller
 
     public function postSubmit($day = null)
     {
-        self::insertOption();
+        $this->insertOption();
         return view("schedules.resident.schedule_update");
     }
 
     public function clearOption($date)
     {
-        $resident_data = Resident::where("email", $_SERVER["HTTP_EMAIL"])->get();
-        $resident = $resident_data[0]["id"];
+        $resident_id = Resident::where("email", $_SERVER["HTTP_EMAIL"])->first()->id;
 
-        for ($i = 0; $i < count($schedule_data_ids) - 1; $i++)
-        {
-        $choice = $i + 1;
-            if (Option::where("date", $date)
-                    ->where("resident", $resident)
-                    ->where("option", $choice)
-                    ->count() != 0) 
-            {
-                Option::where("date", $date)
-                    ->where("resident", $resident)
-                    ->where("option", $choice)
-                    ->delete();
-            }
-        }
+        Option::where("date", $date)
+        ->where("resident", $resident_id)
+        ->delete();
+
         return view("schedules.resident.schedule_update");
     }
 }
