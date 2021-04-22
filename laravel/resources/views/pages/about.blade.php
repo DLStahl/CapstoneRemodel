@@ -124,6 +124,7 @@
 
                     window.location.href = url;
                 }
+
             </script>
         </div>
     </div>
@@ -131,5 +132,6 @@
         .btn {
             white-space: normal;
         }
+
     </style>
 @endsection
