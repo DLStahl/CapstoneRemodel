@@ -21,6 +21,7 @@ class EvaluationParserTest extends TestCase
         $method->setAccessible(true);
         return $method;
     }
+
     public function addResident($resident)
     {
         return Resident::insertGetId([
@@ -48,7 +49,7 @@ class EvaluationParserTest extends TestCase
             ]);
         }
     }
-
+    
     public function testEvaluationParser()
     {
         // insert residents and attendings
@@ -91,7 +92,6 @@ class EvaluationParserTest extends TestCase
         ];
         $parser = new EvaluationParser('20210328');
         $results = $parser->insertEvaluateData();
-
         $this->assertEqualsCanonicalizing($expectedResults, $results);
         foreach ($expectedDataInserted as $expectedEntry) {
             $this->assertDatabaseHas('evaluation_data', [
@@ -191,7 +191,9 @@ class EvaluationParserTest extends TestCase
         $minutes = EvaluationParser::getMinutesDiff($startTime, $endTime);
         $this->assertEquals(300, $minutes);
     }
+
     // Tests for getTime()
+
     public function testGetTimeForLineWithDate()
     {
         $parser = new EvaluationParser('20210323');

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\EvaluationParser;
+use Illuminate\Support\Facades\Log;
 
 class UpdateEvaluateData extends Command
 {
@@ -38,6 +39,9 @@ class UpdateEvaluateData extends Command
      */
     public function handle()
     {
-        $parser = new EvaluationParser(date('omd', strtotime('today')), true);
+        $parser = new EvaluationParser(date('omd', strtotime('today')));
+        $failedUsersResult = $parser->insertEvaluateData();
+        Log::info("Email for Failed Residents/Attendings: " . print_r($failedUsersResult, true));
+        $parser->notifyForAllFailedUsers($failedUsersResult, config('mail.admin.name'), config('mail.admin.email'));
     }
 }
