@@ -41,7 +41,7 @@ class UpdateEvaluateData extends Command
     {
         $parser = new EvaluationParser(date('omd', strtotime('today')));
         $failedUsersResult = $parser->insertEvaluateData();
-        Log::info("Email for Failed Residents/Attendings: " . print_r($failedUsersResult, true));
+        Log::info('Email for Failed Residents/Attendings: ' . print_r($failedUsersResult, true));
         $parser->notifyForAllFailedUsers($failedUsersResult, config('mail.admin.name'), config('mail.admin.email'));
     }
 }

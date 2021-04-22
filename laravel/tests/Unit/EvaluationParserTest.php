@@ -49,7 +49,7 @@ class EvaluationParserTest extends TestCase
             ]);
         }
     }
-    
+
     public function testEvaluationParser()
     {
         // insert residents and attendings
