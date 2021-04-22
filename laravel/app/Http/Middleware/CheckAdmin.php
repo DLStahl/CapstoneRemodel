@@ -18,13 +18,13 @@ class CheckAdmin
     public function handle($request, Closure $next)
     {
         // If the user is not an admin
-        $email = $_SERVER["HTTP_EMAIL"];
+        $email = $_SERVER['HTTP_EMAIL'];
         if (
-            Admin::where("email", $email)
-                ->where("exists", "1")
+            Admin::where('email', $email)
+                ->where('exists', '1')
                 ->doesntExist()
         ) {
-            return response("Unauthorized!", 401);
+            return response('Unauthorized!', 401);
         }
 
         return $next($request);

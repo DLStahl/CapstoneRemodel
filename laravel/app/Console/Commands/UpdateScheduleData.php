@@ -15,14 +15,14 @@ class UpdateScheduleData extends Command
      *
      * @var string
      */
-    protected $signature = "update:schedule_data";
+    protected $signature = 'update:schedule_data';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = "Command description";
+    protected $description = 'Command description';
 
     /**
      * Create a new command instance.
@@ -41,18 +41,18 @@ class UpdateScheduleData extends Command
      */
     public function handle()
     {
-        $date = date("Y-m-d", strtotime("today"));
-        if (Status::where("date", $date)->doesntExist()) {
+        $date = date('Y-m-d', strtotime('today'));
+        if (Status::where('date', $date)->doesntExist()) {
             Status::insert([
-                "date" => $date,
+                'date' => $date,
             ]);
         }
 
-        if ((int) Status::where("date", $date)->value("schedule") < 1) {
-            $parser = new ScheduleParser(date("omd", strtotime("today")), true);
+        if ((int) Status::where('date', $date)->value('schedule') < 1) {
+            $parser = new ScheduleParser(date('omd', strtotime('today')), true);
 
             // insert static options
-            $staticDate = date("Y-m-d", strtotime("+2 Weekday"));
+            $staticDate = date('Y-m-d', strtotime('+2 Weekday'));
             $allStaticChoices = ScheduleDataStatic::all();
             $allStaticChoices->each(function ($choice) use ($staticDate) {
                 $this->addData(
@@ -71,8 +71,8 @@ class UpdateScheduleData extends Command
             });
             // end insert static options
 
-            Status::where("date", $date)->update([
-                "schedule" => true,
+            Status::where('date', $date)->update([
+                'schedule' => true,
             ]);
         }
     }
@@ -91,23 +91,23 @@ class UpdateScheduleData extends Command
         $rotation
     ) {
         if (
-            ScheduleData::where("date", $date)
-                ->where("room", $room)
+            ScheduleData::where('date', $date)
+                ->where('room', $room)
                 ->doesntExist()
         ) {
-            $case = "(" . $start_time . "-" . $end_time . ")" . $case_procedure . " [" . $case_procedure_code . "]\n";
-            $surgeon = $lead_surgeon . " [" . $lead_surgeon_code . "]\n";
+            $case = '(' . $start_time . '-' . $end_time . ')' . $case_procedure . ' [' . $case_procedure_code . "]\n";
+            $surgeon = $lead_surgeon . ' [' . $lead_surgeon_code . "]\n";
             if (strcmp($start_time, $end_time) < 0) {
                 ScheduleData::insert([
-                    "date" => $date,
-                    "location" => $location,
-                    "room" => $room,
-                    "case_procedure" => $case,
-                    "lead_surgeon" => $surgeon,
-                    "patient_class" => $patient_class,
-                    "start_time" => $start_time,
-                    "end_time" => $end_time,
-                    "rotation" => $rotation,
+                    'date' => $date,
+                    'location' => $location,
+                    'room' => $room,
+                    'case_procedure' => $case,
+                    'lead_surgeon' => $surgeon,
+                    'patient_class' => $patient_class,
+                    'start_time' => $start_time,
+                    'end_time' => $end_time,
+                    'rotation' => $rotation,
                 ]);
             }
         }

@@ -11,7 +11,14 @@ class Resident extends Model
      *
      * @var string
      */
-    protected $table = "resident";
+    protected $table = 'resident';
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = ['id'];
 
     /**
      * Indicates if the model should be timestamped.
