@@ -33,9 +33,7 @@ class ScheduleDataController extends Controller
      */
     private static function updateData(array $args = [])
     {
-        /**
-         * Set up default input values.
-         */
+        // Set up default input values.
         $date = $args["date"];
         $leadSurgeon = !isset($args["lead_surgeon"]) ? "TBD" : $args["lead_surgeon"];
         $start_time = !isset($args["start_time"]) ? "00:00:00" : $args["start_time"];
@@ -393,9 +391,8 @@ class ScheduleDataController extends Controller
     public function notifyResidentOverwrittenPreferences($toName, $toEmail, $residentName, $date, $overwrittenChoices)
     {
         $choice = implode(", ", $overwrittenChoices);
-        $choice .= " ";
 
-        $subject = "REMODEL: Resident Preference " . $choice . " Overwritten for " . $date;
+        $subject = "REMODEL: Resident Preference $choice Overwritten for $date";
         $body = "Resident $residentName has overwritten OR preferences $choice for $date. New preferences are now viewable on REMODEL website.";
         $heading = "Resident $residentName has overwritten OR preference $choice";
         $data = ["name" => $toName, "heading" => $heading, "body" => $body];
