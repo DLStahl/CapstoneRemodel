@@ -13,18 +13,18 @@ class CreateEvaluationTable extends Migration
      */
     public function up()
     {
-        Schema::create("evaluation_data", function (Blueprint $table) {
-            $table->increments("id");
-            $table->date("date");
-            $table->text("location")->nullable();
-            $table->text("diagnosis")->nullable();
-            $table->longText("procedure")->nullable();
-            $table->string("ASA");
-            $table->unsignedInteger("rId")->nullable();
-            $table->longText("resident")->nullable();
-            $table->unsignedInteger("aId")->nullable();
-            $table->longText("attending")->nullable();
-            $table->unsignedBigInteger("diff")->nullable();
+        Schema::create('evaluation_data', function (Blueprint $table) {
+            $table->increments('id');
+            $table->date('date');
+            $table->text('location')->nullable();
+            $table->text('diagnosis')->nullable();
+            $table->longText('procedure')->nullable();
+            $table->string('ASA');
+            $table->unsignedInteger('rId')->nullable();
+            $table->longText('resident')->nullable();
+            $table->unsignedInteger('aId')->nullable();
+            $table->longText('attending')->nullable();
+            $table->unsignedBigInteger('diff')->nullable();
             $table->timestamps();
         });
     }
@@ -36,6 +36,6 @@ class CreateEvaluationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists("evaluation_data");
+        Schema::dropIfExists('evaluation_data');
     }
 }

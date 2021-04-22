@@ -11,12 +11,12 @@ class EvaluateData extends Model
      *
      * @var string
      */
-    protected $table = "evaluation_data";
+    protected $table = 'evaluation_data';
 
     /**
-     * Indicates if the model should be timestamped.
+     * The attributes that aren't mass assignable.
      *
-     * @var bool
+     * @var array
      */
-    public $timestamps = false;
+    protected $guarded = ['id'];
 }
