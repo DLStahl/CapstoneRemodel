@@ -5,12 +5,12 @@
     <div id="Resident Form">
         <h4>Resident Preferences</h4>
         <form method="POST" action="../confirm">
-            @foreach ($resident_data as $data)
-                @if (is_null($data['schedule']))
+            @foreach ($resident_choices as $choice)
+                @if (is_null($choice['schedule']))
                     <h5>Preference #{{ $loop->iteration }}: None</h5>
                 @else
-                    <h5>Preference #{{ $loop->iteration }}: Room {{ $data['schedule']['room'] }} with
-                        {{ $data['lead_surgeon'] }} </h5>
+                    <h5>Preference #{{ $loop->iteration }}: Room {{ $choice['schedule']['room'] }} with
+                        {{ $choice['lead_surgeon'] }} </h5>
 
                     <div class="form-group">
                         <label for="milestones{{ $loop->iteration }}">Select your Milestone:</label>
@@ -21,7 +21,7 @@
                                 @foreach ($milestones as $milestone)
                                     @include('partials.milestone_option', [
                                     'milestone' => $milestone,
-                                    'selected_id' => (isset($data['milestone']) ? $data['milestone']['id'] : null)
+                                    'selected_id' => (isset($choice['milestone']) ? $choice['milestone']['id'] : null)
                                     ])
                                 @endforeach
                             @endif
@@ -33,7 +33,7 @@
                             today?</label>
                         <textarea rows="3" name="objectives{{ $loop->iteration }}" id="objectives{{ $loop->iteration }}"
                             class="form-control"
-                            required>{{ isset($data['objective']) ? $data['objective'] : null }}</textarea>
+                            required>{{ isset($choice['objective']) ? $choice['objective'] : null }}</textarea>
                     </div>
 
                     <div class="form-group">
@@ -43,7 +43,7 @@
                             <option selected="selected">No Preference</option>
                             @foreach ($anesthesiologists as $a)
                                 <option value="{{ $a->id }}"
-                                    {{ isset($data['pref_anest']) && $a->id == $data['pref_anest'] ? 'selected' : '' }}>
+                                    {{ isset($choice['pref_anest']) && $a->id == $choice['pref_anest'] ? 'selected' : '' }}>
                                     Dr. {{ $a->first_name }} {{ $a->last_name }}
                                 </option>
                             @endforeach
