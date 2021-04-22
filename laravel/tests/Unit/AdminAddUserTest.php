@@ -46,11 +46,4 @@ class AdminAddUserTest extends TestCase
         $response = $testPOST['response'];
         $this->assertTrue($response == 'success');
     }
-
-    public function testAddUserFindPeople()
-    {
-        $mhc = new MedhubController();
-        $result = $mhc->findPeopleOSU('Michael', 'Bragalone');
-        $this->assertNotNull($result);
-    }
 }

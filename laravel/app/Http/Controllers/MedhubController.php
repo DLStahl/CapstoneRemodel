@@ -15,14 +15,10 @@
     ...
  */
 
-// remodel is green 1611
-
 namespace App\Http\Controllers;
 
 use GuzzleHttp\Client;
-use App\Models\Attending;
-use App\Models\Resident;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class MedhubController extends Controller
 {
@@ -67,126 +63,53 @@ class MedhubController extends Controller
         ]);
     }
 
-    public function notifyAddUser(
-        $userType,
-        $toName,
-        $toEmail,
-        $userName,
-        $body = 'The resident could not be found and must be added manually.',
-        $subject = 'REMODEL: Resident/Attending Needs to be Added'
-    ) {
-        //REMODEL Alert: Resident Needs to be Added
-        $heading = $userType . ' ' . $userName . ' needs to be added.';
-        $data = ['name' => $toName, 'heading' => $heading, 'body' => $body];
-
-        Mail::send('emails.mail', $data, function ($message) use ($toName, $toEmail, $subject) {
-            $message->to($toEmail, $toName)->subject($subject);
-            $message->from('OhioStateAnesthesiology@gmail.com');
-        });
-    }
-
-    public function findPeopleOSU($firstName, $lastName)
+    // Get Medhub Id using name and Medhub API
+    public function getMedhubId($userType, $name)
     {
-        $client = new Client([
-            'base_uri' => 'http://directory.osu.edu/',
-        ]);
-        $callPath = 'fpjson.php?';
-        $query = "firstname=$firstName&lastname=$lastName";
-        // echo 'find people OSU: http://directory.osu.edu/fpjson.php?'.$query."\n";
-        return $client->request('GET', $callPath, ['query' => $query]);
-    }
-
-    // Find user information using OSU Find People API.
-    public function addUserFromFindPeopleOSU($userType, $emailMessage, $name, $medhubId = null)
-    {
-        $namefl = explode(' ', $name);
-        $name_first = $namefl[0];
-        $name_last = $namefl[1];
-
-        $osuMatches = json_decode(self::findPeopleOSU($name_first, $name_last)->getBody(), true);
-
-        $added = false;
-        $osuEmail = '';
-        if (sizeof($osuMatches) == 1) {
-            $osuEmail = $osuMatches[0]['email'];
-            // echo 'osu email: '.$osuEmail."\n";
-            // check if he/she is an Anesthesiology resident/attending
-            if (
-                sizeof($osuMatches[0]['appointments']) > 0 &&
-                $osuMatches[0]['appointments'][0]['organization'] == 'Anesthesiology'
-            ) {
-                if (strcmp($userType, 'Resident') == 0) {
-                    Resident::insert(['name' => $name, 'email' => $osuEmail, 'exists' => 1, 'medhubId' => $medhubId]);
-                } else {
-                    Attending::insert(['name' => $name, 'email' => $osuEmail, 'exists' => 1, 'id' => $medhubId]);
-                }
-
-                // echo $userType." ".$name.' added to database'."\n";
-                $added = true;
-            } else {
-                //not an an Anesthesiology resident
-                $emailMessage .= " $userType $name was found by OSU Find People but is not an Anesthesiology $userType. Please check the information and add user to database manually.";
-                self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
-            }
-        } elseif (sizeof($osuMatches) == 0) {
-            // echo '0 residents found in FindPeopleOSU'."\n";
-            $emailMessage .= " No matches for $userType $name were found by OSU Find People. The $userType may be using a preffered name at OSU. Please check the information and add user to database manually.";
-            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
-        } else {
-            // echo 'More than 1 residents found in FindPeopleOSU'."\n";
-            $emailMessage .= " Multiple matches for $userType $name were found by OSU Find People. Please check the information and add user to database manually.";
-            self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
-        }
-        // echo var_dump($osuMatches);
-        return $added;
-    }
-
-    // Get user's medhubId from Medhub. Get user's name.# email address from OSU Find People.
-    // $userType is eiterh 'Resident' or 'Attending'
-    public function addUserFromMedhub($userType, $name)
-    {
-        $userAdded = false;
-        $medhubMatches = null;
+        $medhubId = null;
+        $medhubMatches = [];
         if (strcmp($userType, 'Attending') == 0) {
-            $medhubMatches = json_decode(
-                self::medhubPOST('users/facultySearch', json_encode(['name' => $name]))->getBody(),
-                true
-            );
+            try {
+                $medhubMatches = json_decode(
+                    self::medhubPOST('users/facultySearch', json_encode(['name' => $name]))->getBody(),
+                    true
+                );
+            } catch (\Exception $e) {
+                Log::debug(
+                    "Exception: Error in Medhub request users/facultySearch for name ($name) Exception code: " .
+                        $e->getCode() .
+                        ' Exception Message: ' .
+                        $e->getMessage()
+                );
+            }
         } else {
-            $medhubMatches = json_decode(
-                self::medhubPOST('users/residentSearch', json_encode(['name' => $name]))->getBody(),
-                true
-            );
+            try {
+                $medhubMatches = json_decode(
+                    self::medhubPOST('users/residentSearch', json_encode(['name' => $name]))->getBody(),
+                    true
+                );
+            } catch (\Exception $e) {
+                Log::debug(
+                    "Exception: Error in Medhub request users/residentSearch for name ($name)Exception code: " .
+                        $e->getCode() .
+                        ' Exception Message: ' .
+                        $e->getMessage()
+                );
+            }
         }
-
-        // echo'looking for '.$userType." ".$name.' info'."\n";
-
+        $emailMessage = '';
         if (sizeof($medhubMatches) == 1) {
-            // echo "medhub found people success"."\n";
             $medhubId = $medhubMatches[0]['userID'];
-            // echo 'medhub email: '.$medhubMatches[0]['email']."\n";
-            $emailMessage = $userType . ' ' . $name . ' with MedHubID ' . $medhubId . ' was found on MedHub. ';
-            $userAdded = self::addUserFromFindPeopleOSU($userType, $emailMessage, $name, $medhubId);
+            $emailMessage .= "$userType $name with MedHubID $medhubId was found on MedHub.";
         } elseif (sizeof($medhubMatches) == 0) {
-            // echo '0 '.$userType.'s found in MedHub'."\n";
-            $emailMessage = 'No matches for ' . $userType . ' ' . $name . ' were found on MedHub. ';
-            if (strcmp($userType, 'Attending') == 0) {
-                self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
-            } else {
-                $userAdded = self::addUserFromFindPeopleOSU($userType, $emailMessage, $name);
-            }
+            $emailMessage .= "No matches for $userType $name were found on MedHub.";
         } else {
-            // echo 'More than one residents found in Medhub'."\n";
-            $emailMessage = 'Multiple matches for ' . $userType . ' ' . $name . ' were found on MedHub. ';
-            if (strcmp($userType, 'Attending') == 0) {
-                self::notifyAddUser($userType, 'David', 'david.stahl@osumc.edu', $name, $emailMessage);
-            } else {
-                $userAdded = self::addUserFromFindPeopleOSU($userType, $emailMessage, $name);
-            }
+            $emailMessage .= "Multiple matches for $userType $name were found on MedHub.";
         }
-
-        // echo var_dump($medhubMatches);
-        return $userAdded;
+        return [
+            'medhubId' => $medhubId,
+            'emailMessage' => $emailMessage,
+        ];
     }
 
     // needs to be refactored still

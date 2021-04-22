@@ -24,11 +24,10 @@ Route::prefix('/')->group(function () {
     Route::get('', function () {
         return redirect('/resident/schedule/secondday');
     });
-    Route::get('about', [PagesController::class, 'getAbout']);
-    Route::get('contact', [PagesController::class, 'getContact']);
-    Route::post('contact', [PagesController::class, 'postContact']);
-    Route::get('test', [PagesController::class, 'test']);
-    Route::get('acknowledgements', [PagesController::class, 'getAcknowledgements']);
+    Route::get('about', 'PagesController@getAbout');
+    Route::get('contact', 'PagesController@getContact');
+    Route::post('contact', 'PagesController@postContact');
+    Route::get('acknowledgements', 'PagesController@getAcknowledgements');
 });
 
 // resident pages
