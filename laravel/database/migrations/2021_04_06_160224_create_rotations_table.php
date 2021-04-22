@@ -13,8 +13,7 @@ class CreateRotationsTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('rotations'))
-        {
+        if (!Schema::hasTable('rotations')) {
             Schema::create('rotations', function (Blueprint $table) {
                 $table->String('Name');
                 $table->increments('ID');
