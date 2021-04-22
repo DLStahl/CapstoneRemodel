@@ -546,7 +546,7 @@ class ScheduleDataController extends Controller
         if ($overwrittenChoices[2] == 3) {
             $choice = $choice . ' 3';
         }
-        $subject = config('app.env') == 'production' ? '' : '(' .config('app.env') . ') ';
+        $subject = config('app.env') == 'production' ? '' : '(' . config('app.env') . ') ';
         $subject .= "REMODEL: Resident Preference $choice Overwritten for $date";
         $body = "Resident $residentName has overwritten OR preferences $choice for $date. New preferences are now viewable on REMODEL website.";
         $heading = "Resident $residentName has overwritten OR preference $choice";

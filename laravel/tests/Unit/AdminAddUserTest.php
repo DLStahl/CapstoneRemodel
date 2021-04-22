@@ -46,5 +46,4 @@ class AdminAddUserTest extends TestCase
         $response = $testPOST['response'];
         $this->assertTrue($response == 'success');
     }
-
 }

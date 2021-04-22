@@ -18,5 +18,5 @@ class EvaluateData extends Model
      *
      * @var array
      */
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 }

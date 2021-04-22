@@ -354,5 +354,4 @@ class PagesController extends Controller
 
         return view('pages.feedback', compact('data_date'));
     }
-
 }

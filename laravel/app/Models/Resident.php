@@ -18,7 +18,7 @@ class Resident extends Model
      *
      * @var array
      */
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     /**
      * Indicates if the model should be timestamped.

@@ -15,7 +15,6 @@
     ...
  */
 
-
 namespace App\Http\Controllers;
 
 use GuzzleHttp\Client;
@@ -64,28 +63,44 @@ class MedhubController extends Controller
         ]);
     }
 
-    // Get Medhub Id using name and Medhub API 
+    // Get Medhub Id using name and Medhub API
     public function getMedhubId($userType, $name)
     {
         $medhubId = null;
         $medhubMatches = [];
         if (strcmp($userType, 'Attending') == 0) {
             try {
-                $medhubMatches = json_decode(self::medhubPOST('users/facultySearch', json_encode(array('name' => $name)))->getBody(), true);
+                $medhubMatches = json_decode(
+                    self::medhubPOST('users/facultySearch', json_encode(['name' => $name]))->getBody(),
+                    true
+                );
             } catch (\Exception $e) {
-                Log::debug("Exception: Error in Medhub request users/facultySearch for name ($name) Exception code: " . $e->getCode() . ' Exception Message: ' . $e->getMessage());
+                Log::debug(
+                    "Exception: Error in Medhub request users/facultySearch for name ($name) Exception code: " .
+                        $e->getCode() .
+                        ' Exception Message: ' .
+                        $e->getMessage()
+                );
             }
         } else {
             try {
-                $medhubMatches = json_decode(self::medhubPOST('users/residentSearch', json_encode(array('name' => $name)))->getBody(), true);
+                $medhubMatches = json_decode(
+                    self::medhubPOST('users/residentSearch', json_encode(['name' => $name]))->getBody(),
+                    true
+                );
             } catch (\Exception $e) {
-                Log::debug("Exception: Error in Medhub request users/residentSearch for name ($name)Exception code: " . $e->getCode() . ' Exception Message: ' . $e->getMessage());
+                Log::debug(
+                    "Exception: Error in Medhub request users/residentSearch for name ($name)Exception code: " .
+                        $e->getCode() .
+                        ' Exception Message: ' .
+                        $e->getMessage()
+                );
             }
         }
         $emailMessage = '';
         if (sizeof($medhubMatches) == 1) {
             $medhubId = $medhubMatches[0]['userID'];
-            $emailMessage .=  "$userType $name with MedHubID $medhubId was found on MedHub.";
+            $emailMessage .= "$userType $name with MedHubID $medhubId was found on MedHub.";
         } elseif (sizeof($medhubMatches) == 0) {
             $emailMessage .= "No matches for $userType $name were found on MedHub.";
         } else {
@@ -93,7 +108,7 @@ class MedhubController extends Controller
         }
         return [
             'medhubId' => $medhubId,
-            'emailMessage' => $emailMessage
+            'emailMessage' => $emailMessage,
         ];
     }
 
@@ -114,7 +129,7 @@ class MedhubController extends Controller
             $startDate = date('Y-m-d', strtotime($yearsArr[$i]['start_date'])); //get the rotation start date from academicYearPOST
             $endDate = date('Y-m-d', strtotime($yearsArr[$i]['end_date'])); //get the rotation end date from academicYearPOST
 
-            if (($date > $startDate) && ($date < $endDate)) { 
+            if ($date > $startDate && $date < $endDate) {
                 // find the date range that fits today
                 break; // break so we can save the rotationSetID
             }
@@ -140,7 +155,7 @@ class MedhubController extends Controller
             $startDate = date('Y-m-d', strtotime($yearsArr[$i]['start_date'])); //get the rotation start date from academicYearPOST
             $endDate = date('Y-m-d', strtotime($yearsArr[$i]['end_date'])); //get the rotation end date from academicYearPOST
 
-            if (($date > $startDate) && ($date < $endDate)) { 
+            if ($date > $startDate && $date < $endDate) {
                 // find the date range that fits today
                 break; // break so we can save the rotationSetID
             }
