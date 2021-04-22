@@ -206,7 +206,9 @@ class PushSchedule extends Command
             $pref_anest_id = $assignment['anesthesiologist_id'];
             if ($pref_anest_id != null) {
                 $anesthesiologist = Anesthesiologist::find($pref_anest_id);
-                $pref_anest_name = "$anesthesiologist->first_name $anesthesiologist->last_name";
+                $first_name = $anesthesiologist->first_name;
+                $last_name = $anesthesiologist->last_name;
+                $pref_anest_name = "$first_name $last_name";
                 $pref_anest_staff_key = $anesthesiologist->staff_key;
             } else {
                 $pref_anest_name = 'No anesthesiologist assignment';
