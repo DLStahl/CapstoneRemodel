@@ -243,7 +243,6 @@ class ScheduleDataController extends Controller
         );
     }
 
-
     public function getChoice()
     {
         // Exclude Admin from selecting preferences
@@ -256,7 +255,8 @@ class ScheduleDataController extends Controller
         // id is stored as id1_id2_id3, need to split it to get the individual ids
         $schedule_data_ids = explode("_", $id);
         // get current preferences
-        foreach ($schedule_data_ids as $i => $id) {  //last element of schedule_data_ids is blank
+        foreach ($schedule_data_ids as $i => $id) {
+            //last element of schedule_data_ids is blank
             if ($id) {
                 $schedule = ScheduleData::where("id", $schedule_data_ids[$i])->get();
                 $currentChoices[$i] = [
@@ -307,7 +307,6 @@ class ScheduleDataController extends Controller
         return $case;
     }
 
-
     public function selectMilestones($id)
     {
         // Get resident data
@@ -326,7 +325,7 @@ class ScheduleDataController extends Controller
                 $schedule_data[$i] = ScheduleData::where("id", $id)->get();
                 $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
                 preg_match("/(.+) \[(\d+)\]/", $lead_surgeon_string, $matches); // get name of the lead surgeon
-                $lead_surgeon = (count($matches) > 1) ? $matches[1] : "OORA";
+                $lead_surgeon = count($matches) > 1 ? $matches[1] : "OORA";
                 $date = $schedule_data[$i][0]["date"];
                 $resident_data[$i]["schedule"] = $schedule_data[$i][0];
                 $resident_data[$i]["lead_surgeon"] = $lead_surgeon;
@@ -339,13 +338,8 @@ class ScheduleDataController extends Controller
             ->orderBy("last_name")
             ->get();
 
-
-        return view(
-            "schedules.resident.milestone",
-            compact("id", "milestones", "resident_data", "anesthesiologists")
-        );
+        return view("schedules.resident.milestone", compact("id", "milestones", "resident_data", "anesthesiologists"));
     }
-
 
     public function updateMilestones($id)
     {
@@ -367,7 +361,7 @@ class ScheduleDataController extends Controller
                 $schedule_data[$i] = ScheduleData::where("id", $id)->get();
                 $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
                 preg_match("/(.+) \[(\d+)\]/", $lead_surgeon_string, $matches); // get name of the lead surgeon
-                $lead_surgeon = (count($matches) > 1) ? $matches[1] : "OORA";
+                $lead_surgeon = count($matches) > 1 ? $matches[1] : "OORA";
                 $date = $schedule_data[$i][0]["date"];
                 $resident_data[$i]["schedule"] = $schedule_data[$i][0];
                 $resident_data[$i]["lead_surgeon"] = $lead_surgeon;
@@ -393,10 +387,7 @@ class ScheduleDataController extends Controller
             ->orderBy("last_name")
             ->get();
 
-        return view(
-            "schedules.resident.milestone",
-            compact("id", "milestones", "resident_data", "anesthesiologists")
-        );
+        return view("schedules.resident.milestone", compact("id", "milestones", "resident_data", "anesthesiologists"));
     }
 
     public function notifyResidentOverwrittenPreferences($toName, $toEmail, $residentName, $date, $overwrittenChoices)
@@ -445,7 +436,7 @@ class ScheduleDataController extends Controller
                 $lead_surgeon_string = $schedule_data[$i][0]["lead_surgeon"];
                 $date = $schedule_data[$i][0]["date"];
                 preg_match("/(.+) \[(\d+)\]/", $lead_surgeon_string, $matches); // get id of lead surgeon
-                $lead_surgeon_medhub_id = (count($matches) > 2) ? $matches[2] : -1; // OORA case, sets medhub id to -1 as no lead surgeons are specified
+                $lead_surgeon_medhub_id = count($matches) > 2 ? $matches[2] : -1; // OORA case, sets medhub id to -1 as no lead surgeons are specified
                 if (isset($_REQUEST["pref_anest" . $choice]) && $_REQUEST["pref_anest" . $choice] != 0) {
                     // if they chose an anesthesiologist, add their ID to the DB, if not, add NULL
                     $pref_anest[$i] = $_REQUEST["pref_anest" . $choice];
@@ -520,8 +511,8 @@ class ScheduleDataController extends Controller
         $resident_id = Resident::where("email", $_SERVER["HTTP_EMAIL"])->first()->id;
 
         Option::where("date", $date)
-        ->where("resident", $resident_id)
-        ->delete();
+            ->where("resident", $resident_id)
+            ->delete();
 
         return view("schedules.resident.schedule_update");
     }
