@@ -11,6 +11,7 @@ use App\Models\Rotations;
 use App\Models\EvaluationForms;
 use App\Models\EvaluateData;
 use App\Models\Option;
+use App\Models\Resident;
 
 class InitiateEval extends Command
 {
@@ -109,12 +110,11 @@ class InitiateEval extends Command
     public function sendEvaluations($residentID, $residentName, $medhubFormId, $attendingID, $attendingName, $date)
     {
         $evalsSent = 0;
+        $residentMedhubID = intval(Resident::where('id', $residentID)->value('medhubId'));
         // send attending an evaluation for a resident
         try {
-            $responseID = self::initAttendingEvalResidentPOST($attendingID, $residentID, $medhubFormId);
-            if ($responseID != 0) {
-                $evalsSent++;
-            }
+            self::initAttendingEvalResidentPOST($attendingID, $residentMedhubID, $medhubFormId);
+            $evalsSent++;
         } catch (\Exception $e) {
             Log::debug(
                 "Failed to send evaluation: Attending Evaluating Resident. Resident: $residentName Resident ID: $residentID Attending: $attendingName Attending ID: $attendingID Medhub Form ID: $medhubFormId"
@@ -123,10 +123,8 @@ class InitiateEval extends Command
         }
         // send resident an evaluation for an attending
         try {
-            $responseID = self::initResidentEvalAttendingPOST($residentID, $attendingID);
-            if ($responseID != 0) {
-                $evalsSent++;
-            }
+            self::initResidentEvalAttendingPOST($residentMedhubID, $attendingID);
+            $evalsSent++;
         } catch (\Exception $e) {
             Log::debug(
                 "Failed to send evaluation: Resident Evaluating Resident. Attending name: $attendingName Attending ID: $attendingID Resident Name: $residentName Resident ID: $residentID"
@@ -142,10 +140,8 @@ class InitiateEval extends Command
             try {
                 $additionalFormType = 'REMODEL feedback';
                 $additionalService = EvaluationForms::where('form_type', $additionalFormType)->value('medhub_form_id');
-                $responseID = self::initAttendingEvalResidentPOST($attendingID, $residentID, $additionalService);
-                if ($responseID != 0) {
-                    $evalsSent++;
-                }
+                self::initAttendingEvalResidentPOST($attendingID, $residentMedhubID, $additionalService);
+                $evalsSent++;
             } catch (\Exception $e) {
                 Log::debug(
                     "Failed to send evaluation: REMODEL Evaluation. Resident Name: $residentName Resident ID: $residentID Attending Name: $attendingName Attending ID: $attendingID Medhub form ID: $medhubFormId"
