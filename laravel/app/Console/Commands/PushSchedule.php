@@ -163,7 +163,7 @@ class PushSchedule extends Command
         $client->setAuthConfig($authConfigPath);
 
         // Load previously authorized token from a file.
-        $tokenPath = '/htdocs/token.json';
+        $tokenPath = base_path('../token.json');
         if (file_exists($tokenPath)) {
             $accessToken = json_decode(file_get_contents($tokenPath), true);
             $client->setAccessToken($accessToken);
