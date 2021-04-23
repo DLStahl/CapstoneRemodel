@@ -98,26 +98,25 @@ class PushSchedule extends Command
         $newSheet = $service->spreadsheets->batchUpdate($spreadsheetId, $newSheet);
         Log::info("Created spreadsheet: \"$title\" with ID: $newSheet->spreadsheetId");
 
-        // get the array that contains all assigments for day + 1.
-        $all_assns = self::getAssignments($tomorrow);
+        // get tomorrow's assignments
+        $assignments = self::getAssignments($tomorrow);
 
-        // relative path for assignment sheet
-        $assignmentCSVPath = "../downloads/assignment$tomorrow.csv";
+        Log::info("writing assignments to csv");
+        $assignmentCSVPath = "../downloads/assignment$tomorrow.csv"; // relative path for assignment sheet
         $mode = file_exists($assignmentCSVPath) ? 'w' : 'c';
         $fp = fopen($assignmentCSVPath, $mode);
 
         // print header for sheet
         fputcsv($fp, PushSchedule::$SPREADSHEET_COLUMN_NAMES);
         // print all assignments to path
-        foreach ($all_assns as $assignemnts) {
-            fputcsv($fp, $assignemnts);
+        foreach ($assignments as $assignemnt) {
+            fputcsv($fp, $assignemnt);
         }
-
         fclose($fp);
-
-        $range = "'$title'!A1:ZZZ1000";
+        Log::info("wrote assignments to csv");
 
         // get the values from the assignment file and save them to an array
+        Log::info("Preparing assignments for upload to Google Sheets");
         $file = fopen($assignmentCSVPath, 'r');
         $csv = [];
         while (($line = fgetcsv($file)) !== false) {
@@ -129,12 +128,16 @@ class PushSchedule extends Command
         // create the correct update to send back to google sheets to fill the sheet with the array created above
         $body = new Google_Service_Sheets_ValueRange(['values' => $csv]);
         $params = ['valueInputOption' => 'USER_ENTERED'];
+        $range = "'$title'!A1:ZZZ1000";
         $result = $service->spreadsheets_values->update($spreadsheetId, $range, $body, $params);
+        Log::info("Wrote assignments to Google Sheets.");
 
         // remove the oldest spreadsheet if there are over MAX_SPREADSHEETS spreadsheets
         $response = $service->spreadsheets->get($spreadsheetId);
-        if (count($response) > PushSchedule::$MAX_SPREADSHEETS) {
-            $lastEntry = $response[count($response) - 1];
+        $count = count($response);
+        if ($count > PushSchedule::$MAX_SPREADSHEETS) {
+            Log::info("Too many ($count) spreadsheet pages. Removing the oldest spreadsheet.");
+            $lastEntry = $response[$count - 1];
             $lastSheetId = $lastEntry['properties']['sheetId'];
             $delete = new Google_Service_Sheets_BatchUpdateSpreadsheetRequest([
                 'requests' => [
@@ -144,6 +147,7 @@ class PushSchedule extends Command
                 ],
             ]);
             $service->spreadsheets->batchUpdate($spreadsheetId, $delete);
+            Log::info("Removed the oldest spreadsheet.");
         }
 
         return 0;
