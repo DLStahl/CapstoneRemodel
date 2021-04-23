@@ -101,7 +101,7 @@ class PushSchedule extends Command
         // get tomorrow's assignments
         $assignments = self::getAssignments($tomorrow);
 
-        Log::info("writing assignments to csv");
+        Log::info('Writing assignments to csv');
         $assignmentCSVPath = "../downloads/assignment$tomorrow.csv"; // relative path for assignment sheet
         $mode = file_exists($assignmentCSVPath) ? 'w' : 'c';
         $fp = fopen($assignmentCSVPath, $mode);
@@ -113,10 +113,10 @@ class PushSchedule extends Command
             fputcsv($fp, $assignemnt);
         }
         fclose($fp);
-        Log::info("wrote assignments to csv");
+        Log::info('Wrote assignments to csv');
 
         // get the values from the assignment file and save them to an array
-        Log::info("Preparing assignments for upload to Google Sheets");
+        Log::info('Preparing assignments for upload to Google Sheets');
         $file = fopen($assignmentCSVPath, 'r');
         $csv = [];
         while (($line = fgetcsv($file)) !== false) {
@@ -130,7 +130,7 @@ class PushSchedule extends Command
         $params = ['valueInputOption' => 'USER_ENTERED'];
         $range = "'$title'!A1:ZZZ1000";
         $result = $service->spreadsheets_values->update($spreadsheetId, $range, $body, $params);
-        Log::info("Wrote assignments to Google Sheets.");
+        Log::info('Wrote assignments to Google Sheets.');
 
         // remove the oldest spreadsheet if there are over MAX_SPREADSHEETS spreadsheets
         $response = $service->spreadsheets->get($spreadsheetId);
@@ -147,7 +147,7 @@ class PushSchedule extends Command
                 ],
             ]);
             $service->spreadsheets->batchUpdate($spreadsheetId, $delete);
-            Log::info("Removed the oldest spreadsheet.");
+            Log::info('Removed the oldest spreadsheet.');
         }
 
         return 0;
