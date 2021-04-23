@@ -338,7 +338,10 @@ class ScheduleDataController extends Controller
             ->orderBy('last_name')
             ->get();
 
-        return view('schedules.resident.milestone', compact('id', 'milestones', 'resident_choices', 'anesthesiologists'));
+        return view(
+            'schedules.resident.milestone',
+            compact('id', 'milestones', 'resident_choices', 'anesthesiologists')
+        );
     }
 
     public function updateMilestones($id)
@@ -388,7 +391,10 @@ class ScheduleDataController extends Controller
             ->orderBy('last_name')
             ->get();
 
-        return view('schedules.resident.milestone', compact('id', 'milestones', 'resident_choices', 'anesthesiologists'));
+        return view(
+            'schedules.resident.milestone',
+            compact('id', 'milestones', 'resident_choices', 'anesthesiologists')
+        );
     }
 
     public function notifyResidentOverwrittenPreferences($toName, $toEmail, $residentName, $date, $overwrittenChoices)
