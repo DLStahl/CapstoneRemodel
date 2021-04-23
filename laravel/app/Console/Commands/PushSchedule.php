@@ -85,13 +85,17 @@ class PushSchedule extends Command
         $title = $tomorrow;
 
         // create new sheet for today
-        $newSheet = new Google_Service_Sheets_Spreadsheet([
-            'properties' => [
-                'title' => $title,
-                'index' => 0,
+        $newSheet = new Google_Service_Sheets_BatchUpdateSpreadsheetRequest([
+            'requests' => [
+                'addSheet' => [
+                    'properties' => [
+                        'title' => $title,
+                        'index' => 0,
+                    ],
+                ],
             ],
         ]);
-        $newSheet = $service->spreadsheets->create($newSheet, ['fields' => 'spreadsheetId']);
+        $newSheet = $service->spreadsheets->batchUpdate($spreadsheetId, $newSheet);
         Log::info("Created spreadsheet: \"$title\" with ID: $newSheet->spreadsheetId");
 
         // get the array that contains all assigments for day + 1.
