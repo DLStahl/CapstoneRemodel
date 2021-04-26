@@ -18,7 +18,7 @@ Since you won't run the application locally, it's technically sufficient to simp
 However, by following these instructions, your code editor should provide helpful completions.
 
 - Clone this repository.
-- Install [PHP](https://www.php.net/manual/en/install.php) (OCIO uses version 7.4. We reccomend that you match this.)
+- Install [PHP](https://www.php.net/manual/en/install.php) (OCIO uses version 7.4. We recommend that you match this.)
 - Install [Composer](https://getcomposer.org) for managing dependencies.
 - Install dependencies by running `composer install` within the `laravel` directory.
 - Install [VS Code](https://code.visualstudio.com).
@@ -27,7 +27,7 @@ However, by following these instructions, your code editor should provide helpfu
 
 ## Different Servers
 
-REMODEL developers have access to three servers. Each server has its own databse.
+REMODEL developers have access to three servers. Each server has its own database.
 
 1. Prod/Production - The publicly available version of the application in use by residents.
 2. Dev/Development - The server where most development should occur. Use this server to develop and use new functionality before deploying.
@@ -35,7 +35,7 @@ REMODEL developers have access to three servers. Each server has its own databse
 
 ## Run Tests
 
-Tests are to be run only on the test server so they do not interfere with production or development data.
+Tests are to be run only on the test server. This is to avoid interfere with production (or development) data.
 
 See Laravel's documentation on running tests [here](https://laravel.com/docs/8.x/testing#running-tests).
 
@@ -58,7 +58,7 @@ ssh lastname.number@webssh.osu.edu # connect to OCIO's servers via ssh
 # enter password and select which server you want to connect to (in this case, test)
 
 cdweb # change directory to the server's files
-cd htsdocs/laravel # change directory to the laravel application
+cd htsdocs/laravel # change directory to the Laravel application
 ```
 
 ## Code Format
